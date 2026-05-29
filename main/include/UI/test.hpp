@@ -3,11 +3,11 @@
 
 //#include <iostream>
 #include "UI.hpp"
-#include "../embedded_signals.hpp"
+#include "embedded_signals.hpp"
 
-// フルサイズ信号ファイルのインクルード
-#if __has_include("../fullsize_signals.hpp")
-    #include "../fullsize_signals.hpp"
+// フルサイズ信号ファイルのインクルード（signals コンポーネント）
+#if __has_include("fullsize_signals.hpp")
+    #include "fullsize_signals.hpp"
     #define FULLSIZE_SIGNALS_AVAILABLE
     #ifdef CONFIG_SPIRAM_USE
         #define FULLSIZE_SIGNALS_PSRAM_AVAILABLE
