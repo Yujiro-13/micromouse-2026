@@ -1,4 +1,4 @@
-#include "NeoPixel.hpp"
+#include "neopixel.hpp"
 
 NeoPixel::NeoPixel(gpio_num_t pin, int _leds = 100){
     rmt_tx_channel_config_t _tx_config;

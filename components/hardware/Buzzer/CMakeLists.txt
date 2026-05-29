@@ -1,3 +1,3 @@
-idf_component_register(SRCS "Buzzer.cpp"
+idf_component_register(SRCS "buzzer.cpp"
                        INCLUDE_DIRS "."
                        REQUIRES driver)

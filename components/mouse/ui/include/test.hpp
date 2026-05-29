@@ -2,7 +2,7 @@
 #define TEST_HPP
 
 //#include <iostream>
-#include "UI.hpp"
+#include "ui.hpp"
 #include "embedded_signals.hpp"
 
 // フルサイズ信号ファイルのインクルード（signals コンポーネント）

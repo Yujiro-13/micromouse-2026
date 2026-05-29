@@ -1,8 +1,8 @@
 #ifndef UI_HPP
 #define UI_HPP
 
-#include "Base_func.hpp"
-#include "Adachi.hpp"
+#include "base_func.hpp"
+#include "adachi.hpp"
 #include "files.hpp"
 
 struct UI : Micromouse

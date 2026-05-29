@@ -1,4 +1,4 @@
-#include "Buzzer.hpp"
+#include "buzzer.hpp"
 
 Buzzer::Buzzer(gpio_num_t pin){
 

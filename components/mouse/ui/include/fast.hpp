@@ -2,7 +2,7 @@
 #define FAST_HPP
 
 //#include <iostream>
-#include "UI.hpp"
+#include "ui.hpp"
 
 
 class Fast : public UI

@@ -1,7 +1,7 @@
 #ifndef TASK_HPP
 #define TASK_HPP
 
-#include "Interrupt.hpp"
+#include "interrupt.hpp"
 #include "drivers.hpp"
 #include "sens_structs.hpp"
 

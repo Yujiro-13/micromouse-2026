@@ -1,4 +1,4 @@
-#include "Motor.hpp"
+#include "motor.hpp"
 
 #define BDC_MCPWM_TIMER_RESOLUTION_HZ 10000000                                      // 10MHz, 1 tick = 0.1us
 #define BDC_MCPWM_FREQ_HZ 150000                                                    // 250KHz PWM

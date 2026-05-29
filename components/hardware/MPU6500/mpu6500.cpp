@@ -1,4 +1,4 @@
-#include "MPU6500.hpp"
+#include "mpu6500.hpp"
 
 MPU6500::MPU6500(spi_host_device_t bus, gpio_num_t cs){
     // デバイスの初期化

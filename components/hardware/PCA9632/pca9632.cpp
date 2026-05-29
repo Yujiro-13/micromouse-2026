@@ -1,4 +1,4 @@
-#include "PCA9632.hpp"
+#include "pca9632.hpp"
 
 PCA9632::PCA9632(i2c_port_t port, uint8_t adrs){
     // デバイスの設定

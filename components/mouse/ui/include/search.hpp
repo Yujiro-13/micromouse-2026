@@ -2,7 +2,7 @@
 #define SEARCH_HPP
 
 //#include <iostream>
-#include "UI.hpp"
+#include "ui.hpp"
 
 class Search : public UI
 {

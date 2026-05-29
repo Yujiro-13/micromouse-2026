@@ -1,14 +1,14 @@
 
-#include "Interrupt.hpp"
+#include "interrupt.hpp"
 #include "fast.hpp"
 #include "log.hpp"
 #include "search.hpp"
 #include "test.hpp"
-#include "Adachi.hpp"
+#include "adachi.hpp"
 #include "include/micromouse.hpp"
 #include "sens_structs.hpp"
 #include <functional>
-#include "Task.hpp"
+#include "task.hpp"
 
 std::vector<std::shared_ptr<UI>> ui;
 

@@ -3,13 +3,13 @@
 
 #include <iostream>
 #include <memory>
-#include "NeoPixel.hpp"
-#include "MPU6500.hpp"
-#include "PCA9632.hpp"
-#include "Buzzer.hpp"
-#include "Motor.hpp"
-#include "MA730.hpp"
-#include "ADS7066.hpp"
+#include "neopixel.hpp"
+#include "mpu6500.hpp"
+#include "pca9632.hpp"
+#include "buzzer.hpp"
+#include "motor.hpp"
+#include "ma730.hpp"
+#include "ads7066.hpp"
 
 typedef struct
 {

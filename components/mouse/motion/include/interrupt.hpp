@@ -11,7 +11,7 @@
 #include "esp_flash.h"
 #include "spi_flash_mmap.h"
 #include "structs.hpp"
-#include "Base_func.hpp"
+#include "base_func.hpp"
 #include "drivers.hpp"
 
 constexpr int ENC_MAX = 16384;

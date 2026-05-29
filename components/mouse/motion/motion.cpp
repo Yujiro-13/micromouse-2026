@@ -1,4 +1,4 @@
-#include "Motion.hpp"
+#include "motion.hpp"
 #include <algorithm>
 
 #define MODE_MAX 15

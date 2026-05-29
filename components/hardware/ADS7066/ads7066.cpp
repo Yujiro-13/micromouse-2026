@@ -1,4 +1,4 @@
-#include "ADS7066.hpp"
+#include "ads7066.hpp"
 
 ADS7066::ADS7066(spi_host_device_t bus, gpio_num_t cs)
 {

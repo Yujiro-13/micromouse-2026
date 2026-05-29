@@ -2,7 +2,7 @@ idf_component_register(
     SRCS
     "main.cpp"
     "micromouse.cpp"
-    "Task.cpp"
+    "task.cpp"
 
     INCLUDE_DIRS
     "include"

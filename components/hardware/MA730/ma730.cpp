@@ -1,4 +1,4 @@
-#include "MA730.hpp"
+#include "ma730.hpp"
 
 MA730::MA730(spi_host_device_t bus, gpio_num_t cs, uint8_t ccw)
 {
