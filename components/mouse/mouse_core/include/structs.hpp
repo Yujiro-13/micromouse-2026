@@ -14,13 +14,13 @@ typedef enum
 {
     FALSE = 0,
     TRUE = 1,
-}t_bool;
+}Bool;
 
 typedef enum
 {
     SEARCH = 0,
     ALL_SEARCH = 1,
-}t_search_mode;
+}SearchMode;
 
 typedef enum
 {
@@ -31,7 +31,7 @@ typedef enum
     SLA_LEFT = 4,
     SLA_RIGHT = 5,
     UNDEFINED,
-}t_local_dir;
+}LocalDirection;
 
 typedef enum
 {
@@ -39,14 +39,14 @@ typedef enum
     EAST = 1,
     SOUTH = 2,
     WEST = 3,
-}t_direction;
+}Direction;
 
 /*typedef enum
 {
     NOWALL = 0,
     WALL = 1,
     UNKNOWN = 2,
-}t_exist_wall;
+}WallState;
 
 typedef struct 
 {
@@ -56,33 +56,33 @@ typedef struct
     int l = 0;  //left
     int r = 0;  //right
     int b = 0;  //back
-}t_sens_dir;    //sensor direction data
+}SensorDir;    //sensor direction data
 
 typedef struct 
 {
-    t_bool l = FALSE; //front
-    t_bool fl = FALSE;    //front left
-    t_bool fr = FALSE;    //front right
-    t_bool r = FALSE; //left
-}t_wall_exist;  //wall exist data
+    Bool l = FALSE; //front
+    Bool fl = FALSE;    //front left
+    Bool fr = FALSE;    //front right
+    Bool r = FALSE; //left
+}WallExist;  //wall exist data
 
 typedef struct 
 {
-    t_sens_dir val;  //sensor value
-    t_sens_dir d_val;    //sensor value difference
-    t_sens_dir p_val;    //sensor value past
-    t_sens_dir error;    //sensor value error
-    t_sens_dir ref;  //sensor value reference
-    t_sens_dir th_wall;  //wall threshold value
-    t_sens_dir th_control;   //control threshold value
-    t_wall_exist exist; //wall true or false
-    t_wall_exist control_enable;  //control true or false
-    t_bool control;  //enable or disable
-    t_sens_dir centor_front;  //center value
-    t_sens_dir center_right;
-    t_sens_dir center_left;
-    t_sens_dir center_rear;
-}t_wall_sens;  //wall sensor data
+    SensorDir val;  //sensor value
+    SensorDir d_val;    //sensor value difference
+    SensorDir p_val;    //sensor value past
+    SensorDir error;    //sensor value error
+    SensorDir ref;  //sensor value reference
+    SensorDir th_wall;  //wall threshold value
+    SensorDir th_control;   //control threshold value
+    WallExist exist; //wall true or false
+    WallExist control_enable;  //control true or false
+    Bool control;  //enable or disable
+    SensorDir centor_front;  //center value
+    SensorDir center_right;
+    SensorDir center_left;
+    SensorDir center_rear;
+}WallSensorData;  //wall sensor data
 
 typedef struct 
 {
@@ -91,25 +91,25 @@ typedef struct
     float ref = 0; //gyro reference
     float degree = 0;
     float radian = 0;
-}t_gyro;    //gyro data
+}Gyro;    //gyro data
 
 typedef struct 
 {
     unsigned int angle = 0;
-    t_sens_dir data;
-    t_sens_dir locate;
-    t_sens_dir p_locate;
-    t_sens_dir diff_pulse;
-    t_sens_dir diff_p_pulse;    
-}t_enc;     //encoder data
+    SensorDir data;
+    SensorDir locate;
+    SensorDir p_locate;
+    SensorDir diff_pulse;
+    SensorDir diff_p_pulse;    
+}EncoderData;     //encoder data
 
 typedef struct 
 {
-    t_wall_sens wall;
-    t_gyro gyro;
-    t_enc enc;
+    WallSensorData wall;
+    Gyro gyro;
+    EncoderData enc;
     float BatteryVoltage = 0;
-}t_sens_data;   //sensor data
+}SensorData;   //sensor data
 */
 
 
@@ -131,35 +131,35 @@ typedef struct
     float wall_error = 0;   //wall error
     float pillar_error = 0; //pillar error (for PD control)
     float alpha = 0.1;    //相補フィルタ用
-    t_local_dir flag;
-}t_motion;  //motion parameter
+    LocalDirection flag;
+}MotionParam;  //motion parameter
 
 
 
 typedef struct 
 {
-    t_motion r;
-    t_motion l;
-    t_motion p;    //past
-    t_motion current;   //current
-    t_motion max;  //max
-    t_motion min;  //min
-    t_motion end;   //end
-    t_motion tar;   //target
-    t_motion sum;   //sum
-    t_motion I;    //integral
-    t_motion sla;  //slalom
-    t_motion sla_jerk; // slalom parameters dedicated for jerk-based control (ang_acc, ang_vel, ang_jerk)
-    t_motion fast_ref; // 最短走行時基準速
-    t_motion fast_high; // 既地区間加速時速
+    MotionParam r;
+    MotionParam l;
+    MotionParam p;    //past
+    MotionParam current;   //current
+    MotionParam max;  //max
+    MotionParam min;  //min
+    MotionParam end;   //end
+    MotionParam tar;   //target
+    MotionParam sum;   //sum
+    MotionParam I;    //integral
+    MotionParam sla;  //slalom
+    MotionParam sla_jerk; // slalom parameters dedicated for jerk-based control (ang_acc, ang_vel, ang_jerk)
+    MotionParam fast_ref; // 最短走行時基準速
+    MotionParam fast_high; // 既地区間加速時速
     float start_angle = 0.0;  // 直進開始時の角度保存用
-    t_bool angle_control_mode = FALSE;  // 角度制御モード（壁制御OFF時に有効）
+    Bool angle_control_mode = FALSE;  // 角度制御モード（壁制御OFF時に有効）
     uint32_t slalom_jerk_phase_ms[9] = {0};  // slalom_jerk の9フェーズ時間配列 [ms]
     float slalom_jerk_value = 0.0f;  // slalom_jerk の躍度パラメータ [rad/s^3]
-    t_bool jerk_integration_enabled = FALSE;  // 躍度積分制御の有効フラグ
+    Bool jerk_integration_enabled = FALSE;  // 躍度積分制御の有効フラグ
     float current_jerk = 0.0f;  // 現在の躍度値 [rad/s^3]（Interrupt内で積分用）
     uint32_t phase_timestamp_ms = 0;  // フェーズタイムスタンプ [ms]（Interruptループで更新）
-}t_mouse_motion_val;    //motion value
+}MotionValues;    //motion value
 
 typedef struct 
 {
@@ -176,7 +176,7 @@ typedef struct
     float cur = 0;
     float E = 0;
     float V_mot = 0;
-}t_motor;   //motor parameter
+}MotorParam;   //motor parameter
 
 typedef struct 
 {
@@ -186,7 +186,7 @@ typedef struct
     float N = 0;    //filter coefficient
     float diff = 0; //differential term filter
     float D_operation_amount = 0; //differential operation amount
-}t_pid; //pid parameter
+}PidParam; //pid parameter
 
 typedef struct 
 {
@@ -232,15 +232,15 @@ typedef struct
     float cov_xx = 0.1;         // X位置の分散
     float cov_yy = 0.1;         // Y位置の分散
     float cov_tt = 0.01;        // 角度の分散
-}t_odom;    //odometry data
+}Odometry;    //odometry data
 
 typedef struct 
 {
-    t_pid v;    //velocity pid
-    t_pid o;    //omega pid
-    t_pid d;    //degree pid
-    t_pid wall; //wall pid
-    t_pid pillar;  //pillar pid
+    PidParam v;    //velocity pid
+    PidParam o;    //omega pid
+    PidParam d;    //degree pid
+    PidParam wall; //wall pid
+    PidParam pillar;  //pillar pid
     float Vatt = 0;
     float V_l = 0;
     float V_r = 0;
@@ -249,11 +249,11 @@ typedef struct
     float test_Duty_l = 0;
     float test_Duty_r = 0;
     uint64_t time_count = 0;
-    t_bool flag = FALSE;
-    t_bool test_flag = FALSE;
-    t_motor mot;
-    t_odom odom;
-    t_bool log_flag = FALSE;
+    Bool flag = FALSE;
+    Bool test_flag = FALSE;
+    MotorParam mot;
+    Odometry odom;
+    Bool log_flag = FALSE;
     int64_t start_run_time = 0;
     int64_t end_run_time = 0;
     int64_t delta_run_time = 0;
@@ -266,7 +266,7 @@ typedef struct
     // 静止状態補償用変数
     float static_friction_compensation_straight = 0.0;  // 静摩擦補償値（直進）
     float static_friction_compensation_turn = 0.0;  // 静摩擦補償値（超信地旋回）
-    t_bool is_stationary = TRUE;  // 静止状態フラグ
+    Bool is_stationary = TRUE;  // 静止状態フラグ
     float stationary_threshold_vel = 0.01;  // 静止判定閾値（速度） [m/s]
     float stationary_threshold_ang_vel = 0.01;  // 静止判定閾値（角速度） [rad/s]
     
@@ -275,7 +275,7 @@ typedef struct
     int correction_cell_x = 0;  // 補正時のセルX座標
     int correction_cell_y = 0;  // 補正時のセルY座標
     int correction_dir = 0;     // 補正時の方向 (0=NORTH, 1=EAST, 2=SOUTH, 3=WEST)
-}t_control; //control parameter
+}Control; //control parameter
 
 
 typedef struct 
@@ -284,28 +284,28 @@ typedef struct
     unsigned char east:2;
     unsigned char south:2;
     unsigned char west:2;
-    t_bool flag;
-}t_wall;    //wall data
+    Bool flag;
+}WallData;    //wall data
 
 typedef struct
 {
     short x = 0;
     short y = 0;
-    t_direction dir;
-}t_pos;     //position data
+    Direction dir;
+}Pos;     //position data
 
 typedef struct 
 {
-    t_pos pos;
-    t_wall wall[32][32];
+    Pos pos;
+    WallData wall[32][32];
     unsigned char size[32][32] = {0};
     uint8_t GOAL_X = 0;
     uint8_t GOAL_Y = 0;
-    t_search_mode flag;
-    t_bool search_count_flag = FALSE;
+    SearchMode flag;
+    Bool search_count_flag = FALSE;
     uint64_t search_time = 0;
-    t_bool thinking_flag = FALSE;
-}t_map;     //map data
+    Bool thinking_flag = FALSE;
+}MazeMap;     //map data
 
 typedef struct
 {
@@ -318,7 +318,7 @@ typedef struct
     float wall_Kp = 0;
     float wall_Ki = 0;
     float wall_Kd = 0;
-}t_file_pid_gain;  //parameter file
+}FilePidGain;  //parameter file
 
 typedef struct
 {
@@ -330,7 +330,7 @@ typedef struct
     uint16_t th_control_r = 0;
     uint16_t ref_l = 0;
     uint16_t ref_r = 0;
-}t_file_wall_th;   //wall threshold file
+}FileWallThreshold;   //wall threshold file
 
 typedef struct
 {
@@ -342,7 +342,7 @@ typedef struct
     uint16_t right_fr = 0;
     uint16_t rear_fl = 0;
     uint16_t rear_fr = 0;
-}t_file_center_sens_value;
+}FileCenterSensValue;
 
 
 #endif // STRUCTS_HPP

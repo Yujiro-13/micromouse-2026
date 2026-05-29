@@ -128,7 +128,7 @@ uint8_t ADS7066::readRegister(uint8_t adrs)
     return cmd.rx_data[0];
 }
 
-void ADS7066::Shar_SensData(t_sens_data *_sens)
+void ADS7066::Shar_SensData(SensorData *_sens)
 {
     sens = _sens;
 }

@@ -17,40 +17,40 @@
 class Log : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
         void log_print();
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class Log1 : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
         void log_print();
         void map_print();
         void map_output_txt();
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 

@@ -28,8 +28,8 @@ void myTaskInterrupt(void *pvpram)
     ADS7066* raw_adc_ptr = static_cast<ADS7066 *>(pvpram);
     std::shared_ptr<ADS7066> adc(raw_adc_ptr);
 
-    // t_drivers 構造体を作成し、adc ポインタを設定
-    std::shared_ptr<t_drivers> driver = std::make_shared<t_drivers>();
+    // Drivers 構造体を作成し、adc ポインタを設定
+    std::shared_ptr<Drivers> driver = std::make_shared<Drivers>();
     driver->adc = adc;
 
     esp_timer_handle_t chargeTimer;
@@ -51,7 +51,7 @@ void myTaskInterrupt(void *pvpram)
     uint16_t charge_us = 60;
     uint16_t rise_us = 15;
 
-    std::shared_ptr<t_sens_data> sens = std::make_shared<t_sens_data>();
+    std::shared_ptr<SensorData> sens = std::make_shared<SensorData>();
 
     while(1)
     {

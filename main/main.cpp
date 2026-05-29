@@ -20,9 +20,9 @@
 
 
 
-t_sens_data sens;
+SensorData sens;
 
-std::shared_ptr<t_drivers> driver = std::make_shared<t_drivers>();
+std::shared_ptr<Drivers> driver = std::make_shared<Drivers>();
 
 
 static SemaphoreHandle_t wallCharged;
@@ -41,8 +41,8 @@ void myTaskAdc(void *pvpram)
     std::shared_ptr<ADS7066> adc(raw_adc_ptr);
     driver->led->set(0b1010);
 
-    // t_drivers 構造体を作成し、adc ポインタを設定
-    std::shared_ptr<t_drivers> driver = std::make_shared<t_drivers>();
+    // Drivers 構造体を作成し、adc ポインタを設定
+    std::shared_ptr<Drivers> driver = std::make_shared<Drivers>();
     driver->adc = adc;*/
 
     ESP_LOGI("ADC", "ADC Task Start");

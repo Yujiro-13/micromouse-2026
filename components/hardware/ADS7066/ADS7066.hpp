@@ -20,7 +20,7 @@ public:
     uint16_t readOneShot(int8_t);
     uint16_t readOnTheFly(int8_t channelID = -1);
 
-    void Shar_SensData(t_sens_data *_sens) override;
+    void Shar_SensData(SensorData *_sens) override;
     float BatteryVoltage();
     //void WallSensor();
     //void adc_sensing();
@@ -51,7 +51,7 @@ private:
 
     
 
-    t_sens_data *sens;
+    SensorData *sens;
 };
 
 #endif

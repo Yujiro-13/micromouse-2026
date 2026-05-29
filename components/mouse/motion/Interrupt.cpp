@@ -13,15 +13,15 @@ Interrupt::Interrupt()
 
 Interrupt::~Interrupt() { std::cout << "~Interrupt" << std::endl; }
 
-void Interrupt::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Interrupt::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Interrupt::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Interrupt::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Interrupt::ptr_by_control(t_control *_control) { control = _control; }
+void Interrupt::ptr_by_control(Control *_control) { control = _control; }
 
-void Interrupt::ptr_by_map(t_map *_map) { map = _map; }
+void Interrupt::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Interrupt::set_device_driver(std::shared_ptr<t_drivers> driver)
+void Interrupt::set_device_driver(std::shared_ptr<Drivers> driver)
 {
     encR = driver->encR;
     encL = driver->encL;

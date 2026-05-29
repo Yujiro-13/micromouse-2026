@@ -27,7 +27,7 @@ class MA730 : public Sensor
     MA730(spi_host_device_t bus, gpio_num_t cs, uint8_t ccw);
     ~MA730();
 
-    void Shar_SensData(t_sens_data *_sens) override;
+    void Shar_SensData(SensorData *_sens) override;
     uint16_t readAngle();
     //void ShowAngle();
 
@@ -45,7 +45,7 @@ private:
     spi_device_interface_config_t dev_enc;
     //gpio_num_t _cs;
     
-    t_sens_data *sens;
+    SensorData *sens;
     
 };
 

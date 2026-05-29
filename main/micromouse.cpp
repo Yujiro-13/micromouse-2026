@@ -12,11 +12,11 @@
 
 std::vector<std::shared_ptr<UI>> ui;
 
-void MICROMOUSE(std::shared_ptr<t_drivers> driver, t_sens_data *sens);
+void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens);
 void set_interface();
 void call_task(UI *task, Adachi &motion);
-void set_param(Micromouse *task, t_sens_data *_sen, t_mouse_motion_val *_val, t_control *_control, t_map *_map);
-void mode_select(uint8_t *_mode_num, Adachi &adachi, t_sens_data *sens, t_mouse_motion_val *val, t_control *control, t_map *map);
+void set_param(Micromouse *task, SensorData *_sen, MotionValues *_val, Control *_control, MazeMap *_map);
+void mode_select(uint8_t *_mode_num, Adachi &adachi, SensorData *sens, MotionValues *val, Control *control, MazeMap *map);
 
 /*void myTaskInterrupt(void *pvpram)
 {
@@ -38,18 +38,18 @@ void mode_select(uint8_t *_mode_num, Adachi &adachi, t_sens_data *sens, t_mouse_
 
 /* 基本的に全ての処理のをここにまとめ、mainで呼び出す。 */
 
-void MICROMOUSE(std::shared_ptr<t_drivers> driver, t_sens_data *sens)
+void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens)
 {
     // printf("start MICROMOUSE\n");
 
     /* 構造体のインスタンス生成 */
-    //t_sens_data sens;
-    t_mouse_motion_val val;
-    t_control control;
-    t_map map;
-    t_file_pid_gain pid_gain;
-    t_file_wall_th wall_threshold;
-    t_file_center_sens_value center_sens_val;
+    //SensorData sens;
+    MotionValues val;
+    Control control;
+    MazeMap map;
+    FilePidGain pid_gain;
+    FileWallThreshold wall_threshold;
+    FileCenterSensValue center_sens_val;
 
     printf("finish struct\n");
 
@@ -368,7 +368,7 @@ void call_task(UI *task, Adachi &motion)
     //std::cout << "call_task" << std::endl;
 }
 
-void set_param(Micromouse *task, t_sens_data *_sen, t_mouse_motion_val *_val, t_control *_control, t_map *_map)
+void set_param(Micromouse *task, SensorData *_sen, MotionValues *_val, Control *_control, MazeMap *_map)
 {
     task->ptr_by_sensor(_sen);
     task->ptr_by_motion(_val);
@@ -377,7 +377,7 @@ void set_param(Micromouse *task, t_sens_data *_sen, t_mouse_motion_val *_val, t_
     //std::cout << "set_param" << std::endl;
 }
 
-void mode_select(uint8_t *_mode_num, Adachi &adachi, t_sens_data *sens, t_mouse_motion_val *val, t_control *control, t_map *map)
+void mode_select(uint8_t *_mode_num, Adachi &adachi, SensorData *sens, MotionValues *val, Control *control, MazeMap *map)
 {
     set_interface();
     set_param(ui[*_mode_num].get(), sens, val, control, map);

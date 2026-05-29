@@ -21,11 +21,11 @@ class Motion : public Micromouse
     public:
         Motion();
         ~Motion();
-        void ptr_by_sensor(t_sens_data *sens) override;
-        void ptr_by_motion(t_mouse_motion_val *val) override;
-        void ptr_by_control(t_control *control) override;
-        void ptr_by_map(t_map *map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *sens) override;
+        void ptr_by_motion(MotionValues *val) override;
+        void ptr_by_control(Control *control) override;
+        void ptr_by_map(MazeMap *map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void GetSemphrHandle(SemaphoreHandle_t *_on_logging);
         void run();
         void run2();
@@ -75,10 +75,10 @@ class Motion : public Micromouse
 
         
     protected:
-        t_sens_data *sens;
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         SemaphoreHandle_t *on_logging;
 
         std::shared_ptr<NeoPixel> np;

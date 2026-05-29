@@ -41,7 +41,7 @@ void init_files()
     ESP_LOGI(PID_FILE_TAG, "init file");
 }
 
-void write_file_pid(t_file_pid_gain *write_gain)
+void write_file_pid(FilePidGain *write_gain)
 {
     ESP_LOGI(PID_FILE_TAG, "write file : %lf", write_gain->speed_Kp);
     ESP_LOGI(PID_FILE_TAG, "write file : %lf", write_gain->speed_Ki);
@@ -75,9 +75,9 @@ void write_file_pid(t_file_pid_gain *write_gain)
     }
 }
 
-t_file_pid_gain read_file_pid()
+FilePidGain read_file_pid()
 {
-    t_file_pid_gain pid_gain;
+    FilePidGain pid_gain;
 
     ESP_LOGI(PID_FILE_TAG, "Opening file");
     std::ifstream ifile(PID_FILE_PATH, std::ios::in);
@@ -189,7 +189,7 @@ t_file_pid_gain read_file_pid()
     return pid_gain;
 }
 
-void write_file_wall_th(t_file_wall_th *write_wall_th)
+void write_file_wall_th(FileWallThreshold *write_wall_th)
 {
     ESP_LOGI(WALL_TH_FILE_TAG, "write file : %d", write_wall_th->th_wall_fl);
     ESP_LOGI(WALL_TH_FILE_TAG, "write file : %d", write_wall_th->th_wall_l);
@@ -221,9 +221,9 @@ void write_file_wall_th(t_file_wall_th *write_wall_th)
     }
 }
 
-t_file_wall_th read_file_wall_th()
+FileWallThreshold read_file_wall_th()
 {
-    t_file_wall_th th_value;
+    FileWallThreshold th_value;
 
     ESP_LOGI(WALL_TH_FILE_TAG, "Opening file");
     std::ifstream ifile(WALL_TH_FILE_PATH, std::ios::in);
@@ -328,7 +328,7 @@ t_file_wall_th read_file_wall_th()
 
 
 
-void map_write(t_map *map)
+void map_write(MazeMap *map)
 {
     std::ofstream ffile(MAP_FILE_PATH, std::ios::out);
     if (ffile.fail())
@@ -338,15 +338,15 @@ void map_write(t_map *map)
     }
     else
     {
-        ffile.write(reinterpret_cast<const char *>(map), sizeof(t_map));
+        ffile.write(reinterpret_cast<const char *>(map), sizeof(MazeMap));
 
         ffile.close();
     }
 }
 
-t_map map_read()
+MazeMap map_read()
 {
-    t_map map;
+    MazeMap map;
 
     ESP_LOGI(MAP_FILE_TAG, "Opening file");
     std::ifstream ifile(MAP_FILE_PATH, std::ios::in);
@@ -357,7 +357,7 @@ t_map map_read()
     else
     {
         ESP_LOGI(MAP_FILE_TAG, "read file");
-        ifile.read(reinterpret_cast<char *>(&map), sizeof(t_map));  // ここでスタックオーバーフロー 追記:原因忘れた 確か最短走行の前に呼び出そうとすると起きてた気がする
+        ifile.read(reinterpret_cast<char *>(&map), sizeof(MazeMap));  // ここでスタックオーバーフロー 追記:原因忘れた 確か最短走行の前に呼び出そうとすると起きてた気がする
                                                                     // 追記2:多分 呼び出す箇所でInitMazeが正しく呼べていなかったことが原因。詳しくは、fast.cppのコメント参照
         ifile.close();
 
@@ -370,7 +370,7 @@ t_map map_read()
     return map;
 }
 
-void write_file_center_sens_val(t_file_center_sens_value *center_value)
+void write_file_center_sens_val(FileCenterSensValue *center_value)
 {
     ESP_LOGI(CENTER_VALUE_TAG, "write file : %d", center_value->front_l);
     ESP_LOGI(CENTER_VALUE_TAG, "write file : %d", center_value->front_r);
@@ -402,9 +402,9 @@ void write_file_center_sens_val(t_file_center_sens_value *center_value)
     }
 }
 
-t_file_center_sens_value read_file_center_sens_val()
+FileCenterSensValue read_file_center_sens_val()
 {
-    t_file_center_sens_value ce_value;
+    FileCenterSensValue ce_value;
 
     ESP_LOGI(CENTER_VALUE_TAG, "Opening file");
     std::ifstream ifile(CENTER_VALUE_PATH, std::ios::in);

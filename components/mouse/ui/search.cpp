@@ -1,14 +1,14 @@
 #include "search.hpp"
 
-void Search::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Search::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Search::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Search::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Search::ptr_by_control(t_control *_control) { control = _control; }
+void Search::ptr_by_control(Control *_control) { control = _control; }
 
-void Search::ptr_by_map(t_map *_map) { map = _map; }
+void Search::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Search::set_device_driver(std::shared_ptr<t_drivers> driver){}
+void Search::set_device_driver(std::shared_ptr<Drivers> driver){}
 
 void Search::ref_by_motion(Adachi &_adachi) { motion = _adachi;}
 
@@ -56,15 +56,15 @@ void Search::main_task() // Task Number 0
     //std::cout << "Search" << std::endl;
 }
 
-void AllSearch::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void AllSearch::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void AllSearch::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void AllSearch::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void AllSearch::ptr_by_control(t_control *_control) { control = _control; }
+void AllSearch::ptr_by_control(Control *_control) { control = _control; }
 
-void AllSearch::ptr_by_map(t_map *_map) { map = _map; }
+void AllSearch::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void AllSearch::set_device_driver(std::shared_ptr<t_drivers> driver){}
+void AllSearch::set_device_driver(std::shared_ptr<Drivers> driver){}
 
 void AllSearch::ref_by_motion(Adachi &_adachi) { motion = _adachi;}
 

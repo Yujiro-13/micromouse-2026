@@ -3,15 +3,15 @@
 #define MAZESIZE_X 32
 #define MAZESIZE_Y 32
 
-void Log::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Log::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Log::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Log::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Log::ptr_by_control(t_control *_control) { control = _control; }
+void Log::ptr_by_control(Control *_control) { control = _control; }
 
-void Log::ptr_by_map(t_map *_map) { map = _map; }
+void Log::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Log::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Log::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Log::ref_by_motion(Adachi &_adachi) {}
 
@@ -70,15 +70,15 @@ void Log::main_task() // Task Number 13
     // std::cout << "Log" << std::endl;
 }
 
-void Log1::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Log1::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Log1::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Log1::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Log1::ptr_by_control(t_control *_control) { control = _control; }
+void Log1::ptr_by_control(Control *_control) { control = _control; }
 
-void Log1::ptr_by_map(t_map *_map) { map = _map; }
+void Log1::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Log1::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Log1::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Log1::ref_by_motion(Adachi &_adachi) {}
 

@@ -22,11 +22,11 @@ class Interrupt : public Micromouse{
         Interrupt();
         ~Interrupt();
         void interrupt();
-        void ptr_by_sensor(t_sens_data *sens) override;
-        void ptr_by_motion(t_mouse_motion_val *val) override;
-        void ptr_by_control(t_control *control) override;
-        void ptr_by_map(t_map *map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *sens) override;
+        void ptr_by_motion(MotionValues *val) override;
+        void ptr_by_control(Control *control) override;
+        void ptr_by_map(MazeMap *map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void GetSemphrHandle(SemaphoreHandle_t *_on_logging);
         void reset_I_gain();
         void logging();
@@ -51,10 +51,10 @@ class Interrupt : public Micromouse{
         void apply_cell_correction();              // セル位置によるオドメトリ補正を適用
         void calculate_corrected_position_error(); // 補正後位置誤差を計算
         
-        t_sens_data *sens;
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         float _accel = 0.0;
         float _vel = 0.0;
         float max_vel = 0.0;

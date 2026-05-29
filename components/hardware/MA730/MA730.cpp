@@ -76,7 +76,7 @@ void MA730::SetFilter(uint8_t fw_value)
     ESP_LOGI("MA730", "Filter set to FW: %d", fw_value);
 }
 
-void MA730::Shar_SensData(t_sens_data *_sens)
+void MA730::Shar_SensData(SensorData *_sens)
 {
     sens = _sens;
 }

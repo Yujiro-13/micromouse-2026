@@ -189,6 +189,6 @@ float MPU6500::gyroZ(){
     return (float)gyroZ_raw() * gyro_sensitivity;
 }
 
-void MPU6500::Shar_SensData(t_sens_data *_sens){
+void MPU6500::Shar_SensData(SensorData *_sens){
     sens = _sens;
 }

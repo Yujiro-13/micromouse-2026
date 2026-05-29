@@ -14,15 +14,15 @@
 #include "structs.hpp"
 
 void init_files();
-void write_file_pid(t_file_pid_gain *write_gain);
-t_file_pid_gain read_file_pid();
-void write_file_wall_th(t_file_wall_th *write_th);
-t_file_wall_th read_file_wall_th();
+void write_file_pid(FilePidGain *write_gain);
+FilePidGain read_file_pid();
+void write_file_wall_th(FileWallThreshold *write_th);
+FileWallThreshold read_file_wall_th();
 
-void map_write(t_map *map);
-t_map map_read();
-void write_file_center_sens_val(t_file_center_sens_value *write_val);
-t_file_center_sens_value read_file_center_sens_val();
+void map_write(MazeMap *map);
+MazeMap map_read();
+void write_file_center_sens_val(FileCenterSensValue *write_val);
+FileCenterSensValue read_file_center_sens_val();
 
 void unmount_fat();
 

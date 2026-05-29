@@ -24,15 +24,15 @@ Motion::Motion()
 
 Motion::~Motion() {}
 
-void Motion::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Motion::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Motion::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Motion::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Motion::ptr_by_control(t_control *_control) { control = _control; }
+void Motion::ptr_by_control(Control *_control) { control = _control; }
 
-void Motion::ptr_by_map(t_map *_map) { map = _map; }
+void Motion::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Motion::set_device_driver(std::shared_ptr<t_drivers> driver)
+void Motion::set_device_driver(std::shared_ptr<Drivers> driver)
 {
     np = driver->np;
     imu = driver->imu;
@@ -1550,7 +1550,7 @@ void Motion::set_pid_gain()
     const char *wall_Ki = "wall_Ki";
     const char *wall_Kd = "wall_Kd";
 
-    t_file_pid_gain pid_gain = read_file_pid();
+    FilePidGain pid_gain = read_file_pid();
 
     adjust_pid(speed_Kp, &pid_gain.speed_Kp, 0.1, mode);
     adjust_pid(speed_Ki, &pid_gain.speed_Ki, 10, mode + 1);
@@ -1616,7 +1616,7 @@ void Motion::set_wall_threshold()
     const char *ref_l = "ref_l";
     const char *ref_r = "ref_r";
 
-    t_file_wall_th th_value = read_file_wall_th();
+    FileWallThreshold th_value = read_file_wall_th();
 
     adjust_wall_threshold(th_wall_fl, &th_value.th_wall_fl, 1, mode);
     adjust_wall_threshold(th_wall_l, &th_value.th_wall_l, 1, mode + 1);
@@ -1696,7 +1696,7 @@ void Motion::offset()
 
 void Motion::calibrate_wall_th()
 {
-    t_file_center_sens_value center_val;
+    FileCenterSensValue center_val;
     bool hosei_flag = false;
 
     // 壁当てで中央に移動

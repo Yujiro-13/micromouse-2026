@@ -61,7 +61,7 @@ void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 	// maskの値(MASK_SEARCH or MASK_SECOND)によって、
 	// 探索用の歩数Mapを作るか、最短走行の歩数Mapを作るかが切り替わる
 	int i, j;
-	t_bool change_flag; // Map作成終了を見極めるためのフラグ
+	Bool change_flag; // Map作成終了を見極めるためのフラグ
 
 	if (map->flag == SEARCH)
 	{
@@ -214,7 +214,7 @@ void Adachi::set_wall(int x, int y) // 壁情報を記録
 	led->set(sens->wall.exist.fl + (sens->wall.exist.l << 1) + (sens->wall.exist.r << 2) + (sens->wall.exist.fr << 3));
 }
 
-t_bool Adachi::is_unknown(int x, int y) // 指定された区画が未探索か否かを判断する関数 未探索:TRUE　探索済:false
+Bool Adachi::is_unknown(int x, int y) // 指定された区画が未探索か否かを判断する関数 未探索:TRUE　探索済:false
 {
 	// 座標x,yが未探索区間か否かを調べる
 
@@ -228,7 +228,7 @@ t_bool Adachi::is_unknown(int x, int y) // 指定された区画が未探索か�
 	}
 }
 
-int Adachi::get_priority(int x, int y, t_direction dir) // そのマスの情報から、優先度を算出する
+int Adachi::get_priority(int x, int y, Direction dir) // そのマスの情報から、優先度を算出する
 {
 	// 座標x,yと、向いている方角dirから優先度を算出する
 
@@ -261,7 +261,7 @@ int Adachi::get_priority(int x, int y, t_direction dir) // そのマスの情報
 	return priority; // 優先度を返す
 }
 
-int Adachi::get_nextdir(int x, int y, int mask, t_direction *dir)
+int Adachi::get_nextdir(int x, int y, int mask, Direction *dir)
 {
 	// ゴール座標x,yに向かう場合、今どちらに行くべきかを判断する。
 	// 探索、最短の切り替えのためのmaskを指定、dirは方角を示す
@@ -370,7 +370,7 @@ void Adachi::search_adachi2(int gx, int gy)
 
 	wall_back_count = 0; // 壁を戻る回数を初期化
 	// 引数gx,gyに向かって足立法で迷路を探索する
-	t_direction glob_nextdir; // 次に向かう方向を記録する変数
+	Direction glob_nextdir; // 次に向かう方向を記録する変数
 
 	bool hosei_flag = false;
 
@@ -645,7 +645,7 @@ void Adachi::search_adachi2(int gx, int gy)
 	//("stop\n");
 	turn_half();
 	// printf("turn_half\n");
-	map->pos.dir = static_cast<t_direction>((map->pos.dir + 6) % 4);
+	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
 void Adachi::search_adachi(int gx, int gy)
@@ -654,7 +654,7 @@ void Adachi::search_adachi(int gx, int gy)
 	bool hosei_flag = false;
 
 	// 引数gx,gyに向かって足立法で迷路を探索する
-	t_direction glob_nextdir; // 次に向かう方向を記録する変数
+	Direction glob_nextdir; // 次に向かう方向を記録する変数
 
 	/*if ((map->pos.x == 0) && (map->pos.y == 0))
 	{
@@ -842,14 +842,14 @@ void Adachi::search_adachi(int gx, int gy)
 	//("stop\n");
 	turn_half();
 	// printf("turn_half\n");
-	map->pos.dir = static_cast<t_direction>((map->pos.dir + 6) % 4);
+	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
 void Adachi::fast_run(int gx, int gy)
 {
 
 	// 引数gx,gyに向かって足立法で迷路を探索する
-	t_direction glob_nextdir; // 次に向かう方向を記録する変数
+	Direction glob_nextdir; // 次に向かう方向を記録する変数
 	uint8_t straight_count = 0;
 
 	// if ((map->pos.x == 0) && (map->pos.y == 0))
@@ -985,7 +985,7 @@ void Adachi::fast_run(int gx, int gy)
 
 	fast_straight(straight_count);
 	//("stop\n");
-	map->pos.dir = static_cast<t_direction>((map->pos.dir + 6) % 4);
+	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 	// printf("turn_half\n");
 }
 
@@ -993,7 +993,7 @@ void Adachi::search_adachi_sla(int gx, int gy)
 {
 
 	// 引数gx,gyに向かって足立法で迷路を探索する
-	t_direction glob_nextdir; // 次に向かう方向を記録する変数
+	Direction glob_nextdir; // 次に向かう方向を記録する変数
 
 	bool hosei_flag = false;
 
@@ -1176,14 +1176,14 @@ void Adachi::search_adachi_sla(int gx, int gy)
 	//("stop\n");
 	turn_half();
 	// printf("turn_half\n");
-	map->pos.dir = static_cast<t_direction>((map->pos.dir + 6) % 4);
+	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
 void Adachi::fast_run_sla(int gx, int gy)
 {
 
 	// 引数gx,gyに向かって足立法で迷路を探索する
-	t_direction glob_nextdir; // 次に向かう方向を記録する変数
+	Direction glob_nextdir; // 次に向かう方向を記録する変数
 
 	/*if ((map->pos.x == 0) && (map->pos.y == 0))
 	{
@@ -1361,13 +1361,13 @@ void Adachi::fast_run_sla(int gx, int gy)
 	//("stop\n");
 	turn_half();
 	// printf("turn_half\n");
-	map->pos.dir = static_cast<t_direction>((map->pos.dir + 6) % 4);
+	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
 void Adachi::fast_run_sla2(int gx, int gy)
 {
 	// 引数gx,gyに向かって足立法で迷路を探索する
-	t_direction glob_nextdir; // 次に向かう方向を記録する変数
+	Direction glob_nextdir; // 次に向かう方向を記録する変数
 	uint8_t straight_count = 0;
 
 	/*if ((map->pos.x == 0) && (map->pos.y == 0))
@@ -1533,7 +1533,7 @@ void Adachi::fast_run_sla2(int gx, int gy)
 
 	turn_half();
 
-	map->pos.dir = static_cast<t_direction>((map->pos.dir + 6) % 4);
+	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
 void Adachi::InitMaze()
@@ -1567,7 +1567,7 @@ void Adachi::make_map_original(int x, int y, int mask)
 {
 	// 従来のBellman-Ford式実装
 	int i, j;
-	t_bool change_flag;
+	Bool change_flag;
 
 	if (map->flag == SEARCH)
 	{
@@ -1790,7 +1790,7 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 }
 
 // オリジナル版のget_nextdir関数（比較用）
-int Adachi::get_nextdir_original(int x, int y, int mask, t_direction *dir)
+int Adachi::get_nextdir_original(int x, int y, int mask, Direction *dir)
 {
 	int min_steps, priority, tmp_priority;
 
@@ -1910,7 +1910,7 @@ void Adachi::benchmark_get_nextdir(int iterations)
 		}
 	}
 
-	t_direction dir_old, dir_new;
+	Direction dir_old, dir_new;
 	int64_t start_time, end_time;
 
 	printf("Testing with %d iterations (pure computation time)...\n", iterations);
@@ -2054,7 +2054,7 @@ void Adachi::performance_test()
 	}
 
 	int64_t start_time, end_time;
-	t_direction dir;
+	Direction dir;
 
 	// === make_map関数単体の比較（最も重要） ===
 	printf("Testing make_map functions (10 iterations each)...\n");

@@ -17,144 +17,144 @@
 class Test : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class Test2 : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class Test3 : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class Test4 : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class Test5 : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class Test6 : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class Test7 : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;    
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;    
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
 class PerformanceTest : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 };
 
@@ -162,18 +162,18 @@ class PerformanceTest : public UI
 class SystemIdentificationTest : public UI
 {
     public:
-        void ptr_by_sensor(t_sens_data *_sens) override;
-        void ptr_by_motion(t_mouse_motion_val *_val) override;
-        void ptr_by_control(t_control *_control) override;
-        void ptr_by_map(t_map *_map) override;
-        void set_device_driver(std::shared_ptr<t_drivers> driver) override;
+        void ptr_by_sensor(SensorData *_sens) override;
+        void ptr_by_motion(MotionValues *_val) override;
+        void ptr_by_control(Control *_control) override;
+        void ptr_by_map(MazeMap *_map) override;
+        void set_device_driver(std::shared_ptr<Drivers> driver) override;
         void main_task() override;
         void ref_by_motion(Adachi &_adachi) override;
     private:
-        t_sens_data *sens;
-        t_mouse_motion_val *val;
-        t_control *control;
-        t_map *map;
+        SensorData *sens;
+        MotionValues *val;
+        Control *control;
+        MazeMap *map;
         Adachi motion;
 
         // システム同定用のメソッド

@@ -21,7 +21,7 @@ typedef struct
     std::shared_ptr<MA730> encL;
     std::shared_ptr<MA730> encR;
     std::shared_ptr<ADS7066> adc;
-}t_drivers;
+}Drivers;
 
 
 #endif

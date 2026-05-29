@@ -2,15 +2,15 @@
 #include "esp_heap_caps.h"
 #include "esp_system.h"
 
-void Test::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Test::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Test::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Test::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Test::ptr_by_control(t_control *_control) { control = _control; }
+void Test::ptr_by_control(Control *_control) { control = _control; }
 
-void Test::ptr_by_map(t_map *_map) { map = _map; }
+void Test::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Test::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Test::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Test::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -33,15 +33,15 @@ void Test::main_task() // Task Number 6
     std::cout << "Test" << std::endl;
 }
 
-void Test2::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Test2::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Test2::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Test2::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Test2::ptr_by_control(t_control *_control) { control = _control; }
+void Test2::ptr_by_control(Control *_control) { control = _control; }
 
-void Test2::ptr_by_map(t_map *_map) { map = _map; }
+void Test2::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Test2::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Test2::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Test2::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -103,15 +103,15 @@ void Test2::main_task() // Task Number 7
     std::cout << "Test2" << std::endl;
 }
 
-void Test3::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Test3::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Test3::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Test3::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Test3::ptr_by_control(t_control *_control) { control = _control; }
+void Test3::ptr_by_control(Control *_control) { control = _control; }
 
-void Test3::ptr_by_map(t_map *_map) { map = _map; }
+void Test3::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Test3::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Test3::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Test3::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -156,15 +156,15 @@ void Test3::main_task() // Task Number 8
     std::cout << "Test3" << std::endl;
 }
 
-void Test4::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Test4::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Test4::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Test4::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Test4::ptr_by_control(t_control *_control) { control = _control; }
+void Test4::ptr_by_control(Control *_control) { control = _control; }
 
-void Test4::ptr_by_map(t_map *_map) { map = _map; }
+void Test4::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Test4::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Test4::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Test4::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -209,15 +209,15 @@ void Test4::main_task() // Task Number 9
     std::cout << "Test4" << std::endl;
 }
 
-void Test5::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Test5::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Test5::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Test5::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Test5::ptr_by_control(t_control *_control) { control = _control; }
+void Test5::ptr_by_control(Control *_control) { control = _control; }
 
-void Test5::ptr_by_map(t_map *_map) { map = _map; }
+void Test5::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Test5::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Test5::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Test5::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -246,15 +246,15 @@ void Test5::main_task() // Task Number 10
     //std::cout << "Test" << std::endl;
 }
 
-void Test6::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Test6::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Test6::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Test6::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Test6::ptr_by_control(t_control *_control) { control = _control; }
+void Test6::ptr_by_control(Control *_control) { control = _control; }
 
-void Test6::ptr_by_map(t_map *_map) { map = _map; }
+void Test6::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Test6::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Test6::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Test6::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -286,15 +286,15 @@ void Test6::main_task() // Task Number 11
     std::cout << "Test2" << std::endl;
 }
 
-void Test7::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void Test7::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void Test7::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void Test7::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void Test7::ptr_by_control(t_control *_control) { control = _control; }
+void Test7::ptr_by_control(Control *_control) { control = _control; }
 
-void Test7::ptr_by_map(t_map *_map) { map = _map; }
+void Test7::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void Test7::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void Test7::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void Test7::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -306,15 +306,15 @@ void Test7::main_task() // Task Number 12
     std::cout << "Test3" << std::endl;
 }
 
-void PerformanceTest::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void PerformanceTest::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void PerformanceTest::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void PerformanceTest::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void PerformanceTest::ptr_by_control(t_control *_control) { control = _control; }
+void PerformanceTest::ptr_by_control(Control *_control) { control = _control; }
 
-void PerformanceTest::ptr_by_map(t_map *_map) { map = _map; }
+void PerformanceTest::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void PerformanceTest::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void PerformanceTest::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void PerformanceTest::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 
@@ -391,15 +391,15 @@ const float SystemIdentificationTest::rotation_signal_right[100] = {
     -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0
 };
 
-void SystemIdentificationTest::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void SystemIdentificationTest::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
-void SystemIdentificationTest::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void SystemIdentificationTest::ptr_by_motion(MotionValues *_val) { val = _val; }
 
-void SystemIdentificationTest::ptr_by_control(t_control *_control) { control = _control; }
+void SystemIdentificationTest::ptr_by_control(Control *_control) { control = _control; }
 
-void SystemIdentificationTest::ptr_by_map(t_map *_map) { map = _map; }
+void SystemIdentificationTest::ptr_by_map(MazeMap *_map) { map = _map; }
 
-void SystemIdentificationTest::set_device_driver(std::shared_ptr<t_drivers> driver) {}
+void SystemIdentificationTest::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
 void SystemIdentificationTest::ref_by_motion(Adachi &_adachi) { motion = _adachi; }
 

@@ -24,11 +24,11 @@ private:
     void make_map(int x, int y, int mask);
     void make_map_fast(int x, int y, int mask);  // 高速版
     void make_map_original(int x, int y, int mask);  // 旧版（比較用）
-    int get_nextdir_original(int x, int y, int mask, t_direction *dir); // 旧版（比較用）
+    int get_nextdir_original(int x, int y, int mask, Direction *dir); // 旧版（比較用）
     void set_wall(int x, int y);
-    t_bool is_unknown(int x, int y);
-    int get_priority(int x, int y, t_direction dir);
-    int get_nextdir(int x, int y, int mask, t_direction *dir);
+    Bool is_unknown(int x, int y);
+    int get_priority(int x, int y, Direction dir);
+    int get_nextdir(int x, int y, int mask, Direction *dir);
     uint8_t wall_back_count = 0;
     
     // キャッシュ用変数
