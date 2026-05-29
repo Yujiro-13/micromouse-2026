@@ -39,8 +39,8 @@ class Interrupt : public Micromouse{
         float calc_target_accel();
         void estimate_velocity_fusion();  // エンコーダ+IMU融合速度推定
         float compensate_centripetal_acceleration(float accel_y_raw); // 向心加速度補正
-        float ff_control_velocity(float r_in); // 速度フィードフォワード制御
-        float ff_control_angular_velocity(float r_in); // 角速度フィードフォワード制御
+        float ff_control_velocity(float reference_input); // 速度フィードフォワード制御
+        float ff_control_angular_velocity(float reference_input); // 角速度フィードフォワード制御
         
         // オドメトリ関連メソッド
         void update_odometry();                    // オドメトリ更新
@@ -66,13 +66,13 @@ class Interrupt : public Micromouse{
         int64_t end_time = 0;
         int64_t delta_time = 0;
 
-        // 速度FF制御用配列
-        float r[3] = {0.0, 0.0, 0.0};
-        float u[3] = {0.0, 0.0, 0.0};
-        
-        // 角速度FF制御用配列
-        float r_ang[3] = {0.0, 0.0, 0.0};
-        float u_ang[3] = {0.0, 0.0, 0.0};
+        // 速度FF制御用の差分方程式状態（入力履歴 ff_vel_in / 出力履歴 ff_vel_out）
+        float ff_vel_in[3] = {0.0, 0.0, 0.0};
+        float ff_vel_out[3] = {0.0, 0.0, 0.0};
+
+        // 角速度FF制御用の差分方程式状態（入力履歴 ff_ang_in / 出力履歴 ff_ang_out）
+        float ff_ang_in[3] = {0.0, 0.0, 0.0};
+        float ff_ang_out[3] = {0.0, 0.0, 0.0};
         
         // 加速度センサ関連（30ms移動平均用）
         static constexpr int ACCEL_MA_SIZE = 30;  // 30ms分（1ms周期想定）

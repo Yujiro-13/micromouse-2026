@@ -922,49 +922,48 @@ float Interrupt::calc_target_accel()
     return ((val->end.vel) * (val->end.vel) - (val->current.vel) * (val->current.vel)) / (2.0 * val->tar.len);
 }
 
-float Interrupt::ff_control_velocity(float r_in)
+float Interrupt::ff_control_velocity(float reference_input)
 {
-    // 差分方程式: u[k] = -a1*u[k-1] - a2*u[k-2] + b0*r[k] + b1*r[k-1] + b2*r[k-2]
+    // 差分方程式: out[k] = -a1*out[k-1] - a2*out[k-2] + b0*in[k] + b1*in[k-1] + b2*in[k-2]
     // a1 = -1.8, a2 = 0.81, b0 = 0.1848, b1 = -0.0092, b2 = -0.1743
-    
-    // 入力信号の更新（最新を r[0] に格納）
-    r[2] = r[1];
-    r[1] = r[0];
-    r[0] = r_in;
+
+    // 入力信号の更新（最新を ff_vel_in[0] に格納）
+    ff_vel_in[2] = ff_vel_in[1];
+    ff_vel_in[1] = ff_vel_in[0];
+    ff_vel_in[0] = reference_input;
 
     // 差分方程式の計算
-    // u[k] = -(-1.8)*u[k-1] - 0.81*u[k-2] + 0.1848*r[k] + (-0.0092)*r[k-1] + (-0.1743)*r[k-2]
-    float u_out = 1.8 * u[0] - 0.81 * u[1] + 0.1848 * r[0] - 0.0092 * r[1] - 0.1743 * r[2];
+    float output = 1.8 * ff_vel_out[0] - 0.81 * ff_vel_out[1] + 0.1848 * ff_vel_in[0] - 0.0092 * ff_vel_in[1] - 0.1743 * ff_vel_in[2];
 
-    // 出力信号の更新（最新を u[0] に格納）
-    u[2] = u[1];
-    u[1] = u[0];
-    u[0] = u_out;
+    // 出力信号の更新（最新を ff_vel_out[0] に格納）
+    ff_vel_out[2] = ff_vel_out[1];
+    ff_vel_out[1] = ff_vel_out[0];
+    ff_vel_out[0] = output;
 
-    return u_out;
+    return output;
 }
 
-float Interrupt::ff_control_angular_velocity(float r_in)
+float Interrupt::ff_control_angular_velocity(float reference_input)
 {
-    // 角速度用差分方程式: u[k] = -a1*u[k-1] - a2*u[k-2] + b0*r[k] + b1*r[k-1] + b2*r[k-2]
+    // 角速度用差分方程式: out[k] = -a1*out[k-1] - a2*out[k-2] + b0*in[k] + b1*in[k-1] + b2*in[k-2]
     // TODO: 角速度用の係数を同定して設定してください
     // 現在は速度制御と同じ係数を使用（仮）
     // a1 = -1.8, a2 = 0.81, b0 = 0.1848, b1 = -0.0092, b2 = -0.1743
-    
-    // 入力信号の更新（最新を r_ang[0] に格納）
-    r_ang[2] = r_ang[1];
-    r_ang[1] = r_ang[0];
-    r_ang[0] = r_in;
+
+    // 入力信号の更新（最新を ff_ang_in[0] に格納）
+    ff_ang_in[2] = ff_ang_in[1];
+    ff_ang_in[1] = ff_ang_in[0];
+    ff_ang_in[0] = reference_input;
 
     // 差分方程式の計算
-    float u_out = 1.8 * u_ang[0] - 0.81 * u_ang[1] + 0.0346 * r_ang[0] - 0.0615 * r_ang[1] + 0.0270 * r_ang[2];
+    float output = 1.8 * ff_ang_out[0] - 0.81 * ff_ang_out[1] + 0.0346 * ff_ang_in[0] - 0.0615 * ff_ang_in[1] + 0.0270 * ff_ang_in[2];
 
-    // 出力信号の更新（最新を u_ang[0] に格納）
-    u_ang[2] = u_ang[1];
-    u_ang[1] = u_ang[0];
-    u_ang[0] = u_out;
+    // 出力信号の更新（最新を ff_ang_out[0] に格納）
+    ff_ang_out[2] = ff_ang_out[1];
+    ff_ang_out[1] = ff_ang_out[0];
+    ff_ang_out[0] = output;
 
-    return u_out;
+    return output;
 }
 
 void Interrupt::interrupt()
