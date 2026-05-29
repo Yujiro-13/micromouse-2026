@@ -6,7 +6,7 @@
 #define EMBEDDED_SIGNALS_HPP
 
 // システム同定用埋め込み信号データ
-namespace SystemIdentificationSignals {
+namespace system_identification_signals {
 
 // 1000 samples
 static const float translation_signal_left_1000[1000] = {
@@ -429,7 +429,7 @@ static constexpr int FULL_SCALE_SAMPLES = 1000;
 static constexpr int SAMPLING_PERIOD_MS = 1;  // 1ms
 static constexpr float EXPERIMENT_DURATION_SEC = 1.000f;  // seconds
 
-} // namespace SystemIdentificationSignals
+} // namespace system_identification_signals
 
 #endif // EMBEDDED_SIGNALS_HPP
 
@@ -441,10 +441,10 @@ static constexpr float EXPERIMENT_DURATION_SEC = 1.000f;  // seconds
 
 2. test.cppで使用:
 motion.RunTranslationIdentification(
-    SystemIdentificationSignals::translation_signal_left_1000,
-    SystemIdentificationSignals::translation_signal_right_1000,
-    SystemIdentificationSignals::FULL_SCALE_SAMPLES,
-    SystemIdentificationSignals::SAMPLING_PERIOD_MS
+    system_identification_signals::translation_signal_left_1000,
+    system_identification_signals::translation_signal_right_1000,
+    system_identification_signals::FULL_SCALE_SAMPLES,
+    system_identification_signals::SAMPLING_PERIOD_MS
 );
 
 === ESP32設定 ===

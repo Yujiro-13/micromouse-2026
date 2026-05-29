@@ -56,19 +56,19 @@ void Search::main_task() // Task Number 0
     //std::cout << "Search" << std::endl;
 }
 
-void All_Search::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
+void AllSearch::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
 
-void All_Search::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
+void AllSearch::ptr_by_motion(t_mouse_motion_val *_val) { val = _val; }
 
-void All_Search::ptr_by_control(t_control *_control) { control = _control; }
+void AllSearch::ptr_by_control(t_control *_control) { control = _control; }
 
-void All_Search::ptr_by_map(t_map *_map) { map = _map; }
+void AllSearch::ptr_by_map(t_map *_map) { map = _map; }
 
-void All_Search::set_device_driver(std::shared_ptr<t_drivers> driver){}
+void AllSearch::set_device_driver(std::shared_ptr<t_drivers> driver){}
 
-void All_Search::ref_by_motion(Adachi &_adachi) { motion = _adachi;}
+void AllSearch::ref_by_motion(Adachi &_adachi) { motion = _adachi;}
 
-void All_Search::main_task() // Task Number 1
+void AllSearch::main_task() // Task Number 1
 {
     /*val->max.acc = 4.0;
     val->max.vel = 0.4;
@@ -112,5 +112,5 @@ void All_Search::main_task() // Task Number 1
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     motion.search_adachi2(0, 0);
     map_write(map);
-    //std::cout << "All_Search" << std::endl;
+    //std::cout << "AllSearch" << std::endl;
 }

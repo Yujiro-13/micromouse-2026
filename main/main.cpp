@@ -207,8 +207,8 @@ static void init_hardware(void)
     driver->led->set(0b1111);
 
     // Buzzer GPIOの設定
-    driver->bz = std::make_shared<BUZZER>(board::kBuzzer);
-    static BUZZER::buzzer_score_t pc98[] = {
+    driver->bz = std::make_shared<Buzzer>(board::kBuzzer);
+    static Buzzer::buzzer_score_t pc98[] = {
         {2000, 100}, {1000, 100}};
     driver->bz->play_melody(pc98, 2);
 

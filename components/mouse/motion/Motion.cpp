@@ -15,8 +15,8 @@
 #define PRE_DISTANCE 0.0049
 #define FOL_DISTANCE 0.0054
 
-static BUZZER::buzzer_score_t pc98[] = {{2000, 100}, {1000, 100}};
-static BUZZER::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};
+static Buzzer::buzzer_score_t pc98[] = {{2000, 100}, {1000, 100}};
+static Buzzer::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};
 
 Motion::Motion()
 { /*std::cout << "Motion" << std::endl;*/
@@ -680,7 +680,7 @@ void Motion::back()
         count++;
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
-    // static BUZZER::buzzer_score_t pc98[] = {
+    // static Buzzer::buzzer_score_t pc98[] = {
     //{2000, 100}, {1000, 100}};
 
     // control->test_flag = TRUE;

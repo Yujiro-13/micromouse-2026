@@ -1,6 +1,6 @@
 #include "Buzzer.hpp"
 
-BUZZER::BUZZER(gpio_num_t pin){
+Buzzer::Buzzer(gpio_num_t pin){
 
     rmt_tx_channel_config_t _tx_config;
     memset(&_tx_config, 0, sizeof(_tx_config));
@@ -15,12 +15,12 @@ BUZZER::BUZZER(gpio_num_t pin){
     ESP_ERROR_CHECK(rmt_enable(buzzer_ch));
 }
 
-BUZZER::~BUZZER(){
+Buzzer::~Buzzer(){
     encoder_delete(buzzer_enc);
     rmt_del_channel(buzzer_ch);
 }
 
-esp_err_t BUZZER::encoder_rmt_create(){
+esp_err_t Buzzer::encoder_rmt_create(){
     esp_err_t ret = ESP_OK;
 
     buzzer_score_encoder_t *score = NULL;
@@ -44,7 +44,7 @@ err:
     return ret;
 }
 
-size_t BUZZER::encoder_rmt(rmt_encoder_t *encoder, rmt_channel_handle_t channel, const void *primary_data, size_t data_size, rmt_encode_state_t *ret_state){
+size_t Buzzer::encoder_rmt(rmt_encoder_t *encoder, rmt_channel_handle_t channel, const void *primary_data, size_t data_size, rmt_encode_state_t *ret_state){
     buzzer_score_encoder_t *score_enc = __containerof(encoder, buzzer_score_encoder_t, base);
     rmt_encoder_handle_t copy_encoder = score_enc->copy_encoder;
     rmt_encode_state_t session_state = RMT_ENCODING_RESET;
@@ -61,7 +61,7 @@ size_t BUZZER::encoder_rmt(rmt_encoder_t *encoder, rmt_channel_handle_t channel,
     return encoded_symbols;
 }
 
-esp_err_t BUZZER::encoder_delete(rmt_encoder_t *encoder){
+esp_err_t Buzzer::encoder_delete(rmt_encoder_t *encoder){
     buzzer_score_encoder_t *score_enc = __containerof(encoder, buzzer_score_encoder_t, base);
     if(score_enc->copy_encoder){
         rmt_del_encoder(score_enc->copy_encoder);
@@ -70,7 +70,7 @@ esp_err_t BUZZER::encoder_delete(rmt_encoder_t *encoder){
     return ESP_OK;
 }
 
-esp_err_t BUZZER::encoder_reset(rmt_encoder_t *encoder){
+esp_err_t Buzzer::encoder_reset(rmt_encoder_t *encoder){
     buzzer_score_encoder_t *score_enc = __containerof(encoder, buzzer_score_encoder_t, base);
     if(score_enc->copy_encoder){
         rmt_encoder_reset(score_enc->copy_encoder);
@@ -78,7 +78,7 @@ esp_err_t BUZZER::encoder_reset(rmt_encoder_t *encoder){
     return ESP_OK;
 }
 
-void BUZZER::play(uint32_t freq_hz, uint32_t duration){
+void Buzzer::play(uint32_t freq_hz, uint32_t duration){
     buzzer_score_t score = {
         .freq_hz = freq_hz,
         .duration_ms = duration
@@ -86,7 +86,7 @@ void BUZZER::play(uint32_t freq_hz, uint32_t duration){
     this->play_melody(&score,1);
 }
 
-void BUZZER::play_melody(buzzer_score_t* score,int len){
+void Buzzer::play_melody(buzzer_score_t* score,int len){
     rmt_tx_wait_all_done(this->buzzer_ch, portMAX_DELAY);
     for(int i=0;i<len;i++){
         rmt_transmit_config_t _tx_config;

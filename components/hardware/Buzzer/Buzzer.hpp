@@ -10,20 +10,20 @@
 #include "driver/rmt_encoder.h"
 #include "driver/rmt_tx.h"
 
-class BUZZER{
+class Buzzer{
     public:
         typedef struct{
             uint32_t freq_hz;
             uint32_t duration_ms;
         } buzzer_score_t;
 
-        BUZZER(gpio_num_t);
-        ~BUZZER();
+        Buzzer(gpio_num_t);
+        ~Buzzer();
         void play(uint32_t = 1000, uint32_t = 1000);
         void play_melody(buzzer_score_t*, int len);
 
     private:
-        const char *TAG = "BUZZER";
+        const char *TAG = "Buzzer";
         const uint32_t RMT_RESOLUTION = 1000000;
 
         typedef struct{

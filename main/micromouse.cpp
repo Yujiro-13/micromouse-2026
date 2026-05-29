@@ -341,7 +341,7 @@ void set_interface()
     /* クラスのポインタを配列に保持*/
 
     ui.push_back(std::make_shared<Search>()); // 0
-    ui.push_back(std::make_shared<All_Search>()); // 1
+    ui.push_back(std::make_shared<AllSearch>()); // 1
     ui.push_back(std::make_shared<Fast>()); // 2
     ui.push_back(std::make_shared<Fast2>()); // 3
     ui.push_back(std::make_shared<Fast3>()); // 4

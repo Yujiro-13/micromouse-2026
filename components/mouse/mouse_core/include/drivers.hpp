@@ -16,7 +16,7 @@ typedef struct
     std::shared_ptr<NeoPixel> np;
     std::shared_ptr<MPU6500> imu;
     std::shared_ptr<PCA9632> led;
-    std::shared_ptr<BUZZER> bz;
+    std::shared_ptr<Buzzer> bz;
     std::shared_ptr<Motor> mot;
     std::shared_ptr<MA730> encL;
     std::shared_ptr<MA730> encR;

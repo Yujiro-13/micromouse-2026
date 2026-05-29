@@ -14,7 +14,7 @@ extern const uint8_t rotation_left_start[] asm("_binary_rotation_signal_left_459
 extern const uint8_t rotation_right_start[] asm("_binary_rotation_signal_right_45900_bin_start");
 }
 
-namespace FullSizeSignals {
+namespace full_size_signals {
 
 const float* const translation_signal_left_45900 =
     reinterpret_cast<const float*>(translation_left_start);
@@ -25,4 +25,4 @@ const float* const rotation_signal_left_45900 =
 const float* const rotation_signal_right_45900 =
     reinterpret_cast<const float*>(rotation_right_start);
 
-}  // namespace FullSizeSignals
+}  // namespace full_size_signals

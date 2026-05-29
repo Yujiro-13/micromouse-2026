@@ -594,10 +594,10 @@ void SystemIdentificationTest::run_embedded_translation_identification()
 
     // 埋め込み信号を使用して実験を実行
     motion.RunTranslationIdentification(
-        SystemIdentificationSignals::translation_signal_left_1000,
-        SystemIdentificationSignals::translation_signal_right_1000,
-        SystemIdentificationSignals::FULL_SCALE_SAMPLES,
-        SystemIdentificationSignals::SAMPLING_PERIOD_MS
+        system_identification_signals::translation_signal_left_1000,
+        system_identification_signals::translation_signal_right_1000,
+        system_identification_signals::FULL_SCALE_SAMPLES,
+        system_identification_signals::SAMPLING_PERIOD_MS
     );
 
     printf("Embedded translation identification completed.\n");
@@ -615,10 +615,10 @@ void SystemIdentificationTest::run_embedded_rotation_identification()
 
     // 埋め込み信号を使用して実験を実行
     motion.RunRotationIdentification(
-        SystemIdentificationSignals::rotation_signal_left_1000,
-        SystemIdentificationSignals::rotation_signal_right_1000,
-        SystemIdentificationSignals::FULL_SCALE_SAMPLES,
-        SystemIdentificationSignals::SAMPLING_PERIOD_MS
+        system_identification_signals::rotation_signal_left_1000,
+        system_identification_signals::rotation_signal_right_1000,
+        system_identification_signals::FULL_SCALE_SAMPLES,
+        system_identification_signals::SAMPLING_PERIOD_MS
     );
 
     printf("Embedded rotation identification completed.\n");
@@ -642,9 +642,9 @@ void SystemIdentificationTest::run_fullsize_translation_identification()
 
     #ifdef FULLSIZE_SIGNALS_AVAILABLE
     printf("Using fullsize signals from fullsize_signals.hpp\n");
-    printf("Samples: %d\n", FullSizeSignals::TRANSLATION_SAMPLES);
-    printf("Duration: %.1f seconds\n", FullSizeSignals::TRANSLATION_EXPERIMENT_DURATION_SEC);
-    printf("Sampling period: %d ms\n", FullSizeSignals::SAMPLING_PERIOD_MS);
+    printf("Samples: %d\n", full_size_signals::TRANSLATION_SAMPLES);
+    printf("Duration: %.1f seconds\n", full_size_signals::TRANSLATION_EXPERIMENT_DURATION_SEC);
+    printf("Sampling period: %d ms\n", full_size_signals::SAMPLING_PERIOD_MS);
 
     // 初期状態をリセット
     val->sum.len = 0.0;
@@ -652,10 +652,10 @@ void SystemIdentificationTest::run_fullsize_translation_identification()
 
     // フルサイズ信号を使用して実験を実行
     motion.RunTranslationIdentification(
-        FullSizeSignals::translation_signal_left_45900,
-        FullSizeSignals::translation_signal_right_45900,
-        FullSizeSignals::TRANSLATION_SAMPLES,
-        FullSizeSignals::SAMPLING_PERIOD_MS
+        full_size_signals::translation_signal_left_45900,
+        full_size_signals::translation_signal_right_45900,
+        full_size_signals::TRANSLATION_SAMPLES,
+        full_size_signals::SAMPLING_PERIOD_MS
     );
 
     printf("Full size translation identification completed.\n");
@@ -671,9 +671,9 @@ void SystemIdentificationTest::run_fullsize_rotation_identification()
 
     #ifdef FULLSIZE_SIGNALS_AVAILABLE
     printf("Using fullsize signals from fullsize_signals.hpp\n");
-    printf("Samples: %d\n", FullSizeSignals::ROTATION_SAMPLES);
-    printf("Duration: %.1f seconds\n", FullSizeSignals::ROTATION_EXPERIMENT_DURATION_SEC);
-    printf("Sampling period: %d ms\n", FullSizeSignals::SAMPLING_PERIOD_MS);
+    printf("Samples: %d\n", full_size_signals::ROTATION_SAMPLES);
+    printf("Duration: %.1f seconds\n", full_size_signals::ROTATION_EXPERIMENT_DURATION_SEC);
+    printf("Sampling period: %d ms\n", full_size_signals::SAMPLING_PERIOD_MS);
 
     // 初期状態をリセット
     val->sum.len = 0.0;
@@ -681,10 +681,10 @@ void SystemIdentificationTest::run_fullsize_rotation_identification()
 
     // フルサイズ信号を使用して実験を実行
     motion.RunRotationIdentification(
-        FullSizeSignals::rotation_signal_left_45900,
-        FullSizeSignals::rotation_signal_right_45900,
-        FullSizeSignals::ROTATION_SAMPLES,
-        FullSizeSignals::SAMPLING_PERIOD_MS
+        full_size_signals::rotation_signal_left_45900,
+        full_size_signals::rotation_signal_right_45900,
+        full_size_signals::ROTATION_SAMPLES,
+        full_size_signals::SAMPLING_PERIOD_MS
     );
 
     printf("Full size rotation identification completed.\n");

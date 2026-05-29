@@ -22,7 +22,7 @@ class Search : public UI
         Adachi motion;
 };
 
-class All_Search : public UI
+class AllSearch : public UI
 {
     public:
         void ptr_by_sensor(t_sens_data *_sens) override;
