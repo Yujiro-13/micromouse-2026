@@ -102,14 +102,14 @@ Motor::Motor(gpio_num_t _ph_pin_R, gpio_num_t _en_pin_R, gpio_num_t _ph_pin_L, g
 
     ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
 
-    setMotorSpeed(0, 0);
-    setFanSpeed(0);
+    set_motor_speed(0, 0);
+    set_fan_speed(0);
 
     ESP_LOGI("Motor", "Initialized");
 }
 Motor::~Motor() {}
 
-void Motor::setMotorSpeed(float spdR, float spdL)
+void Motor::set_motor_speed(float spdR, float spdL)
 {
     // 左右モータの+-に注意
     if (spdR > 0)
@@ -152,7 +152,7 @@ void Motor::setMotorSpeed(float spdR, float spdL)
     }
 }
 
-void Motor::setFanSpeed(float fan)
+void Motor::set_fan_speed(float fan)
 {
     ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, fan * 256);
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);

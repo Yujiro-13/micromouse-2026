@@ -26,26 +26,26 @@ public:
 
     float surveybias(int reftime);
 
-    int16_t accelX_raw();
-    int16_t accelY_raw();
-    int16_t accelZ_raw();
-    int16_t gyroX_raw();
-    int16_t gyroY_raw();
-    int16_t gyroZ_raw();
+    int16_t accel_x_raw();
+    int16_t accel_y_raw();
+    int16_t accel_z_raw();
+    int16_t gyro_x_raw();
+    int16_t gyro_y_raw();
+    int16_t gyro_z_raw();
 
-    float accelX();
-    float accelY();
-    float accelZ();
-    float gyroX();
-    float gyroY();
-    float gyroZ();
+    float accel_x();
+    float accel_y();
+    float accel_z();
+    float gyro_x();
+    float gyro_y();
+    float gyro_z();
     float gyro_sensitivity = 1, accel_sensitivity = 1;
     bool in_survaeybias = false;
     
     // 加速度バイアス除去用メソッド
     float surveybias_accel_y(int reftime);
 
-    void Shar_SensData(SensorData *_sens) override;
+    void share_sensor_data(SensorData *_sens) override;
 
 private:
     spi_device_handle_t _spi;

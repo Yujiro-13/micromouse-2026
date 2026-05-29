@@ -108,7 +108,7 @@ typedef struct
     WallSensorData wall;
     Gyro gyro;
     EncoderData enc;
-    float BatteryVoltage = 0;
+    float battery_voltage = 0;
 }SensorData;   //sensor data
 */
 

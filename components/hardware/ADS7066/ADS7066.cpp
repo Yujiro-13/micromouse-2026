@@ -12,25 +12,25 @@ ADS7066::ADS7066(spi_host_device_t bus, gpio_num_t cs)
     err = spi_bus_add_device(bus, &dev_adc, &_spi);
     ESP_ERROR_CHECK(err);
 
-    writeRegister(0x1, 0b1);
-    while (readRegister(0x1) & 0b1)
+    write_register(0x1, 0b1);
+    while (read_register(0x1) & 0b1)
     {
         vTaskDelay(1);
     }
 
-    writeRegister(0x2, 0b010000);
-    writeRegister(0x3, 0b0);
-    writeRegister(0x4, 0b0);
+    write_register(0x2, 0b010000);
+    write_register(0x3, 0b0);
+    write_register(0x4, 0b0);
 
-    ESP_LOGI("ADS7066", "%x", readRegister(0x0));
+    ESP_LOGI("ADS7066", "%x", read_register(0x0));
 
-    SEQ_MODE = readRegister(0x10) & 0b11;
+    SEQ_MODE = read_register(0x10) & 0b11;
     ESP_LOGI("ADS7066", "%d", SEQ_MODE);
 }
 
 ADS7066::~ADS7066() {}
 
-void ADS7066::writeRegister(uint8_t adrs, uint8_t data)
+void ADS7066::write_register(uint8_t adrs, uint8_t data)
 {
     spi_transaction_t cmd;
 
@@ -45,10 +45,10 @@ void ADS7066::writeRegister(uint8_t adrs, uint8_t data)
     vTaskDelay(1);
 }
 
-uint16_t ADS7066::readOneShot(int8_t channelID)
+uint16_t ADS7066::read_one_shot(int8_t channelID)
 {
-    ESP_ERROR_CHECK(changeSEQ_MODE(0b00));
-    writeRegister(0x11, channelID);
+    ESP_ERROR_CHECK(change_seq_mode(0b00));
+    write_register(0x11, channelID);
     spi_transaction_t cmd;
 
     // 空読み
@@ -71,9 +71,9 @@ uint16_t ADS7066::readOneShot(int8_t channelID)
     return cmd.rx_data[0] << 8 | cmd.rx_data[1];
 }
 
-uint16_t ADS7066::readOnTheFly(int8_t channelID)
+uint16_t ADS7066::read_on_the_fly(int8_t channelID)
 {
-    ESP_ERROR_CHECK(changeSEQ_MODE(0b10));
+    ESP_ERROR_CHECK(change_seq_mode(0b10));
     spi_transaction_t cmd;
 
     memset(&cmd, 0, sizeof(cmd));
@@ -91,13 +91,13 @@ uint16_t ADS7066::readOnTheFly(int8_t channelID)
     return cmd.rx_data[0] << 8 | cmd.rx_data[1];
 }
 
-esp_err_t ADS7066::changeSEQ_MODE(uint8_t mode)
+esp_err_t ADS7066::change_seq_mode(uint8_t mode)
 {
     if (SEQ_MODE != mode)
     {
-        writeRegister(0x10, 0b10);
+        write_register(0x10, 0b10);
         vTaskDelay(1);
-        SEQ_MODE = readRegister(0x10);
+        SEQ_MODE = read_register(0x10);
         if (SEQ_MODE != mode)
         {
             return ESP_FAIL;
@@ -106,7 +106,7 @@ esp_err_t ADS7066::changeSEQ_MODE(uint8_t mode)
     return ESP_OK;
 }
 
-uint8_t ADS7066::readRegister(uint8_t adrs)
+uint8_t ADS7066::read_register(uint8_t adrs)
 {
     spi_transaction_t cmd;
 
@@ -128,15 +128,15 @@ uint8_t ADS7066::readRegister(uint8_t adrs)
     return cmd.rx_data[0];
 }
 
-void ADS7066::Shar_SensData(SensorData *_sens)
+void ADS7066::share_sensor_data(SensorData *_sens)
 {
     sens = _sens;
 }
 
 
-float ADS7066::BatteryVoltage()
+float ADS7066::battery_voltage()
 {
-    return (float)readOnTheFly(SENS[0]) / 65535.0 * 3.3 * 5.0;
+    return (float)read_on_the_fly(SENS[0]) / 65535.0 * 3.3 * 5.0;
 }
 
 /*void ADS7066::WallSensor()
@@ -144,7 +144,7 @@ float ADS7066::BatteryVoltage()
     for (int i = 0; i < 4; i++)
         {
             if (i > 0)
-                _on = readOnTheFly(SENS[i]);
+                _on = read_on_the_fly(SENS[i]);
                 gpio_set_level(LED[i], 0);
                 esp_timer_start_once(charge_timer, charge_us);
                 xSemaphoreTake(wallCharged, portMAX_DELAY);
@@ -152,9 +152,9 @@ float ADS7066::BatteryVoltage()
                 esp_rom_delay_us(rise_us);
                 if (i > 0)
                     value[i - 1] = _on - _off;
-                _off = readOnTheFly(SENS[i]);
+                _off = read_on_the_fly(SENS[i]);
         }
-        _on = readOnTheFly(4);
+        _on = read_on_the_fly(4);
         value[3] = _on - _off;
 
         sens->wall.val.fr = value[0];
@@ -174,7 +174,7 @@ void ADS7066::adc_sensing()
     wallCharged = xSemaphoreCreateBinary();
     while(1)
     {
-        sens->BatteryVoltage = BatteryVoltage();
+        sens->battery_voltage = battery_voltage();
         WallSensor();
     }
 }*/

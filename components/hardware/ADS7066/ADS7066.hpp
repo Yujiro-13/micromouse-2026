@@ -17,11 +17,11 @@ class ADS7066: public Sensor
 public:
     ADS7066(spi_host_device_t, gpio_num_t);
     ~ADS7066();
-    uint16_t readOneShot(int8_t);
-    uint16_t readOnTheFly(int8_t channelID = -1);
+    uint16_t read_one_shot(int8_t);
+    uint16_t read_on_the_fly(int8_t channelID = -1);
 
-    void Shar_SensData(SensorData *_sens) override;
-    float BatteryVoltage();
+    void share_sensor_data(SensorData *_sens) override;
+    float battery_voltage();
     //void WallSensor();
     //void adc_sensing();
 
@@ -42,9 +42,9 @@ private:
     spi_device_interface_config_t dev_adc;
     uint8_t SEQ_MODE;
 
-    void writeRegister(uint8_t adrs, uint8_t data);
-    uint8_t readRegister(uint8_t adrs);
-    esp_err_t changeSEQ_MODE(uint8_t mode);
+    void write_register(uint8_t adrs, uint8_t data);
+    uint8_t read_register(uint8_t adrs);
+    esp_err_t change_seq_mode(uint8_t mode);
 
     //esp_timer_handle_t charge_timer;
     //static void timer_chargeCompleted(void *arg);

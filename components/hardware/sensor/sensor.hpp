@@ -11,7 +11,7 @@
 
 struct Sensor
 {
-    virtual void Shar_SensData(SensorData *_sens) = 0;
+    virtual void share_sensor_data(SensorData *_sens) = 0;
 };
 
 #endif // SENSOR_HPP

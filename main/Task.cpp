@@ -38,7 +38,7 @@ void myTaskInterrupt(void *pvpram)
     {
         gpio_set_level(driver->adc->LED[i], 1);
     }
-    driver->adc->_off = driver->adc->readOnTheFly(4);
+    driver->adc->_off = driver->adc->read_on_the_fly(4);
 
     esp_timer_create_args_t chargeTimerSetting = {
         .callback = &timer_chargeCompleted,
@@ -55,12 +55,12 @@ void myTaskInterrupt(void *pvpram)
 
     while(1)
     {
-        sens->BatteryVoltage = driver->adc->BatteryVoltage();
+        sens->battery_voltage = driver->adc->battery_voltage();
         for (int i = 0; i < 4; i++)
         {
             if (i > 0)
             {
-                driver->adc->_on = driver->adc->readOnTheFly(driver->adc->SENS[i]);
+                driver->adc->_on = driver->adc->read_on_the_fly(driver->adc->SENS[i]);
                 gpio_set_level(driver->adc->LED[i], 0);
                 esp_timer_start_once(chargeTimer, charge_us);
                 xSemaphoreTake(wallCharged, portMAX_DELAY);
@@ -68,11 +68,11 @@ void myTaskInterrupt(void *pvpram)
                 esp_rom_delay_us(rise_us);
                 if (i > 0)
                     driver->adc->value[i - 1] = driver->adc->_on - driver->adc->_off;
-                driver->adc->_off = driver->adc->readOnTheFly(driver->adc->SENS[i]);
+                driver->adc->_off = driver->adc->read_on_the_fly(driver->adc->SENS[i]);
             }
                 
         }
-        driver->adc->_on = driver->adc->readOnTheFly(4);
+        driver->adc->_on = driver->adc->read_on_the_fly(4);
         driver->adc->value[3] = driver->adc->_on - driver->adc->_off;
 
         sens->wall.val.fr = driver->adc->value[0];

@@ -27,16 +27,16 @@ class MA730 : public Sensor
     MA730(spi_host_device_t bus, gpio_num_t cs, uint8_t ccw);
     ~MA730();
 
-    void Shar_SensData(SensorData *_sens) override;
-    uint16_t readAngle();
-    //void ShowAngle();
+    void share_sensor_data(SensorData *_sens) override;
+    uint16_t read_angle();
+    //void show_angle();
 
 private:
     uint16_t read();
-    uint16_t OperateRegisters(const uint8_t command, const uint8_t address, const uint8_t data);
-    uint8_t ReadRegister(const uint8_t address, const uint8_t data);
-    uint8_t WriteRegister(const uint8_t address, const uint8_t data);
-    void SetFilter(const uint8_t fw_value);
+    uint16_t operate_registers(const uint8_t command, const uint8_t address, const uint8_t data);
+    uint8_t read_register(const uint8_t address, const uint8_t data);
+    uint8_t write_register(const uint8_t address, const uint8_t data);
+    void set_filter(const uint8_t fw_value);
     esp_err_t ret;
     esp_err_t err;
     spi_transaction_t cmd;

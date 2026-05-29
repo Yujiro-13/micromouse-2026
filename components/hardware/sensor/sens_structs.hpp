@@ -86,7 +86,7 @@ typedef struct
     Gyro gyro;
     Accel accel;
     EncoderData enc;
-    float BatteryVoltage = 4.0;
+    float battery_voltage = 4.0;
 }SensorData;   //sensor data
 
 #endif // SENS_STRUCT_HPP

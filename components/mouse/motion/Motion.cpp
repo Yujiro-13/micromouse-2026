@@ -2025,7 +2025,7 @@ void Motion::CheckMotorDuty(float Duty_l, float Duty_r, uint32_t time)
 
     while (count < time)
     {
-        mot->setMotorSpeed(Duty_l, Duty_r);
+        mot->set_motor_speed(Duty_l, Duty_r);
         // printf("Duty_L:%f    Duty_R:%f\n", control->Duty_l, control->Duty_r);
         printf(">velocity:%f\n", val->current.vel);
         count++;
@@ -2055,13 +2055,13 @@ void Motion::DetectDeadZone(float step_size, float max_duty, uint32_t update_rat
         control->Duty_l = -current_duty;
         control->Duty_r = current_duty;
         // モーターに指令値を出力
-        mot->setMotorSpeed(-current_duty, current_duty);
+        mot->set_motor_speed(-current_duty, current_duty);
 
         current_duty += step_size;
         vTaskDelay(update_rate / portTICK_PERIOD_MS); // 1秒待機
     }
 
-    mot->setMotorSpeed(0.0, 0.0); // 最終的にモーター停止
+    mot->set_motor_speed(0.0, 0.0); // 最終的にモーター停止
     control->flag = FALSE;        // 制御OFF維持
     control->test_flag = FALSE;
 }
@@ -2080,13 +2080,13 @@ void Motion::DetectSaturationRegion(float start_duty, float step_size, float max
         control->Duty_l = current_duty;
         control->Duty_r = current_duty;
         // モーターに指令値を出力
-        mot->setMotorSpeed(current_duty, current_duty);
+        mot->set_motor_speed(current_duty, current_duty);
 
         current_duty += step_size;
         vTaskDelay(update_rate / portTICK_PERIOD_MS); // 1秒待機
     }
 
-    mot->setMotorSpeed(0.0, 0.0); // 最終的にモーター停止
+    mot->set_motor_speed(0.0, 0.0); // 最終的にモーター停止
     control->flag = FALSE;        // 制御OFF維持
     control->test_flag = FALSE;
 }
@@ -2128,7 +2128,7 @@ void Motion::ApplySystemIdentificationSignal(const float *signal_left, const flo
         control->Duty_l = duty_left;
         control->Duty_r = duty_right;
 
-        mot->setMotorSpeed(duty_left, duty_right);
+        mot->set_motor_speed(duty_left, duty_right);
 
         if (i % 10 == 0)
         {
@@ -2138,7 +2138,7 @@ void Motion::ApplySystemIdentificationSignal(const float *signal_left, const flo
         vTaskDelay(sampling_period_ms / portTICK_PERIOD_MS);
     }
 
-    mot->setMotorSpeed(0.0, 0.0);
+    mot->set_motor_speed(0.0, 0.0);
     control->Duty_l = 0.0;
     control->Duty_r = 0.0;
 

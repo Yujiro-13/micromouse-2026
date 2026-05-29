@@ -52,7 +52,7 @@ void myTaskAdc(void *pvpram)
     {
         gpio_set_level(driver->adc->LED[i], 1);
     }
-    driver->adc->_off = driver->adc->readOnTheFly(4);
+    driver->adc->_off = driver->adc->read_on_the_fly(4);
 
     esp_timer_create_args_t chargeTimerSetting = {
         .callback = &timer_chargeCompleted,
@@ -69,12 +69,12 @@ void myTaskAdc(void *pvpram)
 
     while (1)
     {
-        sens.BatteryVoltage = driver->adc->BatteryVoltage();
+        sens.battery_voltage = driver->adc->battery_voltage();
         for (int i = 0; i < 4; i++)
         {
             if (i > 0) // i = 0 のときは _on が初期化されていないため、読み取りを行わない
             {
-                driver->adc->_on = driver->adc->readOnTheFly(driver->adc->SENS[i]); // readOnTheFly は 送ったアドレスのひとつ前に送った値を返す
+                driver->adc->_on = driver->adc->read_on_the_fly(driver->adc->SENS[i]); // read_on_the_fly は 送ったアドレスのひとつ前に送った値を返す
             }
             gpio_set_level(driver->adc->LED[i], 0);
             esp_timer_start_once(chargeTimer, charge_us);
@@ -93,9 +93,9 @@ void myTaskAdc(void *pvpram)
                     driver->adc->value[i - 1] = driver->adc->_off - driver->adc->_on;
                 }
             }
-            driver->adc->_off = driver->adc->readOnTheFly(driver->adc->SENS[i]);
+            driver->adc->_off = driver->adc->read_on_the_fly(driver->adc->SENS[i]);
         }
-        driver->adc->_on = driver->adc->readOnTheFly(4);
+        driver->adc->_on = driver->adc->read_on_the_fly(4);
         if (driver->adc->_on - driver->adc->_off > 0) // on, off の差分が正のとき(on時の値のほうが大きいとき)
         {
             driver->adc->value[3] = driver->adc->_on - driver->adc->_off;
@@ -238,36 +238,36 @@ extern "C" void app_main(void)
     
     while (1)
     {
-        // h = driver->imu->accelZ() * 360;
+        // h = driver->imu->accel_z() * 360;
         //driver->np->set_hsv({h, 100, 10}, 0, 1);
         driver->np->set_hsv({240, 100, 100}, 0, 1);
         driver->np->show();
         //driver->np->gaming_mouse();
-        // printf("BAT : %f\n", sens.BatteryVoltage);
+        // printf("BAT : %f\n", sens.battery_voltage);
         // printf("sens.wall.val.fl:%d  sens.wall.val.l:%d  sens.wall.val.r:%d  sens.wall.val.fr:%d\n", sens.wall.val.fl, sens.wall.val.l, sens.wall.val.r, sens.wall.val.fr);
         //   printf("driver->adc->off:%d\n", driver->adc->_off);
         MICROMOUSE(driver, &sens);
 
-        //driver->mot->setMotorSpeed((0.2), (0.2));
+        //driver->mot->set_motor_speed((0.2), (0.2));
 
         
 
         // printf("Z : %ld\n", h);
         /*
-        driver->mot->setMotorSpeed(1.0 * sin(t), 1.0 * sin(t));
+        driver->mot->set_motor_speed(1.0 * sin(t), 1.0 * sin(t));
         t = t + 0.01;
         if (t > 2 * M_PI)
             t = 0.0;
         */
 
-        //printf("gyroZ : %f\n", driver->imu->gyroZ());
-        // printf("ang_vel : %f\n", driver->imu->gyroZ() * (M_PI / 180.0));
-        //rad += driver->imu->gyroZ() * (M_PI / 180.0) / 1000.0 *100;// 1tick が100ms周期になっているため *100
+        //printf("gyro_z : %f\n", driver->imu->gyro_z());
+        // printf("ang_vel : %f\n", driver->imu->gyro_z() * (M_PI / 180.0));
+        //rad += driver->imu->gyro_z() * (M_PI / 180.0) / 1000.0 *100;// 1tick が100ms周期になっているため *100
         //printf("rad : %f\n", rad);
 
         /*
-        h = driver->encL->readAngle();
-        h1 = driver->encR->readAngle();
+        h = driver->encL->read_angle();
+        h1 = driver->encR->read_angle();
 
         float WheelAngle_L = 2.0 * M_PI * h / 16384.0;
         float WheelAngle_R = 2.0 * M_PI * h1 / 16384.0;

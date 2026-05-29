@@ -129,7 +129,7 @@ float MPU6500::surveybias(int reftime){
     vTaskDelay(1000/portTICK_PERIOD_MS); //  100ms待つ
     float r_yaw_ref_tmp = 0;
     for(uint16_t i = 0; i < reftime; i++){
-        r_yaw_ref_tmp += gyroZ();
+        r_yaw_ref_tmp += gyro_z();
         vTaskDelay(1/portTICK_PERIOD_MS);
     }
     in_survaeybias = false; 
@@ -141,8 +141,8 @@ float MPU6500::surveybias_accel_y(int reftime){
     vTaskDelay(1000/portTICK_PERIOD_MS); //  1000ms待つ（静止を確実にする）
     float accel_y_ref_tmp = 0;
     for(uint16_t i = 0; i < reftime; i++){
-        // バイアス補正前の生の値を使用（accelY()ではなくaccelY_raw()を使用）
-        accel_y_ref_tmp += (float)accelY_raw() * accel_sensitivity;
+        // バイアス補正前の生の値を使用（accel_y()ではなくaccelY_raw()を使用）
+        accel_y_ref_tmp += (float)accel_y_raw() * accel_sensitivity;
         vTaskDelay(1/portTICK_PERIOD_MS);
     }
     in_survaeybias = false; 
@@ -152,43 +152,43 @@ float MPU6500::surveybias_accel_y(int reftime){
 uint8_t MPU6500::whoami(){
     return read(0x75);  //  0x00
 }
-int16_t MPU6500::accelX_raw(){
+int16_t MPU6500::accel_x_raw(){
     return read16(0x3B);    //  0x3D
 }
-int16_t MPU6500::accelY_raw(){
+int16_t MPU6500::accel_y_raw(){
     return read16(0x3D);    //  0x3F
 }
-int16_t MPU6500::accelZ_raw(){
+int16_t MPU6500::accel_z_raw(){
     return read16(0x3F);    //  0x41
 }
-int16_t MPU6500::gyroX_raw(){
+int16_t MPU6500::gyro_x_raw(){
     return read16(0x43);    //  0x43
 }
-int16_t MPU6500::gyroY_raw(){
+int16_t MPU6500::gyro_y_raw(){
     return read16(0x45);    //  0x45
 }
-int16_t MPU6500::gyroZ_raw(){
+int16_t MPU6500::gyro_z_raw(){
     return read16(0x47);    //  0x47
 }
-float MPU6500::accelX(){
-    return (float)accelX_raw() * accel_sensitivity;
+float MPU6500::accel_x(){
+    return (float)accel_x_raw() * accel_sensitivity;
 }
-float MPU6500::accelY(){
-    return (float)accelY_raw() * accel_sensitivity;
+float MPU6500::accel_y(){
+    return (float)accel_y_raw() * accel_sensitivity;
 }
-float MPU6500::accelZ(){
-    return (float)accelZ_raw() * accel_sensitivity;
+float MPU6500::accel_z(){
+    return (float)accel_z_raw() * accel_sensitivity;
 }
-float MPU6500::gyroX(){
-    return (float)gyroX_raw() * gyro_sensitivity;
+float MPU6500::gyro_x(){
+    return (float)gyro_x_raw() * gyro_sensitivity;
 }
-float MPU6500::gyroY(){
-    return (float)gyroY_raw() * gyro_sensitivity;
+float MPU6500::gyro_y(){
+    return (float)gyro_y_raw() * gyro_sensitivity;
 }
-float MPU6500::gyroZ(){
-    return (float)gyroZ_raw() * gyro_sensitivity;
+float MPU6500::gyro_z(){
+    return (float)gyro_z_raw() * gyro_sensitivity;
 }
 
-void MPU6500::Shar_SensData(SensorData *_sens){
+void MPU6500::share_sensor_data(SensorData *_sens){
     sens = _sens;
 }

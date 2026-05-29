@@ -368,8 +368,8 @@ void Interrupt::feedback_control()
         }
 
         // FF制御（速度）
-        control->Duty_l = FF_VEL_GAIN * (BASE_BATT/sens->BatteryVoltage) * FF_control_velocity(val->tar.vel);
-        control->Duty_r = FF_VEL_GAIN * (BASE_BATT/sens->BatteryVoltage) * FF_control_velocity(val->tar.vel);
+        control->Duty_l = FF_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_velocity(val->tar.vel);
+        control->Duty_r = FF_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_velocity(val->tar.vel);
         
         // 静止状態から加速する場合のみ、静摩擦補償を追加
         /*if (control->is_stationary)
@@ -416,8 +416,8 @@ void Interrupt::feedback_control()
         
 
         // FF制御（角速度）
-        control->Duty_l -= FF_ANG_VEL_GAIN * (BASE_BATT/sens->BatteryVoltage) * FF_control_angular_velocity(val->tar.ang_vel);
-        control->Duty_r += FF_ANG_VEL_GAIN * (BASE_BATT/sens->BatteryVoltage) * FF_control_angular_velocity(val->tar.ang_vel);
+        control->Duty_l -= FF_ANG_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_angular_velocity(val->tar.ang_vel);
+        control->Duty_r += FF_ANG_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_angular_velocity(val->tar.ang_vel);
 
         // 角速度制御
         val->current.ang_error = val->tar.ang_vel - val->current.ang_vel;
@@ -434,10 +434,10 @@ void Interrupt::feedback_control()
 
         
         // FB制御の出力をDutyに加算
-        control->Duty_l += control->V_l / sens->BatteryVoltage; // zero division error に注意
-        control->Duty_r += control->V_r / sens->BatteryVoltage;
+        control->Duty_l += control->V_l / sens->battery_voltage; // zero division error に注意
+        control->Duty_r += control->V_r / sens->battery_voltage;
 
-        mot->setMotorSpeed(control->Duty_r, control->Duty_l);
+        mot->set_motor_speed(control->Duty_r, control->Duty_l);
         //printf("val->tar.vel: %f, control->Duty_l: %f, control->Duty_r: %f\n", val->tar.vel, control->Duty_l, control->Duty_r);
     }
     else if (control->flag == FALSE && control->test_flag == FALSE)
@@ -447,11 +447,11 @@ void Interrupt::feedback_control()
         control->Duty_l = 0;
         control->Duty_r = 0;
 
-        mot->setMotorSpeed(0.0, 0.0);
+        mot->set_motor_speed(0.0, 0.0);
     }
     else if (control->flag == FALSE && control->test_flag == TRUE)
     {
-        // mot->setMotorSpeed(0.0, 0.0); // テスト、実験時は無効にしておかないといけない
+        // mot->set_motor_speed(0.0, 0.0); // テスト、実験時は無効にしておかないといけない
     }
     
     val->p.vel = val->current.vel;
@@ -465,8 +465,8 @@ void Interrupt::calc_distance()
 { //  走行距離を計算する
 
     // エンコーダの値を取得
-    sens->enc.data.l = encL->readAngle();
-    sens->enc.data.r = encR->readAngle();
+    sens->enc.data.l = encL->read_angle();
+    sens->enc.data.r = encR->read_angle();
 
     sens->enc.locate.l = sens->enc.data.l;
     sens->enc.locate.r = sens->enc.data.r;
@@ -512,7 +512,7 @@ void Interrupt::calc_distance()
     return;
 }
 
-void Interrupt::estimate_velocity_fusion() // 多分-accelYが正しい方向
+void Interrupt::estimate_velocity_fusion() // 多分-accel_yが正しい方向
 { // エンコーダ+IMU融合による高精度速度推定システム
     
     // エンコーダベース速度（既存計算）
@@ -523,7 +523,7 @@ void Interrupt::estimate_velocity_fusion() // 多分-accelYが正しい方向
     if (!imu->in_survaeybias) 
     { // サーベイバイアス中は加速度を計算しない
         // 生の加速度値を取得し、バイアスを減算
-        float accel_y_raw = imu->accelY() - sens->accel.y_ref; // G単位、バイアス補正済み
+        float accel_y_raw = imu->accel_y() - sens->accel.y_ref; // G単位、バイアス補正済み
         
         // 向心加速度補正を適用
         float accel_y_compensated = compensate_centripetal_acceleration(accel_y_raw);
@@ -607,7 +607,7 @@ void Interrupt::calc_angle()
     // float _yaw = 0.0;
     if (!imu->in_survaeybias)
     { // サーベイバイアス中は角速度を計算しない
-        sens->gyro.yaw = imu->gyroZ() - sens->gyro.ref;
+        sens->gyro.yaw = imu->gyro_z() - sens->gyro.ref;
     }
 
     val->current.ang_vel = sens->gyro.yaw * (M_PI / 180.0);
@@ -846,7 +846,7 @@ void Interrupt::logging()
         adcs[1] = (int16_t)(sens->wall.val.l);
         adcs[2] = (int16_t)(sens->wall.val.r);
         adcs[3] = (int16_t)(sens->wall.val.fr);
-        adcs[4] = (uint16_t)(sens->BatteryVoltage * 1000);
+        adcs[4] = (uint16_t)(sens->battery_voltage * 1000);
         adcs[5] = (int16_t)(val->current.vel * 1000);
         adcs[6] = (int16_t)(val->tar.vel * 1000);
         adcs[7] = (int16_t)(val->sum.len * 1000);

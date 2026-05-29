@@ -14,8 +14,8 @@ class Motor
 public:
     Motor(gpio_num_t, gpio_num_t, gpio_num_t, gpio_num_t, gpio_num_t, gpio_num_t);
     ~Motor();
-    void setMotorSpeed(float, float);
-    void setFanSpeed(float);
+    void set_motor_speed(float, float);
+    void set_fan_speed(float);
 private:
     gpio_num_t ph_pin_R, en_pin_R, ph_pin_L, en_pin_L, fan_pin;
     float spdR,spdL;

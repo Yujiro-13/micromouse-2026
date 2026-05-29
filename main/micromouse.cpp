@@ -83,10 +83,10 @@ void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens)
     printf("finish motion struct\n");
 
     // センサ系
-    driver->adc->Shar_SensData(sens);
-    driver->imu->Shar_SensData(sens);
-    driver->encR->Shar_SensData(sens);
-    driver->encL->Shar_SensData(sens);
+    driver->adc->share_sensor_data(sens);
+    driver->imu->share_sensor_data(sens);
+    driver->encR->share_sensor_data(sens);
+    driver->encL->share_sensor_data(sens);
 
     printf("finish sensor struct\n");
 
@@ -327,9 +327,9 @@ void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens)
         //printf("time: %d\n", control.time_count); OK
         //printf("vel: %f\n", val.current.vel); OK
         //printf("rad: %f\n", val.current.rad); OK
-        //printf("BatteryVoltage: %f\n", sens->BatteryVoltage); //OK
+        //printf("battery_voltage: %f\n", sens->battery_voltage); //OK
         //printf("sens.wall.val.fl: %d  sens.wall.val.l: %d  sens.wall.val.r: %d  sens.wall.val.fr: %d\n", sens->wall.val.fl, sens->wall.val.l, sens->wall.val.r, sens->wall.val.fr); //OK
-        //printf("time:%d  mode:%d  flag:%d  Duty_L:%lf  Duty_R:%lf  Batt:%lf\n", time_count, mode, control.flag ,control.Duty_l, control.Duty_r, sens.BatteryVoltage);
+        //printf("time:%d  mode:%d  flag:%d  Duty_L:%lf  Duty_R:%lf  Batt:%lf\n", time_count, mode, control.flag ,control.Duty_l, control.Duty_r, sens.battery_voltage);
         time_count++;
         vTaskDelay(10/portTICK_PERIOD_MS);
     }
