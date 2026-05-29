@@ -1,4 +1,4 @@
-#include "include/UI/search.hpp"
+#include "search.hpp"
 
 void Search::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
 

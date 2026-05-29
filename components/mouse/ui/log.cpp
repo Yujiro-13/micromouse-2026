@@ -1,4 +1,4 @@
-#include "include/UI/log.hpp"
+#include "log.hpp"
 
 #define MAZESIZE_X 32
 #define MAZESIZE_Y 32

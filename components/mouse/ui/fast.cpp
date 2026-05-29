@@ -1,5 +1,5 @@
 
-#include "include/UI/fast.hpp"
+#include "fast.hpp"
 
 void Fast::ptr_by_sensor(t_sens_data *_sens) { sens = _sens; }
 

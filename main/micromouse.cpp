@@ -1,9 +1,9 @@
 
 #include "Interrupt.hpp"
-#include "include/UI/fast.hpp"
-#include "include/UI/log.hpp"
-#include "include/UI/search.hpp"
-#include "include/UI/test.hpp"
+#include "fast.hpp"
+#include "log.hpp"
+#include "search.hpp"
+#include "test.hpp"
 #include "Adachi.hpp"
 #include "include/micromouse.hpp"
 #include "sens_structs.hpp"
