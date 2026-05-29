@@ -283,27 +283,25 @@ int Adachi::get_nextdir(int x, int y, int mask, t_direction *dir)
 		cached_mask = mask;
 	}
 
-	int little, priority, tmp_priority; // 最小の値を探すために使用する変数
-	little = 255;						// 最小歩数を255歩(mapがunsigned char型なので)に設定
+	int min_steps, priority, tmp_priority; // 最小の値を探すために使用する変数
+	min_steps = 255;						// 最小歩数を255歩(mapがunsigned char型なので)に設定
 	priority = 0;						// 優先度の初期値は0
 
 	// maskの意味はstatic_parameter.hを参照
 	if ((map->wall[map->pos.x][map->pos.y].north & mask) == NOWALL) // 北に壁がなければ
 	{
 		tmp_priority = get_priority(map->pos.x, map->pos.y + 1, NORTH); // 優先度を算出
-		if (map->size[map->pos.x][map->pos.y + 1] < little)				// 一番歩数が小さい方向を見つける
+		if (map->size[map->pos.x][map->pos.y + 1] < min_steps)				// 一番歩数が小さい方向を見つける
 		{
-			little = map->size[map->pos.x][map->pos.y + 1]; // ひとまず北が歩数が小さい事にする
+			min_steps = map->size[map->pos.x][map->pos.y + 1]; // ひとまず北が歩数が小さい事にする
 			*dir = NORTH;									// 方向を保存
-			// now_dir = north;
 			priority = tmp_priority; // 優先度を保存
 		}
-		else if (map->size[map->pos.x][map->pos.y + 1] == little) // 歩数が同じ場合は優先度から判断する
+		else if (map->size[map->pos.x][map->pos.y + 1] == min_steps) // 歩数が同じ場合は優先度から判断する
 		{
 			if (priority < tmp_priority) // 優先度を評価
 			{
 				*dir = NORTH; // 方向を更新
-				// now_dir = north;
 				priority = tmp_priority; // 優先度を保存
 			}
 		}
@@ -312,19 +310,17 @@ int Adachi::get_nextdir(int x, int y, int mask, t_direction *dir)
 	if ((map->wall[map->pos.x][map->pos.y].east & mask) == NOWALL) // 東に壁がなければ
 	{
 		tmp_priority = get_priority(map->pos.x + 1, map->pos.y, EAST); // 優先度を算出
-		if (map->size[map->pos.x + 1][map->pos.y] < little)			   // 一番歩数が小さい方向を見つける
+		if (map->size[map->pos.x + 1][map->pos.y] < min_steps)			   // 一番歩数が小さい方向を見つける
 		{
-			little = map->size[map->pos.x + 1][map->pos.y]; // ひとまず東が歩数が小さい事にする
+			min_steps = map->size[map->pos.x + 1][map->pos.y]; // ひとまず東が歩数が小さい事にする
 			*dir = EAST;									// 方向を保存
-			// now_dir = east;
 			priority = tmp_priority; // 優先度を保存
 		}
-		else if (map->size[map->pos.x + 1][map->pos.y] == little) // 歩数が同じ場合、優先度から判断
+		else if (map->size[map->pos.x + 1][map->pos.y] == min_steps) // 歩数が同じ場合、優先度から判断
 		{
 			if (priority < tmp_priority) // 優先度を評価
 			{
 				*dir = EAST; // 方向を保存
-				// now_dir = east;
 				priority = tmp_priority; // 優先度を保存
 			}
 		}
@@ -333,19 +329,17 @@ int Adachi::get_nextdir(int x, int y, int mask, t_direction *dir)
 	if ((map->wall[map->pos.x][map->pos.y].south & mask) == NOWALL) // 南に壁がなければ
 	{
 		tmp_priority = get_priority(map->pos.x, map->pos.y - 1, SOUTH); // 優先度を算出
-		if (map->size[map->pos.x][map->pos.y - 1] < little)				// 一番歩数が小さい方向を見つける
+		if (map->size[map->pos.x][map->pos.y - 1] < min_steps)				// 一番歩数が小さい方向を見つける
 		{
-			little = map->size[map->pos.x][map->pos.y - 1]; // ひとまず南が歩数が小さい事にする
+			min_steps = map->size[map->pos.x][map->pos.y - 1]; // ひとまず南が歩数が小さい事にする
 			*dir = SOUTH;									// 方向を保存
-			// now_dir = south;
 			priority = tmp_priority; // 優先度を保存
 		}
-		else if (map->size[map->pos.x][map->pos.y - 1] == little) // 歩数が同じ場合、優先度で評価
+		else if (map->size[map->pos.x][map->pos.y - 1] == min_steps) // 歩数が同じ場合、優先度で評価
 		{
 			if (priority < tmp_priority) // 優先度を評価
 			{
 				*dir = SOUTH; // 方向を保存
-				// now_dir = south;
 				priority = tmp_priority; // 優先度を保存
 			}
 		}
@@ -354,17 +348,15 @@ int Adachi::get_nextdir(int x, int y, int mask, t_direction *dir)
 	if ((map->wall[map->pos.x][map->pos.y].west & mask) == NOWALL) // 西に壁がなければ
 	{
 		tmp_priority = get_priority(map->pos.x - 1, map->pos.y, WEST); // 優先度を算出
-		if (map->size[map->pos.x - 1][map->pos.y] < little)			   // 一番歩数が小さい方向を見つける
+		if (map->size[map->pos.x - 1][map->pos.y] < min_steps)			   // 一番歩数が小さい方向を見つける
 		{
-			little = map->size[map->pos.x - 1][map->pos.y]; // 西が歩数が小さい
+			min_steps = map->size[map->pos.x - 1][map->pos.y]; // 西が歩数が小さい
 			*dir = WEST;									// 方向を保存
-			// now_dir = west;
 			priority = tmp_priority; // 優先度を保存
 		}
-		else if (map->size[map->pos.x - 1][map->pos.y] == little) // 歩数が同じ場合、優先度で評価
+		else if (map->size[map->pos.x - 1][map->pos.y] == min_steps) // 歩数が同じ場合、優先度で評価
 		{
 			*dir = WEST; // 方向を保存
-			// now_dir = west;
 			priority = tmp_priority; // 優先度を保存
 		}
 	}
@@ -1800,22 +1792,22 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 // オリジナル版のget_nextdir関数（比較用）
 int Adachi::get_nextdir_original(int x, int y, int mask, t_direction *dir)
 {
-	int little, priority, tmp_priority;
+	int min_steps, priority, tmp_priority;
 
 	make_map_original(x, y, mask); // オリジナル版使用
-	little = 255;
+	min_steps = 255;
 	priority = 0;
 
 	if ((map->wall[map->pos.x][map->pos.y].north & mask) == NOWALL)
 	{
 		tmp_priority = get_priority(map->pos.x, map->pos.y + 1, NORTH);
-		if (map->size[map->pos.x][map->pos.y + 1] < little)
+		if (map->size[map->pos.x][map->pos.y + 1] < min_steps)
 		{
-			little = map->size[map->pos.x][map->pos.y + 1];
+			min_steps = map->size[map->pos.x][map->pos.y + 1];
 			*dir = NORTH;
 			priority = tmp_priority;
 		}
-		else if (map->size[map->pos.x][map->pos.y + 1] == little)
+		else if (map->size[map->pos.x][map->pos.y + 1] == min_steps)
 		{
 			if (priority < tmp_priority)
 			{
@@ -1828,13 +1820,13 @@ int Adachi::get_nextdir_original(int x, int y, int mask, t_direction *dir)
 	if ((map->wall[map->pos.x][map->pos.y].east & mask) == NOWALL)
 	{
 		tmp_priority = get_priority(map->pos.x + 1, map->pos.y, EAST);
-		if (map->size[map->pos.x + 1][map->pos.y] < little)
+		if (map->size[map->pos.x + 1][map->pos.y] < min_steps)
 		{
-			little = map->size[map->pos.x + 1][map->pos.y];
+			min_steps = map->size[map->pos.x + 1][map->pos.y];
 			*dir = EAST;
 			priority = tmp_priority;
 		}
-		else if (map->size[map->pos.x + 1][map->pos.y] == little)
+		else if (map->size[map->pos.x + 1][map->pos.y] == min_steps)
 		{
 			if (priority < tmp_priority)
 			{
@@ -1847,13 +1839,13 @@ int Adachi::get_nextdir_original(int x, int y, int mask, t_direction *dir)
 	if ((map->wall[map->pos.x][map->pos.y].south & mask) == NOWALL)
 	{
 		tmp_priority = get_priority(map->pos.x, map->pos.y - 1, SOUTH);
-		if (map->size[map->pos.x][map->pos.y - 1] < little)
+		if (map->size[map->pos.x][map->pos.y - 1] < min_steps)
 		{
-			little = map->size[map->pos.x][map->pos.y - 1];
+			min_steps = map->size[map->pos.x][map->pos.y - 1];
 			*dir = SOUTH;
 			priority = tmp_priority;
 		}
-		else if (map->size[map->pos.x][map->pos.y - 1] == little)
+		else if (map->size[map->pos.x][map->pos.y - 1] == min_steps)
 		{
 			if (priority < tmp_priority)
 			{
@@ -1866,13 +1858,13 @@ int Adachi::get_nextdir_original(int x, int y, int mask, t_direction *dir)
 	if ((map->wall[map->pos.x][map->pos.y].west & mask) == NOWALL)
 	{
 		tmp_priority = get_priority(map->pos.x - 1, map->pos.y, WEST);
-		if (map->size[map->pos.x - 1][map->pos.y] < little)
+		if (map->size[map->pos.x - 1][map->pos.y] < min_steps)
 		{
-			little = map->size[map->pos.x - 1][map->pos.y];
+			min_steps = map->size[map->pos.x - 1][map->pos.y];
 			*dir = WEST;
 			priority = tmp_priority;
 		}
-		else if (map->size[map->pos.x - 1][map->pos.y] == little)
+		else if (map->size[map->pos.x - 1][map->pos.y] == min_steps)
 		{
 			*dir = WEST;
 			priority = tmp_priority;
