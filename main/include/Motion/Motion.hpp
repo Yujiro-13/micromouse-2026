@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>    // freertos以下のファイルをインクルードしたい場合、必ず先にFreeRTOS.hをインクルードする
-#include "../Base_func.hpp"
+#include "Base_func.hpp"
 #include "files.hpp"
 
 // 壁センサの列挙型（距離推定用・4センサ個別）
