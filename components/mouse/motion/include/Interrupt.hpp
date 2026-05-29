@@ -14,8 +14,8 @@
 #include "Base_func.hpp"
 #include "drivers.hpp"
 
-#define ENC_MAX 16384
-#define ENC_HALF 8192
+constexpr int ENC_MAX = 16384;
+constexpr int ENC_HALF = 8192;
 
 class Interrupt : public Micromouse{
     public:

@@ -5,9 +5,7 @@
 #include "Adachi.hpp"
 #include "files.hpp"
 
-#define _interface struct
-
-_interface UI : Micromouse
+struct UI : Micromouse
 {
     virtual void main_task() = 0;
     virtual void ref_by_motion(Adachi &_adachi) = 0;

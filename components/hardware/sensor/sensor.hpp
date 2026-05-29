@@ -9,9 +9,7 @@
     センサからデータを取得するドライバを作成する場合は、このクラスを継承
 */
 
-#define _interface struct
-
-_interface Sensor 
+struct Sensor
 {
     virtual void Shar_SensData(t_sens_data *_sens) = 0;
 };

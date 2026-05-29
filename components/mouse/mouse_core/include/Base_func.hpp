@@ -9,9 +9,7 @@
 #include "drivers.hpp"
 
 
-#define Interface struct
-
-Interface Micromouse
+struct Micromouse
 {
     virtual void ptr_by_sensor(t_sens_data *_sens) = 0;
     virtual void ptr_by_motion(t_mouse_motion_val *_val) = 0;
@@ -21,4 +19,4 @@ Interface Micromouse
 };
 
 
-#endif // MICROMOUSE_HPP
+#endif // BASE_FUNC_HPP
