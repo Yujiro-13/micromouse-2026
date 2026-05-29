@@ -1,35 +1,61 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- |
+| Supported Targets | ESP32-S3 |
+| ----------------- | -------- |
 
-# _Sample project_
+# reRoMouse
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+ESP32-S3 を用いたマイクロマウス（迷路自律走行ロボット）のファームウェア。ESP-IDF (v5.x / CMake) と C++ で実装し、足立法による迷路探索と PID 制御による走行を行う。
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
-
-
-
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
-
-## Example folder contents
-
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
+## ディレクトリ構成
 
 ```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
+micromouse-2026/
+├── CMakeLists.txt          # プロジェクトルート CMake
+├── sdkconfig.defaults      # 共有ビルド設定（Git管理）
+├── partitions.csv          # カスタムパーティションテーブル
+├── main/                   # アプリケーション層（エントリポイント・制御・UI）
+│   ├── main.cpp            #   app_main：ペリフェラル初期化とタスク起動
+│   ├── Motion.cpp / Adachi.cpp / Interrupt.cpp  # 走行制御・探索・割り込み
+│   └── include/            #   アプリ層ヘッダ
+├── components/             # ハードウェアドライバ（コンポーネント分離）
+│   ├── ADS7066/            #   16bit ADC（壁センサ読み取り）
+│   ├── MPU6500/            #   6軸IMU
+│   ├── MA730/              #   磁気エンコーダ（L/R）
+│   ├── Motor/              #   DCモータ（PWM＋方向）
+│   ├── Buzzer/ NeoPixel/ PCA9632/  # ブザー・RGB LED・I2C LED
+│   └── sensor/             #   センサ共通インターフェース
+└── tools/                  # 開発支援ツール（ビルド対象外）
+    ├── generate_signal_arrays.py   # システム同定用信号配列の生成
+    └── matlab/                     # ログ解析・システム同定用 MATLAB スクリプト
 ```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+
+## ビルド・書き込み
+
+```bash
+# ターゲット設定（初回のみ）
+idf.py set-target esp32s3
+
+# ビルド
+idf.py build
+
+# 書き込み + シリアルモニタ
+idf.py -p [PORT] flash monitor
+
+# 設定変更
+idf.py menuconfig
+
+# ビルドキャッシュのクリア
+idf.py fullclean
+```
+
+## 主な機能
+
+- **迷路探索**: 足立法による最短経路探索と動的な地図構築（探索 / 全面探索モード）
+- **走行制御**: PID による速度・位置制御、スラロームターン、壁制御
+- **センサ**: IR 壁センサ（前/前左/前右/左/右）、IMU、エンコーダによる自己位置推定
+- **永続化**: 走行パラメータ・地図・ログを Flash (FAT/SPIFFS) に保存
+- **UI**: 探索 / 最短走行 / テスト / ログのモード切り替え
+
+## 開発環境
+
+VSCode + ESP-IDF 拡張を推奨。`.vscode/` にビルド・書き込み・モニタのタスクを定義済み。
+</content>
