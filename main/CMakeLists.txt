@@ -3,7 +3,6 @@ idf_component_register(
     "main.cpp"
     "Adachi.cpp"
     "fast.cpp"
-    "files.cpp"
     "Interrupt.cpp"
     "log.cpp"
     "micromouse.cpp"
