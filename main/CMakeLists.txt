@@ -1,12 +1,9 @@
 idf_component_register(
     SRCS
     "main.cpp"
-    "Adachi.cpp"
     "fast.cpp"
-    "Interrupt.cpp"
     "log.cpp"
     "micromouse.cpp"
-    "Motion.cpp"
     "search.cpp"
     "test.cpp"
     "Task.cpp"

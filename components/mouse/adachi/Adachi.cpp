@@ -1,4 +1,4 @@
-#include "include/Motion/Adachi.hpp"
+#include "Adachi.hpp"
 
 static BUZZER::buzzer_score_t pc98[] = {{2000, 100}, {1000, 100}};
 static BUZZER::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};

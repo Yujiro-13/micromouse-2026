@@ -1,10 +1,10 @@
 
-#include "include/Interrupt.hpp"
+#include "Interrupt.hpp"
 #include "include/UI/fast.hpp"
 #include "include/UI/log.hpp"
 #include "include/UI/search.hpp"
 #include "include/UI/test.hpp"
-#include "include/Motion/Adachi.hpp"
+#include "Adachi.hpp"
 #include "include/micromouse.hpp"
 #include "sens_structs.hpp"
 #include <functional>

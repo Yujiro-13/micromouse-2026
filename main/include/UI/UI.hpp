@@ -2,7 +2,7 @@
 #define UI_HPP
 
 #include "Base_func.hpp"
-#include "../Motion/Adachi.hpp"
+#include "Adachi.hpp"
 #include "files.hpp"
 
 #define _interface struct
