@@ -246,7 +246,7 @@ extern "C" void app_main(void)
         // printf("BAT : %f\n", sens.battery_voltage);
         // printf("sens.wall.val.fl:%d  sens.wall.val.l:%d  sens.wall.val.r:%d  sens.wall.val.fr:%d\n", sens.wall.val.fl, sens.wall.val.l, sens.wall.val.r, sens.wall.val.fr);
         //   printf("driver->adc->off:%d\n", driver->adc->_off);
-        MICROMOUSE(driver, &sens);
+        run_micromouse(driver, &sens);
 
         //driver->mot->set_motor_speed((0.2), (0.2));
 

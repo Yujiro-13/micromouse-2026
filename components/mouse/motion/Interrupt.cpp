@@ -36,7 +36,7 @@ void Interrupt::set_device_driver(std::shared_ptr<Drivers> driver)
     // printf("set_device_driver\n");
 }
 
-void Interrupt::GetSemphrHandle(SemaphoreHandle_t *_on_logging) { on_logging = _on_logging; }
+void Interrupt::get_semphr_handle(SemaphoreHandle_t *_on_logging) { on_logging = _on_logging; }
 
 void Interrupt::calc_target()
 { //  目標値を計算する
@@ -368,8 +368,8 @@ void Interrupt::feedback_control()
         }
 
         // FF制御（速度）
-        control->Duty_l = FF_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_velocity(val->tar.vel);
-        control->Duty_r = FF_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_velocity(val->tar.vel);
+        control->Duty_l = FF_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * ff_control_velocity(val->tar.vel);
+        control->Duty_r = FF_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * ff_control_velocity(val->tar.vel);
         
         // 静止状態から加速する場合のみ、静摩擦補償を追加
         /*if (control->is_stationary)
@@ -416,8 +416,8 @@ void Interrupt::feedback_control()
         
 
         // FF制御（角速度）
-        control->Duty_l -= FF_ANG_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_angular_velocity(val->tar.ang_vel);
-        control->Duty_r += FF_ANG_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * FF_control_angular_velocity(val->tar.ang_vel);
+        control->Duty_l -= FF_ANG_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * ff_control_angular_velocity(val->tar.ang_vel);
+        control->Duty_r += FF_ANG_VEL_GAIN * (BASE_BATT/sens->battery_voltage) * ff_control_angular_velocity(val->tar.ang_vel);
 
         // 角速度制御
         val->current.ang_error = val->tar.ang_vel - val->current.ang_vel;
@@ -908,7 +908,7 @@ void Interrupt::logging()
     return;
 }
 
-void Interrupt::reset_I_gain()
+void Interrupt::reset_i_gain()
 {
     val->I.vel = 0.0;
     val->I.ang_vel = 0.0;
@@ -922,7 +922,7 @@ float Interrupt::calc_target_accel()
     return ((val->end.vel) * (val->end.vel) - (val->current.vel) * (val->current.vel)) / (2.0 * val->tar.len);
 }
 
-float Interrupt::FF_control_velocity(float r_in)
+float Interrupt::ff_control_velocity(float r_in)
 {
     // 差分方程式: u[k] = -a1*u[k-1] - a2*u[k-2] + b0*r[k] + b1*r[k-1] + b2*r[k-2]
     // a1 = -1.8, a2 = 0.81, b0 = 0.1848, b1 = -0.0092, b2 = -0.1743
@@ -944,7 +944,7 @@ float Interrupt::FF_control_velocity(float r_in)
     return u_out;
 }
 
-float Interrupt::FF_control_angular_velocity(float r_in)
+float Interrupt::ff_control_angular_velocity(float r_in)
 {
     // 角速度用差分方程式: u[k] = -a1*u[k-1] - a2*u[k-2] + b0*r[k] + b1*r[k-1] + b2*r[k-2]
     // TODO: 角速度用の係数を同定して設定してください

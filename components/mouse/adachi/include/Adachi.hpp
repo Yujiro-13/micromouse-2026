@@ -12,7 +12,7 @@ public:
     void search_adachi_sla(int gx, int gy);
     void fast_run_sla(int gx, int gy);
     void fast_run_sla2(int gx, int gy);
-    void InitMaze();
+    void init_maze();
     
     // パフォーマンス検証用関数
     void performance_test();

@@ -45,7 +45,7 @@ void Motion::set_device_driver(std::shared_ptr<Drivers> driver)
     // std::cout << "set_device_driver" << std::endl;
 }
 
-void Motion::GetSemphrHandle(SemaphoreHandle_t *_on_logging) { on_logging = _on_logging; }
+void Motion::get_semphr_handle(SemaphoreHandle_t *_on_logging) { on_logging = _on_logging; }
 
 void Motion::run()
 {
@@ -426,7 +426,7 @@ void Motion::turn_half()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    val->tar.ang_acc = -RecalculateAngularAcceleration(val->current.rad - local_rad, val->tar.rad, val->tar.ang_vel);
+    val->tar.ang_acc = -recalculate_angular_acceleration(val->current.rad - local_rad, val->tar.rad, val->tar.ang_vel);
 
     while (val->tar.rad > (val->current.rad - local_rad))
     {
@@ -509,7 +509,7 @@ void Motion::stop()
     }
 
     // std::cout << "##### deceleration #####" << std::endl;
-    val->tar.acc = -RecalculateAcceleration(val->current.len, val->tar.len, val->current.vel);
+    val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len) > val->current.len)
     {
@@ -1343,7 +1343,7 @@ void Motion::turn_left_2()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    val->tar.ang_acc = -RecalculateAngularAcceleration(val->current.rad - local_rad, val->tar.rad, val->tar.ang_vel);
+    val->tar.ang_acc = -recalculate_angular_acceleration(val->current.rad - local_rad, val->tar.rad, val->tar.ang_vel);
 
     while (val->tar.rad > (val->current.rad - local_rad))
     {
@@ -1424,7 +1424,7 @@ void Motion::turn_right_2()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    val->tar.ang_acc = RecalculateAngularAcceleration(val->current.rad - local_rad, val->tar.rad, val->tar.ang_vel);
+    val->tar.ang_acc = recalculate_angular_acceleration(val->current.rad - local_rad, val->tar.rad, val->tar.ang_vel);
 
     while ((val->tar.rad) < (val->current.rad - local_rad))
     {
@@ -1666,7 +1666,7 @@ void Motion::offset()
     }
 
     // std::cout << "##### deceleration #####" << std::endl;
-    val->tar.acc = -RecalculateAcceleration(val->current.len, val->tar.len, val->current.vel);
+    val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len) > val->current.len)
     {
@@ -1843,7 +1843,7 @@ void Motion::fast_straight(uint8_t straight_count)
     val->current.len = 0.0;
     val->tar.acc = val->max.acc;
 
-    val->max.vel = CalcVelocity((val->tar.len - 0.09), val->fast_ref.vel, val->max.acc); // 一区画以上の場合に加速区間を設定
+    val->max.vel = calc_velocity((val->tar.len - 0.09), val->fast_ref.vel, val->max.acc); // 一区画以上の場合に加速区間を設定
     val->end.vel = val->fast_ref.vel;
 
     bool l_wall_check = sens->wall.exist.l;
@@ -1968,7 +1968,7 @@ void Motion::fast_stop(uint8_t straight_count)
     val->current.len = 0.0;
     val->tar.acc = val->max.acc;
 
-    val->max.vel = CalcVelocity(val->tar.len, val->fast_ref.vel, val->max.acc);
+    val->max.vel = calc_velocity(val->tar.len, val->fast_ref.vel, val->max.acc);
     val->end.vel = 0;
 
     while (((val->tar.len - 0.01) - val->current.len) > (((val->tar.vel) * (val->tar.vel)) / (2.0 *
@@ -1978,7 +1978,7 @@ void Motion::fast_stop(uint8_t straight_count)
     }
 
     // std::cout << "##### deceleration #####" << std::endl;
-    val->tar.acc = -RecalculateAcceleration(val->current.len, val->tar.len, val->current.vel);
+    val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len - 0.001) > val->current.len)
     {
@@ -2013,7 +2013,7 @@ void Motion::fast_stop(uint8_t straight_count)
     // std::cout << "stop" << std::endl;
 }
 
-void Motion::CheckMotorDuty(float Duty_l, float Duty_r, uint32_t time)
+void Motion::check_motor_duty(float Duty_l, float Duty_r, uint32_t time)
 {
     control->flag = FALSE; // 制御ON
     control->test_flag = TRUE;
@@ -2036,12 +2036,12 @@ void Motion::CheckMotorDuty(float Duty_l, float Duty_r, uint32_t time)
     control->test_flag = FALSE;
 }
 
-float Motion::CalcVelocity(float dist, float vel, float acc)
+float Motion::calc_velocity(float dist, float vel, float acc)
 {
     return (vel + sqrt((vel * vel) + 2 * acc * dist)) / 2;
 }
 
-void Motion::DetectDeadZone(float step_size, float max_duty, uint32_t update_rate, uint32_t settle_time)
+void Motion::detect_dead_zone(float step_size, float max_duty, uint32_t update_rate, uint32_t settle_time)
 {
     control->flag = FALSE; // 制御OFF（手動モータ制御）
     control->test_flag = TRUE;
@@ -2066,7 +2066,7 @@ void Motion::DetectDeadZone(float step_size, float max_duty, uint32_t update_rat
     control->test_flag = FALSE;
 }
 
-void Motion::DetectSaturationRegion(float start_duty, float step_size, float max_duty, uint32_t update_rate, uint32_t settle_time)
+void Motion::detect_saturation_region(float start_duty, float step_size, float max_duty, uint32_t update_rate, uint32_t settle_time)
 {
     control->flag = FALSE; // 制御OFF（手動モータ制御）
     control->test_flag = TRUE;
@@ -2091,7 +2091,7 @@ void Motion::DetectSaturationRegion(float start_duty, float step_size, float max
     control->test_flag = FALSE;
 }
 
-void Motion::ApplySystemIdentificationSignal(const float *signal_left, const float *signal_right, int num_samples, int sampling_period_ms)
+void Motion::apply_system_identification_signal(const float *signal_left, const float *signal_right, int num_samples, int sampling_period_ms)
 {
     control->flag = FALSE;
     control->test_flag = TRUE;
@@ -2148,22 +2148,22 @@ void Motion::ApplySystemIdentificationSignal(const float *signal_left, const flo
     control->test_flag = FALSE;
 }
 
-void Motion::RunTranslationIdentification(const float *signal_left, const float *signal_right, int num_samples, int sampling_period_ms)
+void Motion::run_translation_identification(const float *signal_left, const float *signal_right, int num_samples, int sampling_period_ms)
 {
     printf("--- Starting Translation Model Identification ---\n");
     printf("Robot will perform parallel wheel motion for system identification.\n");
 
-    ApplySystemIdentificationSignal(signal_left, signal_right, num_samples, sampling_period_ms);
+    apply_system_identification_signal(signal_left, signal_right, num_samples, sampling_period_ms);
 
     printf("Translation model identification completed.\n");
 }
 
-void Motion::RunRotationIdentification(const float *signal_left, const float *signal_right, int num_samples, int sampling_period_ms)
+void Motion::run_rotation_identification(const float *signal_left, const float *signal_right, int num_samples, int sampling_period_ms)
 {
     printf("--- Starting Rotation Model Identification ---\n");
     printf("Robot will perform differential wheel motion for system identification.\n");
 
-    ApplySystemIdentificationSignal(signal_left, signal_right, num_samples, sampling_period_ms);
+    apply_system_identification_signal(signal_left, signal_right, num_samples, sampling_period_ms);
 
     printf("Rotation model identification completed.\n");
 }
@@ -2180,7 +2180,7 @@ void Motion::RunRotationIdentification(const float *signal_left, const float *si
  * @param control_period 制御周期 [s] (デフォルト: 0.001 = 1kHz)
  * @return float 必要な減速度の絶対値 [m/s^2] (常に正の値)
  */
-float Motion::RecalculateAcceleration(float current_position, float target_position, float current_velocity, float control_period)
+float Motion::recalculate_acceleration(float current_position, float target_position, float current_velocity, float control_period)
 {
     // 残り距離を計算
     float remaining_distance = target_position - current_position;
@@ -2218,7 +2218,7 @@ float Motion::RecalculateAcceleration(float current_position, float target_posit
  * @param control_period 制御周期 [s] (デフォルト: 0.001 = 1kHz)
  * @return float 必要な角減速度の絶対値 [rad/s^2] (常に正の値)
  */
-float Motion::RecalculateAngularAcceleration(float current_angle, float target_angle, float current_angular_velocity, float control_period)
+float Motion::recalculate_angular_acceleration(float current_angle, float target_angle, float current_angular_velocity, float control_period)
 {
     // 残り角度を計算
     float remaining_angle = target_angle - current_angle;
@@ -2256,7 +2256,7 @@ float Motion::RecalculateAngularAcceleration(float current_angle, float target_a
  *
  * @param duration_ms 計測時間 [ms] (デフォルト: 5000ms = 5秒)
  */
-void Motion::MeasureWallSensorDistance(uint32_t duration_ms)
+void Motion::measure_wall_sensor_distance(uint32_t duration_ms)
 {
     printf("=== Wall Sensor Distance Measurement Start ===\n");
     printf("Duration: %lu ms\n", duration_ms);
@@ -2303,7 +2303,7 @@ void Motion::MeasureWallSensorDistance(uint32_t duration_ms)
  * ロボットを低速で前進させながら壁センサ値を計測します。
  * 既存のrun()関数とログシステムを組み合わせて使用します。
  */
-void Motion::CalibrateWallSensorDistance()
+void Motion::calibrate_wall_sensor_distance()
 {
     printf("=== Wall Sensor Calibration Start ===\n");
     printf("Robot will move forward at low speed.\n");
@@ -2354,7 +2354,7 @@ void Motion::CalibrateWallSensorDistance()
     }
 
     // std::cout << "##### deceleration #####" << std::endl;
-    val->tar.acc = -RecalculateAcceleration(val->current.len, val->tar.len, val->current.vel);
+    val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len) > val->current.len)
     {

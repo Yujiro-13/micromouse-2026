@@ -11,7 +11,7 @@ void Fast::ptr_by_map(MazeMap *_map) { map = _map; }
 
 void Fast::set_device_driver(std::shared_ptr<Drivers> driver) {}
 
-void Fast::ref_by_motion(Adachi &_adachi) { motion = _adachi; } // ここでのポインタ渡しを忘れていて、InitMazeが正しく行えず、map_readがオーバーフローした
+void Fast::ref_by_motion(Adachi &_adachi) { motion = _adachi; } // ここでのポインタ渡しを忘れていて、init_mazeが正しく行えず、map_readがオーバーフローした
 
 void Fast::main_task() // Task Number 2
 {
@@ -50,7 +50,7 @@ void Fast::main_task() // Task Number 2
 
     map->flag = SEARCH;
     control->log_flag = TRUE;
-    motion.InitMaze();
+    motion.init_maze();
     map->search_count_flag = TRUE;
     map->search_time = 0;
     motion.search_adachi_sla(map->GOAL_X, map->GOAL_Y);
@@ -102,7 +102,7 @@ void Fast2::main_task() // Task Number 3
 
     map->flag = SEARCH;
     control->log_flag = TRUE;
-    motion.InitMaze();
+    motion.init_maze();
     map->search_count_flag = TRUE;
     map->search_time = 0;
     motion.search_adachi_sla(map->GOAL_X, map->GOAL_Y);

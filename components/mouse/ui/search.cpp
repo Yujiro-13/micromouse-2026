@@ -41,7 +41,7 @@ void Search::main_task() // Task Number 0
     
     map->flag = SEARCH;
     control->log_flag = TRUE;
-    motion.InitMaze();
+    motion.init_maze();
     map->search_count_flag = TRUE;
     map->search_time = 0;
     motion.search_adachi(map->GOAL_X,map->GOAL_Y);
@@ -101,7 +101,7 @@ void AllSearch::main_task() // Task Number 1
     
     map->flag = SEARCH;
     control->log_flag = TRUE;
-    motion.InitMaze();
+    motion.init_maze();
     map->search_count_flag = TRUE;
     map->search_time = 0;
     motion.search_adachi2(map->GOAL_X,map->GOAL_Y);

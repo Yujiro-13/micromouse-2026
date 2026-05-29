@@ -18,12 +18,12 @@ void Test::main_task() // Task Number 6
 {
     control->log_flag = TRUE;
     //motion.check_enkaigei(); // ok
-    motion.CheckMotorDuty(0.05, -0.05, 1000); // ok
+    motion.check_motor_duty(0.05, -0.05, 1000); // ok
     
     // 不感帯検出テスト
-    //motion.DetectDeadZone(0.005, 0.10, 10, 1000); // 0.0 ~ 0.30 まで0.005刻みで10msごとにデューティ更新
+    //motion.detect_dead_zone(0.005, 0.10, 10, 1000); // 0.0 ~ 0.30 まで0.005刻みで10msごとにデューティ更新
 
-    //motion.CalibrateWallSensorDistance();
+    //motion.calibrate_wall_sensor_distance();
     // vel : 0.08 , ang_vel : 0.05
 
     //motion.calibrate_wall_th();
@@ -50,7 +50,7 @@ void Test2::main_task() // Task Number 7
     control->log_flag = TRUE;
     
     // 飽和領域検出テスト
-   // motion.DetectSaturationRegion(0.1, 0.05, 0.8, 1, 500); // 0.1 ~ 0.80 まで0.05刻みで1msごとにデューティ更新
+   // motion.detect_saturation_region(0.1, 0.05, 0.8, 1, 500); // 0.1 ~ 0.80 まで0.05刻みで1msごとにデューティ更新
     
     
     val->sum.len = 0.0;
@@ -323,7 +323,7 @@ void PerformanceTest::main_task() // Task Number 14 (Performance Test)
     printf("=== Starting Performance Test ===\n");
 
     // 迷路の初期化
-    motion.InitMaze();
+    motion.init_maze();
     map->pos.x = 0;
     map->pos.y = 0;
     map->pos.dir = NORTH;
@@ -453,7 +453,7 @@ void SystemIdentificationTest::run_translation_identification()
     val->current.rad = 0.0;
 
     // Motion.cppの関数を使用して並進モデル実験を実行
-    motion.RunTranslationIdentification(translation_signal_left, translation_signal_right, 100, SAMPLING_PERIOD_MS);
+    motion.run_translation_identification(translation_signal_left, translation_signal_right, 100, SAMPLING_PERIOD_MS);
 
     printf("Translation identification completed.\n");
 }
@@ -469,7 +469,7 @@ void SystemIdentificationTest::run_rotation_identification()
     val->current.rad = 0.0;
 
     // Motion.cppの関数を使用して回転モデル実験を実行
-    motion.RunRotationIdentification(rotation_signal_left, rotation_signal_right, 100, SAMPLING_PERIOD_MS);
+    motion.run_rotation_identification(rotation_signal_left, rotation_signal_right, 100, SAMPLING_PERIOD_MS);
 
     printf("Rotation identification completed.\n");
 }
@@ -571,9 +571,9 @@ void SystemIdentificationTest::run_identification_from_file(const char* filename
 
     // Motion.cppの関数を使用して実験を実行
     if (strstr(experiment_type, "Translation") != nullptr) {
-        motion.RunTranslationIdentification(file_signal_left, file_signal_right, file_num_samples, 1);
+        motion.run_translation_identification(file_signal_left, file_signal_right, file_num_samples, 1);
     } else if (strstr(experiment_type, "Rotation") != nullptr) {
-        motion.RunRotationIdentification(file_signal_left, file_signal_right, file_num_samples, 1);
+        motion.run_rotation_identification(file_signal_left, file_signal_right, file_num_samples, 1);
     }
 
     // メモリ解放
@@ -593,7 +593,7 @@ void SystemIdentificationTest::run_embedded_translation_identification()
     val->current.rad = 0.0;
 
     // 埋め込み信号を使用して実験を実行
-    motion.RunTranslationIdentification(
+    motion.run_translation_identification(
         system_identification_signals::translation_signal_left_1000,
         system_identification_signals::translation_signal_right_1000,
         system_identification_signals::FULL_SCALE_SAMPLES,
@@ -614,7 +614,7 @@ void SystemIdentificationTest::run_embedded_rotation_identification()
     val->current.rad = 0.0;
 
     // 埋め込み信号を使用して実験を実行
-    motion.RunRotationIdentification(
+    motion.run_rotation_identification(
         system_identification_signals::rotation_signal_left_1000,
         system_identification_signals::rotation_signal_right_1000,
         system_identification_signals::FULL_SCALE_SAMPLES,
@@ -651,7 +651,7 @@ void SystemIdentificationTest::run_fullsize_translation_identification()
     val->current.rad = 0.0;
 
     // フルサイズ信号を使用して実験を実行
-    motion.RunTranslationIdentification(
+    motion.run_translation_identification(
         full_size_signals::translation_signal_left_45900,
         full_size_signals::translation_signal_right_45900,
         full_size_signals::TRANSLATION_SAMPLES,
@@ -680,7 +680,7 @@ void SystemIdentificationTest::run_fullsize_rotation_identification()
     val->current.rad = 0.0;
 
     // フルサイズ信号を使用して実験を実行
-    motion.RunRotationIdentification(
+    motion.run_rotation_identification(
         full_size_signals::rotation_signal_left_45900,
         full_size_signals::rotation_signal_right_45900,
         full_size_signals::ROTATION_SAMPLES,

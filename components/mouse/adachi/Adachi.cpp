@@ -1536,7 +1536,7 @@ void Adachi::fast_run_sla2(int gx, int gy)
 	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
-void Adachi::InitMaze()
+void Adachi::init_maze()
 {
 	for (int x = 0; x < MAZESIZE_X; x++)
 	{
@@ -1880,7 +1880,7 @@ void Adachi::benchmark_get_nextdir(int iterations)
 	printf("=== get_nextdir Performance Benchmark (Improved) ===\n");
 
 	// テスト用の迷路状態を設定
-	InitMaze();
+	init_maze();
 	map->pos.x = 0;
 	map->pos.y = 0;
 	map->pos.dir = NORTH;
@@ -2035,7 +2035,7 @@ void Adachi::performance_test()
 	// まず軽量テストで問題を切り分け
 	printf("\n=== Lightweight Core Algorithm Test ===\n");
 
-	InitMaze();
+	init_maze();
 	map->pos.x = 5;
 	map->pos.y = 5;
 	map->pos.dir = NORTH;

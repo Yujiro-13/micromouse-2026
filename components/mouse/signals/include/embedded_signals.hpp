@@ -440,7 +440,7 @@ static constexpr float EXPERIMENT_DURATION_SEC = 1.000f;  // seconds
 #include "../embedded_signals.hpp"
 
 2. test.cppで使用:
-motion.RunTranslationIdentification(
+motion.run_translation_identification(
     system_identification_signals::translation_signal_left_1000,
     system_identification_signals::translation_signal_right_1000,
     system_identification_signals::FULL_SCALE_SAMPLES,

@@ -26,7 +26,7 @@ class Motion : public Micromouse
         void ptr_by_control(Control *control) override;
         void ptr_by_map(MazeMap *map) override;
         void set_device_driver(std::shared_ptr<Drivers> driver) override;
-        void GetSemphrHandle(SemaphoreHandle_t *_on_logging);
+        void get_semphr_handle(SemaphoreHandle_t *_on_logging);
         void run();
         void run2();
         void run_half();
@@ -53,25 +53,25 @@ class Motion : public Micromouse
         void calibrate_wall_th();
         void fast_straight(uint8_t straight_count);
         void fast_stop(uint8_t straight_count);
-        void CheckMotorDuty(float duty_l, float duty_r, uint32_t time);
-        float CalcVelocity(float dis, float vel, float acc);
-        void DetectDeadZone(float step_size = 0.001, float max_duty = 0.1, uint32_t update_rate = 1, uint32_t settle_time = 1000);
-        void DetectSaturationRegion(float start_duty = 0.1, float step_size = 0.05, float max_duty = 0.8, uint32_t update_rate = 1, uint32_t settle_time = 2000);
+        void check_motor_duty(float duty_l, float duty_r, uint32_t time);
+        float calc_velocity(float dis, float vel, float acc);
+        void detect_dead_zone(float step_size = 0.001, float max_duty = 0.1, uint32_t update_rate = 1, uint32_t settle_time = 1000);
+        void detect_saturation_region(float start_duty = 0.1, float step_size = 0.05, float max_duty = 0.8, uint32_t update_rate = 1, uint32_t settle_time = 2000);
 
         // システム同定実験用の関数
-        void ApplySystemIdentificationSignal(const float* signal_left, const float* signal_right, int num_samples, int sampling_period_ms);
-        void RunTranslationIdentification(const float* signal_left, const float* signal_right, int num_samples, int sampling_period_ms);
-        void RunRotationIdentification(const float* signal_left, const float* signal_right, int num_samples, int sampling_period_ms);
+        void apply_system_identification_signal(const float* signal_left, const float* signal_right, int num_samples, int sampling_period_ms);
+        void run_translation_identification(const float* signal_left, const float* signal_right, int num_samples, int sampling_period_ms);
+        void run_rotation_identification(const float* signal_left, const float* signal_right, int num_samples, int sampling_period_ms);
 
         // 加速度再計算関数
-        float RecalculateAcceleration(float current_position, float target_position, float current_velocity, float control_period = 0.001);
-        float RecalculateAngularAcceleration(float current_angle, float target_angle, float current_angular_velocity, float control_period = 0.001);
+        float recalculate_acceleration(float current_position, float target_position, float current_velocity, float control_period = 0.001);
+        float recalculate_angular_acceleration(float current_angle, float target_angle, float current_angular_velocity, float control_period = 0.001);
 
         // 壁センサ距離推定用の関数
-        void MeasureWallSensorDistance(uint32_t duration_ms = 5000);
-        void CalibrateWallSensorDistance();
-        float ConvertSensorValueToDistance(uint16_t sensor_value, WallSensor sensor);
-        void TestWallDistanceConversion();
+        void measure_wall_sensor_distance(uint32_t duration_ms = 5000);
+        void calibrate_wall_sensor_distance();
+        float convert_sensor_value_to_distance(uint16_t sensor_value, WallSensor sensor);
+        void test_wall_distance_conversion();
 
         
     protected:

@@ -27,8 +27,8 @@ class Interrupt : public Micromouse{
         void ptr_by_control(Control *control) override;
         void ptr_by_map(MazeMap *map) override;
         void set_device_driver(std::shared_ptr<Drivers> driver) override;
-        void GetSemphrHandle(SemaphoreHandle_t *_on_logging);
-        void reset_I_gain();
+        void get_semphr_handle(SemaphoreHandle_t *_on_logging);
+        void reset_i_gain();
         void logging();
     private:
         void calc_target();
@@ -39,8 +39,8 @@ class Interrupt : public Micromouse{
         float calc_target_accel();
         void estimate_velocity_fusion();  // エンコーダ+IMU融合速度推定
         float compensate_centripetal_acceleration(float accel_y_raw); // 向心加速度補正
-        float FF_control_velocity(float r_in); // 速度フィードフォワード制御
-        float FF_control_angular_velocity(float r_in); // 角速度フィードフォワード制御
+        float ff_control_velocity(float r_in); // 速度フィードフォワード制御
+        float ff_control_angular_velocity(float r_in); // 角速度フィードフォワード制御
         
         // オドメトリ関連メソッド
         void update_odometry();                    // オドメトリ更新

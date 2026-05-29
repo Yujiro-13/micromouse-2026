@@ -12,7 +12,7 @@
 
 std::vector<std::shared_ptr<UI>> ui;
 
-void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens);
+void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens);
 void set_interface();
 void call_task(UI *task, Adachi &motion);
 void set_param(Micromouse *task, SensorData *_sen, MotionValues *_val, Control *_control, MazeMap *_map);
@@ -38,9 +38,9 @@ void mode_select(uint8_t *_mode_num, Adachi &adachi, SensorData *sens, MotionVal
 
 /* 基本的に全ての処理のをここにまとめ、mainで呼び出す。 */
 
-void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens)
+void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
 {
-    // printf("start MICROMOUSE\n");
+    // printf("start run_micromouse\n");
 
     /* 構造体のインスタンス生成 */
     //SensorData sens;
@@ -67,7 +67,7 @@ void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens)
     interrupt.ptr_by_control(&control);
     interrupt.ptr_by_map(&map);
     printf("finish pass pointer\n");
-    interrupt.GetSemphrHandle(&on_logging);
+    interrupt.get_semphr_handle(&on_logging);
 
     printf("finish interrupt struct\n");
 
@@ -78,7 +78,7 @@ void MICROMOUSE(std::shared_ptr<Drivers> driver, SensorData *sens)
     motion.ptr_by_motion(&val);
     motion.ptr_by_control(&control);
     motion.ptr_by_map(&map);
-    motion.GetSemphrHandle(&on_logging);
+    motion.get_semphr_handle(&on_logging);
 
     printf("finish motion struct\n");
 
