@@ -20,8 +20,6 @@ CLAUDE.md
 /tools/matlab/fre*
 /tools/matlab/rotation*
 
-# NOTE: sdkconfig は規約上 .gitignore 対象だが、現環境では idf.py による
-#       再生成差分検証ができないため、当面はトラッキングを維持する。
-#       ESP-IDF 環境で `idf.py build` し sdkconfig が再生成されることを
-#       確認後、`git rm --cached sdkconfig` と下記コメント解除を行うこと。
-# sdkconfig
+# sdkconfig は idf.py が生成するローカル設定。共有設定は sdkconfig.defaults で管理する。
+# （2026-05-30: ビルド成功確認後に追跡解除済み）
+sdkconfig
