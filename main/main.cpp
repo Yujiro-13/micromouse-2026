@@ -16,6 +16,7 @@
 #include "drivers.hpp"
 #include "micromouse.hpp"
 #include "task.hpp"
+#include "wall_sensor.hpp"
 #include "files.hpp"
 #include "board_config.h"
 
@@ -111,13 +112,12 @@ static void init_hardware(void)
     driver->led->set(0b1110);
     driver->led->set(0b1100);
 
-    // ADC タスクへ渡すコンテキスト。グローバルの driver/sens 実体を指す。
-    // タスク存続中ずっと参照されるため static で寿命を確保する。
-    static AdcTaskContext adc_ctx{driver, &sens};
-    // タイマ/セマフォの生成は他ペリフェラルと同じく init フェーズで行う。
-    adc_task_init(&adc_ctx);
+    // 壁センササンプラ。タスク存続中ずっと参照されるため static で寿命を確保する。
+    // タイマ/セマフォの生成(init)は他ペリフェラルと同じく init フェーズで行う。
+    static WallSensorSampler wall_sensor;
+    wall_sensor.init(driver, &sens);
     xTaskCreatePinnedToCore(myTaskAdc,
-                            "adc", 8192, &adc_ctx, configMAX_PRIORITIES - 2, NULL, APP_CPU_NUM);
+                            "adc", 8192, &wall_sensor, configMAX_PRIORITIES - 2, NULL, APP_CPU_NUM);
 }
 
 extern "C" void app_main(void)

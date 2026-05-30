@@ -18,7 +18,8 @@ void call_task(UI *task, Adachi &motion);
 void set_param(Micromouse *task, SensorData *_sen, MotionValues *_val, Control *_control, MazeMap *_map);
 void mode_select(uint8_t *_mode_num, Adachi &adachi, SensorData *sens, MotionValues *val, Control *control, MazeMap *map);
 
-/* タスク本体(myTaskInterrupt / myTaskAdc / myTaskLog)は tasks コンポーネント(components/mouse/tasks)に集約。 */
+/* タスクのラッパーは tasks コンポーネント(components/platform/tasks)、
+   実装本体は対応クラス(motion の Interrupt / wall_sensor の WallSensorSampler)にある。 */
 
 /* 基本的に全ての処理のをここにまとめ、mainで呼び出す。 */
 
