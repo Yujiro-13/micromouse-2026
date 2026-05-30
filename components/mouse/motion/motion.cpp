@@ -536,7 +536,7 @@ void ::Motion::stop2()
     // 壁補正(コメントアウト中の前壁補正ロジック)で使用する変数。再有効化に備え温存。
     // 注: hosei_dist は uint8_t に 0.050 を代入しており 0 に切り捨てられる(再有効化時は型を float へ要修正)。
     [[maybe_unused]] bool hosei_flag = NOT_YET;
-    [[maybe_unused]] uint8_t hosei_dist = 0.050;
+    [[maybe_unused]] float hosei_dist = 0.050;
 
     // 角度制御の準備（壁制御がFALSEなので角度制御を有効化）
     val->start_angle = val->current.rad;

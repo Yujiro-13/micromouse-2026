@@ -5,7 +5,7 @@
 #include "search.hpp"
 #include "test.hpp"
 #include "adachi.hpp"
-#include "include/micromouse.hpp"
+#include "micromouse.hpp"
 #include "sens_structs.hpp"
 #include <functional>
 #include "task.hpp"
@@ -17,6 +17,7 @@ void set_interface();
 void call_task(UI *task, Adachi &motion);
 void set_param(Micromouse *task, SensorData *_sen, MotionValues *_val, Control *_control, MazeMap *_map);
 void mode_select(uint8_t *_mode_num, Adachi &adachi, SensorData *sens, MotionValues *val, Control *control, MazeMap *map);
+void set_default_params(MotionValues &val, Control &control, SensorData *sens, MazeMap &map);
 
 /* タスクのラッパーは tasks コンポーネント(components/platform/tasks)、
    実装本体は対応クラス(motion の Interrupt / wall_sensor の WallSensorSampler)にある。 */
@@ -80,6 +81,110 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     //wall_threshold = read_file_wall_th();
     //center_sens_val = read_file_center_sens_val();
 
+    set_default_params(val, control, sens, map);
+
+    printf("finish parameter\n"); // ここまでOK
+    // タスク優先順位 1 ~ 25    25が最高優先度
+    xTaskCreatePinnedToCore(myTaskInterrupt,
+                            "interrupt", 8192, &interrupt, configMAX_PRIORITIES - 1, NULL, APP_CPU_NUM);
+    printf("finish interrupt task\n");
+    // ADC タスクは init_hardware(main.cpp) で起動済み。
+    xTaskCreatePinnedToCore(myTaskLog,
+                            "log", 8192, &interrupt, configMAX_PRIORITIES - 3, NULL, APP_CPU_NUM);
+
+    //xTaskCreatePinnedToCore(myTaskNeoPixel,
+                            //"nepixel", 8192, &driver, configMAX_PRIORITIES - 24, NULL, APP_CPU_NUM); // driver ごと渡すにはサイズが大きすぎるかも
+    //printf("finish task\n");
+
+    /*char buffer[512];
+    vTaskList(buffer);
+    printf("Task execution statistics:\n%s", buffer);*/
+
+    uint8_t mode = 0;
+    uint16_t time_count = 0;
+    const int MODE_MAX = 0b1111;
+    const int MODE_MIN = 0;
+    control.flag = FALSE;
+
+    /* メインループ */
+    //printf("start main loop\n");
+    while (1)
+    {
+        
+        driver->led->set(mode + 1);
+
+        /*vTaskList(buffer);
+        printf("Task execution statistics:\n%s", buffer);*/
+
+        if (sens->wall.val.fl + sens->wall.val.l + sens->wall.val.r + sens->wall.val.fr > 100000)
+        {
+
+            driver->led->set(0b1111);
+            sens->gyro.ref = driver->imu->surveybias(2000);
+            sens->accel.y_ref = driver->imu->surveybias_accel_y(2000);
+            
+            // IMUセンサオフセット位置の設定（回転中心からの距離）
+            // x = 15.036mm, y = 21.044mm, z = 0mm
+            sens->accel.offset.x = 0.015036;  // [m] 前方向
+            sens->accel.offset.y = 0.021044;  // [m] 右方向
+            sens->accel.offset.z = 0.0;       // [m] 上方向
+            
+            mode_select(&mode, motion, sens, &val, &control, &map);
+            control.flag = FALSE;
+        }
+        /*if (time_count > 500)
+        {
+            driver->led->set(0b1111);
+            sens.gyro.ref = driver->imu->surveybias(2000);
+            sens.accel.y_ref = driver->imu->surveybias_accel_y(2000);
+            mode_select(&mode, motion, &sens, &val, &control, &map);
+            control.flag = FALSE;
+            time_count = 0;
+        }*/
+
+        if (val.current.vel > 0.04)
+        {
+            if (mode >= MODE_MAX)
+            {
+                mode = MODE_MIN;
+            }
+            else
+            {
+                mode++;
+            }
+            time_count = 0;
+            vTaskDelay(pdMS_TO_TICKS(500));
+        }
+        if (val.current.vel < -0.04)
+        {
+            if (mode <= MODE_MIN)
+            {
+                mode = MODE_MAX;
+            }
+            else
+            {
+                mode--;
+            }
+            time_count = 0;
+            vTaskDelay(pdMS_TO_TICKS(500));
+        }
+
+        /* ログ出力したいときは、以下のprintfを全てコメントアウトしておく*/
+        //printf("mode: %d\n", mode); //OK
+        //printf("time: %d\n", control.time_count); OK
+        //printf("vel: %f\n", val.current.vel); OK
+        //printf("rad: %f\n", val.current.rad); OK
+        //printf("battery_voltage: %f\n", sens->battery_voltage); //OK
+        //printf("sens.wall.val.fl: %d  sens.wall.val.l: %d  sens.wall.val.r: %d  sens.wall.val.fr: %d\n", sens->wall.val.fl, sens->wall.val.l, sens->wall.val.r, sens->wall.val.fr); //OK
+        //printf("time:%d  mode:%d  flag:%d  Duty_L:%lf  Duty_R:%lf  Batt:%lf\n", time_count, mode, control.flag ,control.Duty_l, control.Duty_r, sens.battery_voltage);
+        time_count++;
+        vTaskDelay(10/portTICK_PERIOD_MS);
+    }
+    //vTaskDelay(pdMS_TO_TICKS(10));
+}
+
+void set_default_params(MotionValues &val, Control &control, SensorData *sens, MazeMap &map)
+{
     // 距離
     val.tar.len = 0.09;
     val.tar.len_half = 0.045;
@@ -217,109 +322,11 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     // ゴール座標
     map.GOAL_X = 13;
     map.GOAL_Y = 16;
-
-    printf("finish parameter\n"); // ここまでOK
-    // タスク優先順位 1 ~ 25    25が最高優先度
-    xTaskCreatePinnedToCore(myTaskInterrupt,
-                            "interrupt", 8192, &interrupt, configMAX_PRIORITIES - 1, NULL, APP_CPU_NUM);
-    printf("finish interrupt task\n");
-    // ADC タスクは init_hardware(main.cpp) で起動済み。
-    xTaskCreatePinnedToCore(myTaskLog,
-                            "log", 8192, &interrupt, configMAX_PRIORITIES - 3, NULL, APP_CPU_NUM);
-
-    //xTaskCreatePinnedToCore(myTaskNeoPixel,
-                            //"nepixel", 8192, &driver, configMAX_PRIORITIES - 24, NULL, APP_CPU_NUM); // driver ごと渡すにはサイズが大きすぎるかも
-    //printf("finish task\n");
-
-    /*char buffer[512];
-    vTaskList(buffer);
-    printf("Task execution statistics:\n%s", buffer);*/
-
-    uint8_t mode = 0;
-    uint16_t time_count = 0;
-    const int MODE_MAX = 0b1111;
-    const int MODE_MIN = 0;
-    control.flag = FALSE;
-
-    /* メインループ */
-    //printf("start main loop\n");
-    while (1)
-    {
-        
-        driver->led->set(mode + 1);
-
-        /*vTaskList(buffer);
-        printf("Task execution statistics:\n%s", buffer);*/
-
-        if (sens->wall.val.fl + sens->wall.val.l + sens->wall.val.r + sens->wall.val.fr > 100000)
-        {
-
-            driver->led->set(0b1111);
-            sens->gyro.ref = driver->imu->surveybias(2000);
-            sens->accel.y_ref = driver->imu->surveybias_accel_y(2000);
-            
-            // IMUセンサオフセット位置の設定（回転中心からの距離）
-            // x = 15.036mm, y = 21.044mm, z = 0mm
-            sens->accel.offset.x = 0.015036;  // [m] 前方向
-            sens->accel.offset.y = 0.021044;  // [m] 右方向
-            sens->accel.offset.z = 0.0;       // [m] 上方向
-            
-            mode_select(&mode, motion, sens, &val, &control, &map);
-            control.flag = FALSE;
-        }
-        /*if (time_count > 500)
-        {
-            driver->led->set(0b1111);
-            sens.gyro.ref = driver->imu->surveybias(2000);
-            sens.accel.y_ref = driver->imu->surveybias_accel_y(2000);
-            mode_select(&mode, motion, &sens, &val, &control, &map);
-            control.flag = FALSE;
-            time_count = 0;
-        }*/
-
-        if (val.current.vel > 0.04)
-        {
-            if (mode >= MODE_MAX)
-            {
-                mode = MODE_MIN;
-            }
-            else
-            {
-                mode++;
-            }
-            time_count = 0;
-            vTaskDelay(pdMS_TO_TICKS(500));
-        }
-        if (val.current.vel < -0.04)
-        {
-            if (mode <= MODE_MIN)
-            {
-                mode = MODE_MAX;
-            }
-            else
-            {
-                mode--;
-            }
-            time_count = 0;
-            vTaskDelay(pdMS_TO_TICKS(500));
-        }
-
-        /* ログ出力したいときは、以下のprintfを全てコメントアウトしておく*/
-        //printf("mode: %d\n", mode); //OK
-        //printf("time: %d\n", control.time_count); OK
-        //printf("vel: %f\n", val.current.vel); OK
-        //printf("rad: %f\n", val.current.rad); OK
-        //printf("battery_voltage: %f\n", sens->battery_voltage); //OK
-        //printf("sens.wall.val.fl: %d  sens.wall.val.l: %d  sens.wall.val.r: %d  sens.wall.val.fr: %d\n", sens->wall.val.fl, sens->wall.val.l, sens->wall.val.r, sens->wall.val.fr); //OK
-        //printf("time:%d  mode:%d  flag:%d  Duty_L:%lf  Duty_R:%lf  Batt:%lf\n", time_count, mode, control.flag ,control.Duty_l, control.Duty_r, sens.battery_voltage);
-        time_count++;
-        vTaskDelay(10/portTICK_PERIOD_MS);
-    }
-    //vTaskDelay(pdMS_TO_TICKS(10));
 }
 
 void set_interface()
 {
+    if (!ui.empty()) return; // 既に構築済みなら再構築しない(mode_select 毎の重複pushによるリーク防止)
     /* クラスのポインタを配列に保持*/
 
     ui.push_back(std::make_shared<Search>()); // 0
