@@ -562,7 +562,7 @@ float Interrupt::compensate_centripetal_acceleration(float accel_y_raw)
     // x = 15.036mm, y = 21.044mm, z = 0mm (実測値)
     float r_x = sens->accel.offset.x; // [m]（前後方向）
     float r_y = sens->accel.offset.y; // [m]（左右方向）
-    float r_z = sens->accel.offset.z; // [m]（上下方向）
+    [[maybe_unused]] float r_z = sens->accel.offset.z; // [m]（上下方向・2D運動のため現状未使用）
     
     // === 2. 角速度と角加速度 ===
     float omega_z = val->current.ang_vel;     // Z軸周りの角速度 [rad/s]

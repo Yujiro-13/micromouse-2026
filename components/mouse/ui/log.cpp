@@ -26,8 +26,6 @@ void Log::log_print()
 
     uint32_t mem_offset = 0;
     int16_t data[37];  // 35列 → 37列に拡張（加速度データ2つ追加）
-    int64_t run_time = 0;
-    int64_t search_time = 0;
 
     while (1)
     {

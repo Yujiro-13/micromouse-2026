@@ -533,8 +533,10 @@ void ::Motion::stop2()
     val->tar.acc = val->max.acc;
     // val->tar.vel = 0.0;
 
-    bool hosei_flag = NOT_YET;
-    uint8_t hosei_dist = 0.050;
+    // 壁補正(コメントアウト中の前壁補正ロジック)で使用する変数。再有効化に備え温存。
+    // 注: hosei_dist は uint8_t に 0.050 を代入しており 0 に切り捨てられる(再有効化時は型を float へ要修正)。
+    [[maybe_unused]] bool hosei_flag = NOT_YET;
+    [[maybe_unused]] uint8_t hosei_dist = 0.050;
 
     // 角度制御の準備（壁制御がFALSEなので角度制御を有効化）
     val->start_angle = val->current.rad;
@@ -837,8 +839,6 @@ void Motion::slalom_right()
 
     val->tar.len = PRE_DISTANCE;
     val->tar.vel = val->max.vel;
-
-    uint32_t wait_count = 0;
 
     // 前距離
     while ((val->tar.len) > val->current.len)

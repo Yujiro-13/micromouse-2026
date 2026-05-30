@@ -1,7 +1,8 @@
 #include "adachi.hpp"
 
-static Buzzer::buzzer_score_t pc98[] = {{2000, 100}, {1000, 100}};
-static Buzzer::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};
+// コメントアウト中の bz->play_melody(...) 用のメロディデータ。再有効化に備え温存。
+[[maybe_unused]] static Buzzer::buzzer_score_t pc98[] = {{2000, 100}, {1000, 100}};
+[[maybe_unused]] static Buzzer::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};
 
 #define MAZESIZE_X 32 // 迷路の大きさ(x方向)
 #define MAZESIZE_Y 32 // 迷路の大きさ(y方向)

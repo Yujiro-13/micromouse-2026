@@ -217,15 +217,12 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     map.GOAL_X = 13;
     map.GOAL_Y = 16;
 
-    ADS7066 *adc = driver->adc.get();
-
     printf("finish parameter\n"); // ここまでOK
     // タスク優先順位 1 ~ 25    25が最高優先度
     xTaskCreatePinnedToCore(myTaskInterrupt,
                             "interrupt", 8192, &interrupt, configMAX_PRIORITIES - 1, NULL, APP_CPU_NUM);
     printf("finish interrupt task\n");
-    //xTaskCreatePinnedToCore(myTaskAdc,
-                            //"adc", 8192, &adc, configMAX_PRIORITIES - 2, NULL, APP_CPU_NUM);
+    // ADC タスクは init_hardware(main.cpp) で起動済み。
     xTaskCreatePinnedToCore(myTaskLog,
                             "log", 8192, &interrupt, configMAX_PRIORITIES - 3, NULL, APP_CPU_NUM);
 

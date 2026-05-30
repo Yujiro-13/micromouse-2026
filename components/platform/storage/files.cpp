@@ -20,13 +20,15 @@ const esp_vfs_fat_mount_config_t MOUNT_CONFIG = {
     .format_if_mount_failed = true,
     .max_files = 4,
     .allocation_unit_size = CONFIG_WL_SECTOR_SIZE,
+    .disk_status_check_enable = false,
+    .use_one_fat = false,
 };
 
 wl_handle_t wl_handle = WL_INVALID_HANDLE;
 
 void init_files()
 {
-    esp_err_t err = esp_vfs_fat_spiflash_mount(
+    esp_err_t err = esp_vfs_fat_spiflash_mount_rw_wl(
         BASE_PATH.c_str(),
         PARTITION_LABEL,
         &MOUNT_CONFIG,
@@ -511,5 +513,5 @@ FileCenterSensValue read_file_center_sens_val()
 void unmount_fat()
 {
     ESP_LOGI(BASE_PATH.c_str(), "Umounting FATFS");
-    esp_vfs_fat_spiflash_unmount(BASE_PATH.c_str(), wl_handle);
+    esp_vfs_fat_spiflash_unmount_rw_wl(BASE_PATH.c_str(), wl_handle);
 }

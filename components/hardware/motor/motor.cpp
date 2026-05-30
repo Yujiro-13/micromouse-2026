@@ -87,7 +87,8 @@ Motor::Motor(gpio_num_t _ph_pin_R, gpio_num_t _en_pin_R, gpio_num_t _ph_pin_L, g
         .duty_resolution = LEDC_TIMER_8_BIT,
         .timer_num = LEDC_TIMER_1,
         .freq_hz = 100 * 1000,
-        .clk_cfg = LEDC_AUTO_CLK};
+        .clk_cfg = LEDC_AUTO_CLK,
+        .deconfigure = false};
     ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
 
     // Prepare and then apply the LEDC PWM channel configuration
@@ -98,7 +99,8 @@ Motor::Motor(gpio_num_t _ph_pin_R, gpio_num_t _en_pin_R, gpio_num_t _ph_pin_L, g
         .intr_type = LEDC_INTR_DISABLE,
         .timer_sel = LEDC_TIMER_1,
         .duty = 0,
-        .hpoint = 0};
+        .hpoint = 0,
+        .flags = {}};
 
     ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
 
