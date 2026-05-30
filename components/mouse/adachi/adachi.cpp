@@ -392,7 +392,6 @@ void Adachi::search_adachi2(int gx, int gy)
 			offset2();
 		}
 		run_half();
-		// printf("run_half\n");
 		break;
 
 	case RIGHT:
@@ -402,7 +401,6 @@ void Adachi::search_adachi2(int gx, int gy)
 		}
 		turn_right_2();
 		run_half();
-		// printf("turn_right\n");
 		break;
 
 	case LEFT:
@@ -412,7 +410,6 @@ void Adachi::search_adachi2(int gx, int gy)
 		}
 		turn_left_2();
 		run_half();
-		// printf("turn_left\n");
 		break;
 
 	case REAR:
@@ -422,7 +419,6 @@ void Adachi::search_adachi2(int gx, int gy)
 		}
 		turn_half();
 		run_half();
-		// printf("turn_half\n");
 		break;
 	}
 
@@ -447,7 +443,6 @@ void Adachi::search_adachi2(int gx, int gy)
 		map->pos.x--; // 西を向いたときはX座標を減らす
 		break;
 	}
-	// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 	while ((map->pos.x != gx) || (map->pos.y != gy))
 	{ // ゴールするまで繰り返す
@@ -459,7 +454,6 @@ void Adachi::search_adachi2(int gx, int gy)
 		{
 		case FRONT:
 			run2();
-			// printf("run\n");
 			break;
 
 		case RIGHT: // バグあり
@@ -512,7 +506,6 @@ void Adachi::search_adachi2(int gx, int gy)
 			run_half();
 			*/
 
-			// printf("turn_right\n");
 			break;
 
 		case LEFT:
@@ -563,7 +556,6 @@ void Adachi::search_adachi2(int gx, int gy)
 			turn_left_2();
 			run_half();
 			*/
-			// printf("turn_left\n");
 			break;
 
 		case REAR: // 袋小は、壁当て起きやすくするため閾値低め
@@ -631,7 +623,6 @@ void Adachi::search_adachi2(int gx, int gy)
 			map->pos.x--; // 西を向いたときはX座標を減らす
 			break;
 		}
-		// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 		if (map->flag == ALL_SEARCH)
 		{
@@ -649,7 +640,6 @@ void Adachi::search_adachi2(int gx, int gy)
 	stop();
 	//("stop\n");
 	turn_half();
-	// printf("turn_half\n");
 	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
@@ -682,7 +672,6 @@ void Adachi::search_adachi(int gx, int gy)
 			offset2();
 		}
 		run_half();
-		// printf("run_half\n");
 		break;
 
 	case RIGHT:
@@ -692,7 +681,6 @@ void Adachi::search_adachi(int gx, int gy)
 		}
 		turn_right_2();
 		run_half();
-		// printf("turn_right\n");
 		break;
 
 	case LEFT:
@@ -702,7 +690,6 @@ void Adachi::search_adachi(int gx, int gy)
 		}
 		turn_left_2();
 		run_half();
-		// printf("turn_left\n");
 		break;
 
 	case REAR:
@@ -712,7 +699,6 @@ void Adachi::search_adachi(int gx, int gy)
 		}
 		turn_half();
 		run_half();
-		// printf("turn_half\n");
 		break;
 	}
 
@@ -737,7 +723,6 @@ void Adachi::search_adachi(int gx, int gy)
 		map->pos.x--; // 西を向いたときはX座標を減らす
 		break;
 	}
-	// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 	while ((map->pos.x != gx) || (map->pos.y != gy))
 	{ // ゴールするまで繰り返す
@@ -748,21 +733,18 @@ void Adachi::search_adachi(int gx, int gy)
 		{
 		case FRONT:
 			run();
-			// printf("run\n");
 			break;
 
 		case RIGHT:
 			stop();
 			turn_right_2();
 			run_half();
-			// printf("turn_right\n");
 			break;
 
 		case LEFT:
 			stop();
 			turn_left_2();
 			run_half();
-			// printf("turn_left\n");
 			break;
 
 		case REAR:
@@ -831,7 +813,6 @@ void Adachi::search_adachi(int gx, int gy)
 			map->pos.x--; // 西を向いたときはX座標を減らす
 			break;
 		}
-		// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 		if (map->flag == ALL_SEARCH)
 		{
@@ -846,7 +827,6 @@ void Adachi::search_adachi(int gx, int gy)
 	stop();
 	//("stop\n");
 	turn_half();
-	// printf("turn_half\n");
 	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
@@ -871,7 +851,6 @@ void Adachi::fast_run(int gx, int gy)
 		}
 		straight_count++;
 		// run_half();
-		//  printf("run_half\n");
 		break;
 
 	case RIGHT:
@@ -881,7 +860,6 @@ void Adachi::fast_run(int gx, int gy)
 		}
 		turn_right_2();
 		straight_count = 1;
-		// printf("turn_right\n");
 		break;
 
 	case LEFT:
@@ -891,7 +869,6 @@ void Adachi::fast_run(int gx, int gy)
 		}
 		turn_left_2();
 		straight_count = 1;
-		// printf("turn_left\n");
 		break;
 
 	case REAR:
@@ -901,7 +878,6 @@ void Adachi::fast_run(int gx, int gy)
 		}
 		turn_half();
 		straight_count = 1;
-		// printf("turn_half\n");
 		break;
 	}
 
@@ -926,7 +902,6 @@ void Adachi::fast_run(int gx, int gy)
 		map->pos.x--; // 西を向いたときはX座標を減らす
 		break;
 	}
-	// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 	while ((map->pos.x != gx) || (map->pos.y != gy))
 	{ // ゴールするまで繰り返す
@@ -938,28 +913,24 @@ void Adachi::fast_run(int gx, int gy)
 		case FRONT:
 			straight_count++;
 			// run();
-			//  printf("run\n");
 			break;
 
 		case RIGHT:
 			fast_straight(straight_count);
 			turn_right_2();
 			straight_count = 1;
-			// printf("turn_right\n");
 			break;
 
 		case LEFT:
 			fast_straight(straight_count);
 			turn_left_2();
 			straight_count = 1;
-			// printf("turn_left\n");
 			break;
 
 		case REAR:
 			fast_straight(straight_count);
 			turn_half();
 			straight_count = 1;
-			// printf("turn_half\n");
 			break;
 		}
 
@@ -984,14 +955,12 @@ void Adachi::fast_run(int gx, int gy)
 			map->pos.x--; // 西を向いたときはX座標を減らす
 			break;
 		}
-		// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 	}
 	// set_wall(map->pos.x, map->pos.y); // 壁をセット
 
 	fast_straight(straight_count);
 	//("stop\n");
 	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
-	// printf("turn_half\n");
 }
 
 void Adachi::search_adachi_sla(int gx, int gy)
@@ -1015,7 +984,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 			offset2();
 		}
 		run_half();
-		// printf("run_half\n");
 		break;
 
 	case RIGHT:
@@ -1025,7 +993,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 		}
 		turn_right_2();
 		run_half();
-		// printf("turn_right\n");
 		break;
 
 	case LEFT:
@@ -1035,7 +1002,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 		}
 		turn_left_2();
 		run_half();
-		// printf("turn_left\n");
 		break;
 
 	case REAR:
@@ -1045,7 +1011,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 		}
 		turn_half();
 		run_half();
-		// printf("turn_half\n");
 		break;
 	}
 
@@ -1070,7 +1035,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 		map->pos.x--; // 西を向いたときはX座標を減らす
 		break;
 	}
-	// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 	while ((map->pos.x != gx) || (map->pos.y != gy))
 	{ // ゴールするまで繰り返す
@@ -1081,14 +1045,12 @@ void Adachi::search_adachi_sla(int gx, int gy)
 		{
 		case FRONT:
 			run2();
-			// printf("run\n");
 			break;
 
 		case RIGHT:
 			//slalom_right();
 			//slalom_time(SLA_RIGHT, 90, 85, 90);
 			slalom_jerk(SLA_RIGHT, val->slalom_jerk_value, val->slalom_jerk_phase_ms, 9);
-			// printf("turn_right\n");
 			break;
 
 		case LEFT:
@@ -1096,7 +1058,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 			//slalom_time(SLA_LEFT, 90, 85, 90);
 			slalom_jerk(SLA_LEFT, val->slalom_jerk_value, val->slalom_jerk_phase_ms, 9);
     
-			// printf("turn_left\n");
 			break;
 
 		case REAR:
@@ -1164,7 +1125,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 			map->pos.x--; // 西を向いたときはX座標を減らす
 			break;
 		}
-		// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 		/*if (map->flag == ALL_SEARCH)
 		{
@@ -1180,7 +1140,6 @@ void Adachi::search_adachi_sla(int gx, int gy)
 	stop();
 	//("stop\n");
 	turn_half();
-	// printf("turn_half\n");
 	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
@@ -1203,7 +1162,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 			offset2();
 		}
 		run_half();
-		// printf("run_half\n");
 		break;
 
 	case RIGHT:
@@ -1212,7 +1170,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 			offset();
 		}
 		turn_right_2();
-		// printf("turn_right\n");
 		break;
 
 	case LEFT:
@@ -1221,7 +1178,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 			offset();
 		}
 		turn_left_2();
-		// printf("turn_left\n");
 		break;
 
 	case REAR:
@@ -1230,7 +1186,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 			offset();
 		}
 		turn_half();
-		// printf("turn_half\n");
 		break;
 	}
 
@@ -1255,7 +1210,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 		map->pos.x--; // 西を向いたときはX座標を減らす
 		break;
 	}
-	// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 	while ((map->pos.x != gx) || (map->pos.y != gy))
 	{ // ゴールするまで繰り返す
@@ -1266,19 +1220,16 @@ void Adachi::fast_run_sla(int gx, int gy)
 		{
 		case FRONT:
 			run2();
-			// printf("run\n");
 			break;
 
 		case RIGHT:
 			//slalom_time(SLA_RIGHT, 90, 85, 90);
 			slalom_jerk(SLA_RIGHT, val->slalom_jerk_value, val->slalom_jerk_phase_ms, 9);
-			// printf("turn_right\n");
 			break;
 
 		case LEFT:
 			//slalom_time(SLA_LEFT, 90, 85, 90);
 			slalom_jerk(SLA_LEFT, val->slalom_jerk_value, val->slalom_jerk_phase_ms, 9);
-			// printf("turn_left\n");
 			break;
 
 		case REAR:
@@ -1325,7 +1276,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 			*/
 
 			run_half();
-			// printf("turn_half\n");
 			break;
 		}
 
@@ -1350,7 +1300,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 			map->pos.x--; // 西を向いたときはX座標を減らす
 			break;
 		}
-		// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 		if (map->flag == ALL_SEARCH)
 		{
@@ -1365,7 +1314,6 @@ void Adachi::fast_run_sla(int gx, int gy)
 	stop();
 	//("stop\n");
 	turn_half();
-	// printf("turn_half\n");
 	map->pos.dir = static_cast<Direction>((map->pos.dir + 6) % 4);
 }
 
@@ -1442,7 +1390,6 @@ void Adachi::fast_run_sla2(int gx, int gy)
 		map->pos.x--; // 西を向いたときはX座標を減らす
 		break;
 	}
-	// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 
 	while ((map->pos.x != gx) || (map->pos.y != gy))
 	{ // ゴールするまで繰り返す
@@ -1530,7 +1477,6 @@ void Adachi::fast_run_sla2(int gx, int gy)
 			map->pos.x--; // 西を向いたときはX座標を減らす
 			break;
 		}
-		// printf("map->pos.x = %d, map->pos.y = %d\n", map->pos.x, map->pos.y);
 	}
 	fast_straight(straight_count);
 	stop();

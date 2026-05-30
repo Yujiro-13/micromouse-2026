@@ -8,7 +8,7 @@
 #define FF_ANG_VEL_GAIN 0.55
 
 Interrupt::Interrupt()
-{ /*std::cout << "Interrupt" << std::endl;*/
+{
 }
 
 Interrupt::~Interrupt() { std::cout << "~Interrupt" << std::endl; }
@@ -32,8 +32,6 @@ void Interrupt::set_device_driver(std::shared_ptr<Drivers> driver)
     // bz = driver->bz;
     // adc = driver->adc;
 
-    // std::cout << "set_device_driver" << std::endl;
-    // printf("set_device_driver\n");
 }
 
 void Interrupt::get_semphr_handle(SemaphoreHandle_t *_on_logging) { on_logging = _on_logging; }
@@ -342,7 +340,6 @@ void Interrupt::wall_control() //  壁制御
     }
     // xSemaphoreGive(on_logging);
 
-    // std::cout << "wall_ctl" << std::endl;
     return;
 }
 
@@ -438,7 +435,6 @@ void Interrupt::feedback_control()
         control->Duty_r += control->V_r / sens->battery_voltage;
 
         mot->set_motor_speed(control->Duty_r, control->Duty_l);
-        //printf("val->tar.vel: %f, control->Duty_l: %f, control->Duty_r: %f\n", val->tar.vel, control->Duty_l, control->Duty_r);
     }
     else if (control->flag == FALSE && control->test_flag == FALSE)
     {
@@ -457,7 +453,6 @@ void Interrupt::feedback_control()
     val->p.vel = val->current.vel;
     val->p.ang_vel = val->current.ang_vel;
 
-    // std::cout << "FB_ctl" << std::endl;
     return;
 }
 
@@ -493,7 +488,6 @@ void Interrupt::calc_distance()
 
     // val->current.len += (len_L + len_R) / 2.0;
 
-    // std::cout << "val->current.len : " << val->current.len * 1000.0 << std::endl;
 
     val->l.vel = len_L / 0.001; // 1ms
     val->r.vel = len_R / 0.001;
@@ -501,14 +495,11 @@ void Interrupt::calc_distance()
     // 高精度速度推定システム（エンコーダ+IMU融合）
     estimate_velocity_fusion();
 
-    // std::cout << "val->l.vel : " << val->l.vel * 1000.0 << std::endl;
-    // std::cout << "val->r.vel : " << val->r.vel *1 000.0 << std::endl;
 
     val->current.len += val->current.vel * 0.001;
     val->sum.len += val->current.vel * 0.001;
     val->I.vel += val->current.vel; // 積分値更新
 
-    // std::cout << "calc_dist" << std::endl;
     return;
 }
 
@@ -904,7 +895,6 @@ void Interrupt::logging()
     }
     
     vTaskDelete(NULL);
-    // std::cout << "logging" << std::endl;
     return;
 }
 
@@ -995,9 +985,6 @@ void Interrupt::interrupt()
 
         //control->time_count++;
 
-        // printf("Duty_l : %f\n", control->Duty_l);
-        // printf("Duty_r : %f\n", control->Duty_r);
-        //printf("val->tar.vel: %f, control->V_l: %f, control->V_r: %f\n", val->tar.vel, control->V_l, control->V_r);
         end_time = esp_timer_get_time();
         delta_time = end_time - start_time;
 

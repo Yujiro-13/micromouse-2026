@@ -19,7 +19,7 @@ static Buzzer::buzzer_score_t pc98[] = {{2000, 100}, {1000, 100}};
 static Buzzer::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};
 
 Motion::Motion()
-{ /*std::cout << "Motion" << std::endl;*/
+{
 }
 
 Motion::~Motion() {}
@@ -42,7 +42,6 @@ void Motion::set_device_driver(std::shared_ptr<Drivers> driver)
     encL = driver->encL;
     encR = driver->encR;
     adc = driver->adc;
-    // std::cout << "set_device_driver" << std::endl;
 }
 
 void Motion::get_semphr_handle(SemaphoreHandle_t *_on_logging) { on_logging = _on_logging; }
@@ -80,7 +79,6 @@ void Motion::run()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     // val->tar.acc = -(val->max.acc);
 
     while ((val->tar.len) > val->current.len)
@@ -111,7 +109,6 @@ void Motion::run()
     control->correction_cell_y = map->pos.y;
     control->correction_dir = map->pos.dir;
 
-    // std::cout << "run" << std::endl;
 }
 
 void Motion::run2()
@@ -190,7 +187,6 @@ void Motion::run2()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     // val->tar.acc = -(val->max.acc);
 
     while ((val->tar.len) > val->current.len)
@@ -210,7 +206,6 @@ void Motion::run2()
 
     map->thinking_flag = TRUE;
 
-    // std::cout << "run" << std::endl;
 }
 
 void Motion::run_half()
@@ -260,7 +255,6 @@ void Motion::run_half()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     // val->tar.acc = -(val->tar.acc);
 
     while ((val->tar.len - 0.001) > val->current.len)
@@ -277,7 +271,6 @@ void Motion::run_half()
     val->tar.acc = 0.0;
     // control->flag = FALSE;
 
-    // std::cout << "run" << std::endl;
 }
 
 void Motion::turn_left()
@@ -301,7 +294,6 @@ void Motion::turn_left()
 
     val->tar.rad = TURN_QUARTER;
 
-    // std::cout << "turn_left" << std::endl;
     int turn_count = 0;
 
     local_rad = val->current.rad; // 現在の角度を保存
@@ -309,11 +301,9 @@ void Motion::turn_left()
     while (val->tar.rad > (val->current.rad - local_rad))
     {
         turn_count++;
-        // printf("turn_count : %d\n", turn_count);
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
 
     val->tar.ang_vel = 0.0;
     val->tar.ang_acc = 0.0;
@@ -330,7 +320,6 @@ void Motion::turn_left()
 
     control->flag = FALSE;
 
-    // std::cout << "turn" << std::endl;
 }
 
 void Motion::turn_right()
@@ -354,7 +343,6 @@ void Motion::turn_right()
 
     val->tar.rad = -(TURN_QUARTER);
 
-    // std::cout << "turn_left" << std::endl;
     // int turn_count = 0;
 
     local_rad = val->current.rad; // 現在の角度を保存
@@ -362,12 +350,9 @@ void Motion::turn_right()
     while (val->tar.rad < (val->current.rad - local_rad))
     {
         // turn_count++;
-        // printf("val->tar.ang_vel : %f\n", val->tar.ang_vel);
-        //  printf("turn_count : %d\n", turn_count);
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
 
     val->tar.ang_vel = 0.0;
     val->tar.ang_acc = 0.0;
@@ -384,7 +369,6 @@ void Motion::turn_right()
 
     control->flag = FALSE;
 
-    // std::cout << "turn" << std::endl;
 }
 
 void Motion::turn_half()
@@ -417,7 +401,6 @@ void Motion::turn_half()
 
     val->tar.rad = TURN_HALF;
 
-    // std::cout << "turn_left" << std::endl;
 
     local_rad = val->current.rad; // 現在の角度を保存
 
@@ -439,7 +422,6 @@ void Motion::turn_half()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
 
     val->tar.ang_acc = 0.0;
     val->tar.ang_vel = 0.0;
@@ -471,7 +453,6 @@ void Motion::turn_half()
 
     //control->flag = FALSE;
 
-    // std::cout << "turn" << std::endl;
 }
 
 void Motion::stop()
@@ -508,7 +489,6 @@ void Motion::stop()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len) > val->current.len)
@@ -534,7 +514,6 @@ void Motion::stop()
 
     val->current.len = 0.0;
 
-    // std::cout << "stop" << std::endl;
 }
 
 void ::Motion::stop2()
@@ -587,7 +566,6 @@ void ::Motion::stop2()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     val->tar.acc = -(val->max.acc);
 
     while ((val->tar.len - 0.001) > val->current.len)
@@ -636,7 +614,6 @@ void ::Motion::stop2()
 
     control->flag = FALSE; // 制御OFF
 
-    // std::cout << "stop" << std::endl;
 }
 
 void Motion::back()
@@ -756,7 +733,6 @@ void Motion::slalom_left()
 
     val->tar.rad = TURN_QUARTER;
 
-    // std::cout << "turn_left" << std::endl;
 
     local_rad = val->current.rad; // 現在の角度を保存
 
@@ -823,7 +799,6 @@ void Motion::slalom_left()
 
     map->thinking_flag = TRUE;
 
-    // std::cout << "turn" << std::endl;
 }
 
 void Motion::slalom_right()
@@ -857,7 +832,6 @@ void Motion::slalom_right()
 
     val->tar.rad = -(TURN_QUARTER);
 
-    // std::cout << "turn_left" << std::endl;
 
     local_rad = val->current.rad; // 現在の角度を保存
 
@@ -927,7 +901,6 @@ void Motion::slalom_right()
 
     map->thinking_flag = TRUE;
 
-    // std::cout << "turn" << std::endl;
 }
 
 /**
@@ -1334,7 +1307,6 @@ void Motion::turn_left_2()
 
     val->tar.rad = TURN_QUARTER;
 
-    // std::cout << "turn_left" << std::endl;
 
     local_rad = val->current.rad; // 現在の角度を保存
 
@@ -1356,7 +1328,6 @@ void Motion::turn_left_2()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
 
     val->tar.ang_vel = 0.0;
     val->tar.ang_acc = 0.0;
@@ -1389,7 +1360,6 @@ void Motion::turn_left_2()
     control->correction_cell_y = map->pos.y;
     control->correction_dir = map->pos.dir;
 
-    // std::cout << "turn" << std::endl;
 }
 
 void Motion::turn_right_2()
@@ -1414,7 +1384,6 @@ void Motion::turn_right_2()
 
     val->tar.rad = -(TURN_QUARTER);
 
-    // std::cout << "turn_left" << std::endl;
     // int turn_count = 0;
 
     local_rad = val->current.rad; // 現在の角度を保存
@@ -1451,7 +1420,6 @@ void Motion::turn_right_2()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
 
     val->tar.ang_vel = 0.0;
     val->tar.vel = 0.0;
@@ -1470,7 +1438,6 @@ void Motion::turn_right_2()
     control->correction_cell_y = map->pos.y;
     control->correction_dir = map->pos.dir;
 
-    // std::cout << "turn" << std::endl;
 }
 
 void Motion::wall_check()
@@ -1492,12 +1459,10 @@ void Motion::wall_check()
         // 設定したsens->wall.th_wallの値によって光るLEDが変わる
         printf("sens.wall.val.fl:%d    sens.wall.val.l:%d    sens.wall.val.r:%d    sens.wall.val.fr:%d\n", sens->wall.val.fl, sens->wall.val.l, sens->wall.val.r, sens->wall.val.fr);
         led->set(sens->wall.exist.fl + (sens->wall.exist.l << 1) + (sens->wall.exist.r << 2) + (sens->wall.exist.fr << 3));
-        // printf("val->current.wall_error:%f sens->wall.error.r:%d sens->wall.error.l:%d\n", val->current.wall_error, sens->wall.error.r, sens->wall.error.l);
         //  壁制御に使用しているセンサ値の表示
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "check_enkaigei" << std::endl;
 }
 
 void Motion::adjust_pid(const char *gain, float *pid, float step, uint8_t mode_num)
@@ -1665,7 +1630,6 @@ void Motion::offset()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len) > val->current.len)
@@ -1691,7 +1655,6 @@ void Motion::offset()
 
     val->current.len = 0.0;
 
-    // std::cout << "offset" << std::endl;
 }
 
 void Motion::calibrate_wall_th()
@@ -1807,7 +1770,6 @@ void Motion::offset2()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     // val->tar.acc = -(val->max.acc);
 
     while ((val->tar.len - 0.001) > val->current.len) // offsetにこのwhile文の処理いらないかも
@@ -1823,7 +1785,6 @@ void Motion::offset2()
     // val->tar.acc = 0.0;
     // val->tar.vel = 0.0;
 
-    // std::cout << "offset" << std::endl;
 }
 
 void Motion::fast_straight(uint8_t straight_count)
@@ -1889,7 +1850,6 @@ void Motion::fast_straight(uint8_t straight_count)
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     val->tar.acc = -(val->max.acc);
 
     while ((val->tar.len) > val->current.len)
@@ -1977,7 +1937,6 @@ void Motion::fast_stop(uint8_t straight_count)
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len - 0.001) > val->current.len)
@@ -2010,7 +1969,6 @@ void Motion::fast_stop(uint8_t straight_count)
     control->correction_cell_y = map->pos.y;
     control->correction_dir = map->pos.dir;
 
-    // std::cout << "stop" << std::endl;
 }
 
 void Motion::check_motor_duty(float Duty_l, float Duty_r, uint32_t time)
@@ -2026,7 +1984,6 @@ void Motion::check_motor_duty(float Duty_l, float Duty_r, uint32_t time)
     while (count < time)
     {
         mot->set_motor_speed(Duty_l, Duty_r);
-        // printf("Duty_L:%f    Duty_R:%f\n", control->Duty_l, control->Duty_r);
         printf(">velocity:%f\n", val->current.vel);
         count++;
         vTaskDelay(1 / portTICK_PERIOD_MS);
@@ -2132,7 +2089,6 @@ void Motion::apply_system_identification_signal(const float *signal_left, const 
 
         if (i % 10 == 0)
         {
-            // printf("Progress: %d/%d samples\n", i + 1, num_samples);
         }
 
         vTaskDelay(sampling_period_ms / portTICK_PERIOD_MS);
@@ -2353,7 +2309,6 @@ void Motion::calibrate_wall_sensor_distance()
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
 
-    // std::cout << "##### deceleration #####" << std::endl;
     val->tar.acc = -recalculate_acceleration(val->current.len, val->tar.len, val->current.vel);
 
     while ((val->tar.len) > val->current.len)
