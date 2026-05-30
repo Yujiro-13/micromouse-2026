@@ -4,17 +4,19 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
+#include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_timer.h"
+#include "esp_rom_sys.h"
 
-//static SemaphoreHandle_t wallCharged;
+static SemaphoreHandle_t wallCharged;
 
-/*static void timer_chargeCompleted(void *arg)
+static void timer_chargeCompleted(void *arg)
 {
     BaseType_t _highPriorityTask = pdFALSE;
     xSemaphoreGiveFromISR(wallCharged, &_highPriorityTask);
     portYIELD_FROM_ISR(_highPriorityTask);
-}*/
+}
 
 void myTaskInterrupt(void *pvpram)
 {
@@ -22,17 +24,14 @@ void myTaskInterrupt(void *pvpram)
     interrupt->interrupt();
 }
 
-/*void myTaskAdc(void *pvpram)
+void myTaskAdc(void *pvpram)
 {
-    // pvpram が指す既存の ADS7066 ポインタを std::shared_ptr に変換
-    ADS7066* raw_adc_ptr = static_cast<ADS7066 *>(pvpram);
-    std::shared_ptr<ADS7066> adc(raw_adc_ptr);
+    AdcTaskContext *ctx = static_cast<AdcTaskContext *>(pvpram);
+    std::shared_ptr<Drivers> driver = ctx->driver;
+    SensorData *sens = ctx->sens;
 
-    // Drivers 構造体を作成し、adc ポインタを設定
-    std::shared_ptr<Drivers> driver = std::make_shared<Drivers>();
-    driver->adc = adc;
-
-    esp_timer_handle_t chargeTimer;
+    ESP_LOGI("ADC", "ADC Task Start");
+    driver->led->set(0b1000);
 
     for (int i = 0; i < 4; i++)
     {
@@ -47,42 +46,83 @@ void myTaskInterrupt(void *pvpram)
     ESP_ERROR_CHECK(esp_timer_create(&chargeTimerSetting, &chargeTimer));
 
     wallCharged = xSemaphoreCreateBinary();
+    driver->led->set(0b1111);
 
-    uint16_t charge_us = 60;
-    uint16_t rise_us = 15;
+    // センサの設定 (コンデンサ充電時間、放電時間 値のオーバーフロー対策必須（時間設定するか、例外処理追加するか）)　ｒが怪しい
+    uint16_t charge_us = 500; // コンデンサへの充電時間
+    uint16_t rise_us = 30;    // 放電してからセンサの読み取りを開始するまでの時間
 
-    std::shared_ptr<SensorData> sens = std::make_shared<SensorData>();
-
-    while(1)
+    while (1)
     {
         sens->battery_voltage = driver->adc->battery_voltage();
         for (int i = 0; i < 4; i++)
         {
-            if (i > 0)
+            if (i > 0) // i = 0 のときは _on が初期化されていないため、読み取りを行わない
             {
-                driver->adc->_on = driver->adc->read_on_the_fly(driver->adc->SENS[i]);
-                gpio_set_level(driver->adc->LED[i], 0);
-                esp_timer_start_once(chargeTimer, charge_us);
-                xSemaphoreTake(wallCharged, portMAX_DELAY);
-                gpio_set_level(driver->adc->LED[i], 1);
-                esp_rom_delay_us(rise_us);
-                if (i > 0)
-                    driver->adc->value[i - 1] = driver->adc->_on - driver->adc->_off;
-                driver->adc->_off = driver->adc->read_on_the_fly(driver->adc->SENS[i]);
+                driver->adc->_on = driver->adc->read_on_the_fly(driver->adc->SENS[i]); // read_on_the_fly は 送ったアドレスのひとつ前に送った値を返す
             }
-                
+            gpio_set_level(driver->adc->LED[i], 0);
+            esp_timer_start_once(chargeTimer, charge_us);
+            xSemaphoreTake(wallCharged, portMAX_DELAY);
+            gpio_set_level(driver->adc->LED[i], 1);
+            esp_rom_delay_us(rise_us);
+            if (i > 0) // i = 0 のときは _on が初期化されていないため、読み取りを行わない
+            {
+                // 何も無いところを見ていると、on,offの値が逆転することがあるため対策
+                if (driver->adc->_on - driver->adc->_off > 0) // on, off の差分が正のとき(on時の値のほうが大きいとき)
+                {
+                    driver->adc->value[i - 1] = driver->adc->_on - driver->adc->_off;
+                }
+                else
+                {
+                    driver->adc->value[i - 1] = driver->adc->_off - driver->adc->_on;
+                }
+            }
+            driver->adc->_off = driver->adc->read_on_the_fly(driver->adc->SENS[i]);
         }
         driver->adc->_on = driver->adc->read_on_the_fly(4);
-        driver->adc->value[3] = driver->adc->_on - driver->adc->_off;
+        if (driver->adc->_on - driver->adc->_off > 0) // on, off の差分が正のとき(on時の値のほうが大きいとき)
+        {
+            driver->adc->value[3] = driver->adc->_on - driver->adc->_off;
+        }
+        else
+        {
+            driver->adc->value[3] = driver->adc->_off - driver->adc->_on;
+        }
 
         sens->wall.val.fr = driver->adc->value[0];
-        sens->wall.val.l = driver->adc->value[2];
-        sens->wall.val.r = driver->adc->value[1];
+        sens->wall.val.r = driver->adc->value[2];
+        sens->wall.val.l = driver->adc->value[1];
         sens->wall.val.fl = driver->adc->value[3];
 
-        vTaskDelay(1 /portTICK_PERIOD_MS);
+        // === 壁センサローパスフィルタ（指数移動平均） ===
+        static float wall_fl_filtered = 0.0;
+        static float wall_fr_filtered = 0.0;
+        static float wall_l_filtered = 0.0;
+        static float wall_r_filtered = 0.0;
+        static const float wall_filter_alpha = 0.5; // 指数移動平均の重み（0.0-1.0、小さいほど平滑化が強い）
+
+        // 生の壁センサ値を取得
+        float raw_fl = sens->wall.val.fl;
+        float raw_fr = sens->wall.val.fr;
+        float raw_l = sens->wall.val.l;
+        float raw_r = sens->wall.val.r;
+
+        // 指数移動平均（EMAフィルタ）
+        wall_fl_filtered = wall_filter_alpha * raw_fl + (1.0 - wall_filter_alpha) * wall_fl_filtered;
+        wall_fr_filtered = wall_filter_alpha * raw_fr + (1.0 - wall_filter_alpha) * wall_fr_filtered;
+        wall_l_filtered = wall_filter_alpha * raw_l + (1.0 - wall_filter_alpha) * wall_l_filtered;
+        wall_r_filtered = wall_filter_alpha * raw_r + (1.0 - wall_filter_alpha) * wall_r_filtered;
+
+        // フィルタ後の値を構造体に書き戻す
+        sens->wall.val.fl = (int)wall_fl_filtered;
+        sens->wall.val.fr = (int)wall_fr_filtered;
+        sens->wall.val.l = (int)wall_l_filtered;
+        sens->wall.val.r = (int)wall_r_filtered;
+
+        vTaskDelay(1 / portTICK_PERIOD_MS);
     }
-}*/
+}
 
 void myTaskLog(void *pvpram)
 {
