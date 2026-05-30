@@ -12,7 +12,7 @@ static Buzzer::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};
 // 歩数Mapの未探索セルを表すセンチネル値。
 // 歩数Map(MazeMap::size)は unsigned char のため最大値 255 を「未到達/未探索」に使う。
 // 最小歩数(min_steps)の初期値としても用いる。
-constexpr unsigned char kUnexploredStep = kUnexploredStep;
+constexpr unsigned char kUnexploredStep = 255;
 
 void Adachi::init_map(int x, int y)
 {
