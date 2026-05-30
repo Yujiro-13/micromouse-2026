@@ -9,13 +9,29 @@
 #include "esp_timer.h"
 #include "esp_rom_sys.h"
 
-static SemaphoreHandle_t wallCharged;
-
 static void timer_chargeCompleted(void *arg)
 {
-    BaseType_t _highPriorityTask = pdFALSE;
-    xSemaphoreGiveFromISR(wallCharged, &_highPriorityTask);
-    portYIELD_FROM_ISR(_highPriorityTask);
+    SemaphoreHandle_t wall_charged = static_cast<SemaphoreHandle_t>(arg);
+    BaseType_t high_priority_task = pdFALSE;
+    xSemaphoreGiveFromISR(wall_charged, &high_priority_task);
+    portYIELD_FROM_ISR(high_priority_task);
+}
+
+// 壁充電完了通知用のセマフォとワンショットタイマを生成する。
+// ペリフェラル初期化と同じく、タスク起動前の init フェーズで一度だけ呼ぶ。
+void adc_task_init(AdcTaskContext *ctx)
+{
+    ctx->wall_charged = xSemaphoreCreateBinary();
+
+    // セマフォはタイマの arg 経由でコールバックへ渡す（グローバル依存を排除）。
+    const esp_timer_create_args_t charge_timer_args = {
+        .callback = &timer_chargeCompleted,
+        .arg = ctx->wall_charged,
+        .dispatch_method = ESP_TIMER_TASK,
+        .name = "wallCharge",
+        .skip_unhandled_events = false,
+    };
+    ESP_ERROR_CHECK(esp_timer_create(&charge_timer_args, &ctx->charge_timer));
 }
 
 void myTaskInterrupt(void *pvpram)
@@ -29,6 +45,9 @@ void myTaskAdc(void *pvpram)
     AdcTaskContext *ctx = static_cast<AdcTaskContext *>(pvpram);
     std::shared_ptr<Drivers> driver = ctx->driver;
     SensorData *sens = ctx->sens;
+    // セマフォ/タイマは adc_task_init() が init フェーズで生成済み。
+    SemaphoreHandle_t wallCharged = ctx->wall_charged;
+    esp_timer_handle_t chargeTimer = ctx->charge_timer;
 
     ESP_LOGI("ADC", "ADC Task Start");
     driver->led->set(0b1000);
@@ -39,13 +58,6 @@ void myTaskAdc(void *pvpram)
     }
     driver->adc->_off = driver->adc->read_on_the_fly(4);
 
-    esp_timer_create_args_t chargeTimerSetting = {
-        .callback = &timer_chargeCompleted,
-        .name = "wallCharge"};
-    esp_timer_handle_t chargeTimer;
-    ESP_ERROR_CHECK(esp_timer_create(&chargeTimerSetting, &chargeTimer));
-
-    wallCharged = xSemaphoreCreateBinary();
     driver->led->set(0b1111);
 
     // センサの設定 (コンデンサ充電時間、放電時間 値のオーバーフロー対策必須（時間設定するか、例外処理追加するか）)　ｒが怪しい

@@ -114,6 +114,8 @@ static void init_hardware(void)
     // ADC タスクへ渡すコンテキスト。グローバルの driver/sens 実体を指す。
     // タスク存続中ずっと参照されるため static で寿命を確保する。
     static AdcTaskContext adc_ctx{driver, &sens};
+    // タイマ/セマフォの生成は他ペリフェラルと同じく init フェーズで行う。
+    adc_task_init(&adc_ctx);
     xTaskCreatePinnedToCore(myTaskAdc,
                             "adc", 8192, &adc_ctx, configMAX_PRIORITIES - 2, NULL, APP_CPU_NUM);
 }
