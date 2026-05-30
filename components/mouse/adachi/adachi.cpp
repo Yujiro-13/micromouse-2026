@@ -9,6 +9,11 @@ static Buzzer::buzzer_score_t pc98_2[] = {{1000, 100}, {2000, 100}};
 #define MASK_SECOND 0x03
 #define CONV_SEN2WALL(w) ((w) ? WALL : NOWALL)
 
+// 歩数Mapの未探索セルを表すセンチネル値。
+// 歩数Map(MazeMap::size)は unsigned char のため最大値 255 を「未到達/未探索」に使う。
+// 最小歩数(min_steps)の初期値としても用いる。
+constexpr unsigned char kUnexploredStep = kUnexploredStep;
+
 void Adachi::init_map(int x, int y)
 {
 	// 迷路の歩数Mapを初期化する。全体を0xff、引数の座標x,yは0で初期化する
@@ -19,7 +24,7 @@ void Adachi::init_map(int x, int y)
 	{
 		for (j = 0; j < MAZESIZE_Y; j++) // 迷路の大きさ分ループ(y座標)
 		{
-			map->size[i][j] = 255; // すべて255で埋める  ex)map[1][1] = 255,map[1][2] = 255, ...map[1][9] = 255,map[2][1] = 255...
+			map->size[i][j] = kUnexploredStep; // すべて255で埋める  ex)map[1][1] = 255,map[1][2] = 255, ...map[1][9] = 255,map[2][1] = 255...
 		}
 	}
 
@@ -44,7 +49,7 @@ void Adachi::init_map_all(int x, int y)
 			}
 			else
 			{
-				map->size[i][j] = 255;
+				map->size[i][j] = kUnexploredStep;
 			}
 		}
 	}
@@ -79,7 +84,7 @@ void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 		{
 			for (j = 0; j < MAZESIZE_Y; j++) // 迷路の大きさ分ループ(y座標)
 			{
-				if (map->size[i][j] == 255) // 255の場合は次へ
+				if (map->size[i][j] == kUnexploredStep) // 255の場合は次へ
 				{
 					continue;
 				}
@@ -88,7 +93,7 @@ void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 				{
 					if ((map->wall[i][j].north & mask) == NOWALL) // 壁がなければ(maskの意味はstatic_parametersを参照)
 					{
-						if (map->size[i][j + 1] == 255) // まだ値が入っていなければ
+						if (map->size[i][j + 1] == kUnexploredStep) // まだ値が入っていなければ
 						{
 							map->size[i][j + 1] = map->size[i][j] + 1; // 値を代入
 							change_flag = TRUE;						   // 値が更新されたことを示す
@@ -100,7 +105,7 @@ void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 				{
 					if ((map->wall[i][j].east & mask) == NOWALL) // 壁がなければ
 					{
-						if (map->size[i + 1][j] == 255) // 値が入っていなければ
+						if (map->size[i + 1][j] == kUnexploredStep) // 値が入っていなければ
 						{
 							map->size[i + 1][j] = map->size[i][j] + 1; // 値を代入
 							change_flag = TRUE;						   // 値が更新されたことを示す
@@ -112,7 +117,7 @@ void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 				{
 					if ((map->wall[i][j].south & mask) == NOWALL) // 壁がなければ
 					{
-						if (map->size[i][j - 1] == 255) // 値が入っていなければ
+						if (map->size[i][j - 1] == kUnexploredStep) // 値が入っていなければ
 						{
 							map->size[i][j - 1] = map->size[i][j] + 1; // 値を代入
 							change_flag = TRUE;						   // 値が更新されたことを示す
@@ -124,7 +129,7 @@ void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 				{
 					if ((map->wall[i][j].west & mask) == NOWALL) // 壁がなければ
 					{
-						if (map->size[i - 1][j] == 255) // 値が入っていなければ
+						if (map->size[i - 1][j] == kUnexploredStep) // 値が入っていなければ
 						{
 							map->size[i - 1][j] = map->size[i][j] + 1; // 値を代入
 							change_flag = TRUE;						   // 値が更新されたことを示す
@@ -284,7 +289,7 @@ int Adachi::get_nextdir(int x, int y, int mask, Direction *dir)
 	}
 
 	int min_steps, priority, tmp_priority; // 最小の値を探すために使用する変数
-	min_steps = 255;						// 最小歩数を255歩(mapがunsigned char型なので)に設定
+	min_steps = kUnexploredStep;						// 最小歩数を255歩(mapがunsigned char型なので)に設定
 	priority = 0;						// 優先度の初期値は0
 
 	// maskの意味はstatic_parameter.hを参照
@@ -1585,7 +1590,7 @@ void Adachi::make_map_original(int x, int y, int mask)
 		{
 			for (j = 0; j < MAZESIZE_Y; j++)
 			{
-				if (map->size[i][j] == 255)
+				if (map->size[i][j] == kUnexploredStep)
 				{
 					continue;
 				}
@@ -1594,7 +1599,7 @@ void Adachi::make_map_original(int x, int y, int mask)
 				{
 					if ((map->wall[i][j].north & mask) == NOWALL)
 					{
-						if (map->size[i][j + 1] == 255)
+						if (map->size[i][j + 1] == kUnexploredStep)
 						{
 							map->size[i][j + 1] = map->size[i][j] + 1;
 							change_flag = TRUE;
@@ -1606,7 +1611,7 @@ void Adachi::make_map_original(int x, int y, int mask)
 				{
 					if ((map->wall[i][j].east & mask) == NOWALL)
 					{
-						if (map->size[i + 1][j] == 255)
+						if (map->size[i + 1][j] == kUnexploredStep)
 						{
 							map->size[i + 1][j] = map->size[i][j] + 1;
 							change_flag = TRUE;
@@ -1618,7 +1623,7 @@ void Adachi::make_map_original(int x, int y, int mask)
 				{
 					if ((map->wall[i][j].south & mask) == NOWALL)
 					{
-						if (map->size[i][j - 1] == 255)
+						if (map->size[i][j - 1] == kUnexploredStep)
 						{
 							map->size[i][j - 1] = map->size[i][j] + 1;
 							change_flag = TRUE;
@@ -1630,7 +1635,7 @@ void Adachi::make_map_original(int x, int y, int mask)
 				{
 					if ((map->wall[i][j].west & mask) == NOWALL)
 					{
-						if (map->size[i - 1][j] == 255)
+						if (map->size[i - 1][j] == kUnexploredStep)
 						{
 							map->size[i - 1][j] = map->size[i][j] + 1;
 							change_flag = TRUE;
@@ -1662,7 +1667,7 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 		{
 			for (int j = 0; j < MAZESIZE_Y; j++)
 			{
-				map->size[i][j] = 255;
+				map->size[i][j] = kUnexploredStep;
 			}
 		}
 		map->size[goal_x][goal_y] = 0;
@@ -1682,7 +1687,7 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 				}
 				else
 				{
-					map->size[i][j] = 255;
+					map->size[i][j] = kUnexploredStep;
 				}
 			}
 		}
@@ -1728,7 +1733,7 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 			if ((map->wall[current.x][current.y].north & mask) == NOWALL)
 			{
 				int new_step = current.step + 1;
-				if (map->size[current.x][current.y + 1] == 255)
+				if (map->size[current.x][current.y + 1] == kUnexploredStep)
 				{
 					map->size[current.x][current.y + 1] = new_step;
 					queue[queue_rear++] = {current.x, current.y + 1, new_step};
@@ -1742,7 +1747,7 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 			if ((map->wall[current.x][current.y].east & mask) == NOWALL)
 			{
 				int new_step = current.step + 1;
-				if (map->size[current.x + 1][current.y] == 255)
+				if (map->size[current.x + 1][current.y] == kUnexploredStep)
 				{
 					map->size[current.x + 1][current.y] = new_step;
 					queue[queue_rear++] = {current.x + 1, current.y, new_step};
@@ -1756,7 +1761,7 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 			if ((map->wall[current.x][current.y].south & mask) == NOWALL)
 			{
 				int new_step = current.step + 1;
-				if (map->size[current.x][current.y - 1] == 255)
+				if (map->size[current.x][current.y - 1] == kUnexploredStep)
 				{
 					map->size[current.x][current.y - 1] = new_step;
 					queue[queue_rear++] = {current.x, current.y - 1, new_step};
@@ -1770,7 +1775,7 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 			if ((map->wall[current.x][current.y].west & mask) == NOWALL)
 			{
 				int new_step = current.step + 1;
-				if (map->size[current.x - 1][current.y] == 255)
+				if (map->size[current.x - 1][current.y] == kUnexploredStep)
 				{
 					map->size[current.x - 1][current.y] = new_step;
 					queue[queue_rear++] = {current.x - 1, current.y, new_step};
@@ -1795,7 +1800,7 @@ int Adachi::get_nextdir_original(int x, int y, int mask, Direction *dir)
 	int min_steps, priority, tmp_priority;
 
 	make_map_original(x, y, mask); // オリジナル版使用
-	min_steps = 255;
+	min_steps = kUnexploredStep;
 	priority = 0;
 
 	if ((map->wall[map->pos.x][map->pos.y].north & mask) == NOWALL)
