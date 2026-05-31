@@ -8,7 +8,7 @@
 #define FF_ANG_VEL_GAIN 0.55
 
 Interrupt::Interrupt()
-{ /*std::cout << "Interrupt" << std::endl;*/
+{
 }
 
 Interrupt::~Interrupt() { std::cout << "~Interrupt" << std::endl; }
@@ -32,8 +32,6 @@ void Interrupt::set_device_driver(std::shared_ptr<Drivers> driver)
     // bz = driver->bz;
     // adc = driver->adc;
 
-    // std::cout << "set_device_driver" << std::endl;
-    // printf("set_device_driver\n");
 }
 
 void Interrupt::get_semphr_handle(SemaphoreHandle_t *_on_logging) { on_logging = _on_logging; }
@@ -111,46 +109,20 @@ void Interrupt::calc_target()
     return;
 }
 
+// 壁センサ値が閾値を超えていれば壁あり(TRUE)を返す純関数。
+// 旧 wall_control 前半の fl/fr/l/r 同型 if/else と等価。
+static inline Bool detect_wall(int val, int th)
+{
+    return (val > th) ? TRUE : FALSE;
+}
+
 void Interrupt::wall_control() //  壁制御
 {
-    // 左前壁センサ
-    if (sens->wall.val.fl > sens->wall.th_wall.fl)
-    {
-        sens->wall.exist.fl = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.fl = FALSE;
-    }
-
-    // 右前壁センサ
-    if (sens->wall.val.fr > sens->wall.th_wall.fr)
-    {
-        sens->wall.exist.fr = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.fr = FALSE;
-    }
-
-    // 左壁センサ
-    if (sens->wall.val.l > sens->wall.th_wall.l)
-    {
-        sens->wall.exist.l = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.l = FALSE;
-    }
-    // 右壁センサ
-    if (sens->wall.val.r > sens->wall.th_wall.r)
-    {
-        sens->wall.exist.r = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.r = FALSE;
-    }
+    // 各壁センサの有無判定（fl:左前 / fr:右前 / l:左 / r:右）
+    sens->wall.exist.fl = detect_wall(sens->wall.val.fl, sens->wall.th_wall.fl);
+    sens->wall.exist.fr = detect_wall(sens->wall.val.fr, sens->wall.th_wall.fr);
+    sens->wall.exist.l = detect_wall(sens->wall.val.l, sens->wall.th_wall.l);
+    sens->wall.exist.r = detect_wall(sens->wall.val.r, sens->wall.th_wall.r);
 
     if (sens->wall.val.l > sens->wall.th_control.l)
     {
@@ -342,7 +314,6 @@ void Interrupt::wall_control() //  壁制御
     }
     // xSemaphoreGive(on_logging);
 
-    // std::cout << "wall_ctl" << std::endl;
     return;
 }
 
@@ -438,7 +409,6 @@ void Interrupt::feedback_control()
         control->Duty_r += control->V_r / sens->battery_voltage;
 
         mot->set_motor_speed(control->Duty_r, control->Duty_l);
-        //printf("val->tar.vel: %f, control->Duty_l: %f, control->Duty_r: %f\n", val->tar.vel, control->Duty_l, control->Duty_r);
     }
     else if (control->flag == FALSE && control->test_flag == FALSE)
     {
@@ -457,7 +427,6 @@ void Interrupt::feedback_control()
     val->p.vel = val->current.vel;
     val->p.ang_vel = val->current.ang_vel;
 
-    // std::cout << "FB_ctl" << std::endl;
     return;
 }
 
@@ -493,7 +462,6 @@ void Interrupt::calc_distance()
 
     // val->current.len += (len_L + len_R) / 2.0;
 
-    // std::cout << "val->current.len : " << val->current.len * 1000.0 << std::endl;
 
     val->l.vel = len_L / 0.001; // 1ms
     val->r.vel = len_R / 0.001;
@@ -501,14 +469,11 @@ void Interrupt::calc_distance()
     // 高精度速度推定システム（エンコーダ+IMU融合）
     estimate_velocity_fusion();
 
-    // std::cout << "val->l.vel : " << val->l.vel * 1000.0 << std::endl;
-    // std::cout << "val->r.vel : " << val->r.vel *1 000.0 << std::endl;
 
     val->current.len += val->current.vel * 0.001;
     val->sum.len += val->current.vel * 0.001;
     val->I.vel += val->current.vel; // 積分値更新
 
-    // std::cout << "calc_dist" << std::endl;
     return;
 }
 
@@ -571,7 +536,7 @@ float Interrupt::compensate_centripetal_acceleration(float accel_y_raw)
     // x = 15.036mm, y = 21.044mm, z = 0mm (実測値)
     float r_x = sens->accel.offset.x; // [m]（前後方向）
     float r_y = sens->accel.offset.y; // [m]（左右方向）
-    float r_z = sens->accel.offset.z; // [m]（上下方向）
+    [[maybe_unused]] float r_z = sens->accel.offset.z; // [m]（上下方向・2D運動のため現状未使用）
     
     // === 2. 角速度と角加速度 ===
     float omega_z = val->current.ang_vel;     // Z軸周りの角速度 [rad/s]
@@ -904,7 +869,6 @@ void Interrupt::logging()
     }
     
     vTaskDelete(NULL);
-    // std::cout << "logging" << std::endl;
     return;
 }
 
@@ -995,9 +959,6 @@ void Interrupt::interrupt()
 
         //control->time_count++;
 
-        // printf("Duty_l : %f\n", control->Duty_l);
-        // printf("Duty_r : %f\n", control->Duty_r);
-        //printf("val->tar.vel: %f, control->V_l: %f, control->V_r: %f\n", val->tar.vel, control->V_l, control->V_r);
         end_time = esp_timer_get_time();
         delta_time = end_time - start_time;
 
