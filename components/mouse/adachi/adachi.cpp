@@ -267,6 +267,33 @@ int Adachi::get_priority(int x, int y, Direction dir) // そのマスの情報�
 	return priority; // 優先度を返す
 }
 
+void Adachi::evaluate_direction(int nx, int ny, Direction dir, int wall_field, int mask,
+								int &min_steps, int &priority, Direction *out_dir,
+								bool tie_break_guard)
+{
+	if ((wall_field & mask) != NOWALL) // その方位に壁があれば候補にしない
+	{
+		return;
+	}
+
+	int tmp_priority = get_priority(nx, ny, dir); // 優先度を算出
+	if (map->size[nx][ny] < min_steps)			  // 一番歩数が小さい方向を見つける
+	{
+		min_steps = map->size[nx][ny]; // ひとまずこの方位が歩数最小
+		*out_dir = dir;				   // 方向を保存
+		priority = tmp_priority;	   // 優先度を保存
+	}
+	else if (map->size[nx][ny] == min_steps) // 歩数が同じ場合は優先度から判断する
+	{
+		// 西ブロックのみ tie_break_guard=false で無条件上書き（現状挙動の厳密再現）
+		if (!tie_break_guard || priority < tmp_priority)
+		{
+			*out_dir = dir;			 // 方向を更新
+			priority = tmp_priority; // 優先度を保存
+		}
+	}
+}
+
 int Adachi::get_nextdir(int x, int y, int mask, Direction *dir)
 {
 	// ゴール座標x,yに向かう場合、今どちらに行くべきかを判断する。
@@ -289,83 +316,18 @@ int Adachi::get_nextdir(int x, int y, int mask, Direction *dir)
 		cached_mask = mask;
 	}
 
-	int min_steps, priority, tmp_priority; // 最小の値を探すために使用する変数
-	min_steps = kUnexploredStep;						// 最小歩数を255歩(mapがunsigned char型なので)に設定
-	priority = 0;						// 優先度の初期値は0
+	int min_steps, priority;	 // 最小の値を探すために使用する変数
+	min_steps = kUnexploredStep; // 最小歩数を255歩(mapがunsigned char型なので)に設定
+	priority = 0;				 // 優先度の初期値は0
 
 	// maskの意味はstatic_parameter.hを参照
-	if ((map->wall[map->pos.x][map->pos.y].north & mask) == NOWALL) // 北に壁がなければ
-	{
-		tmp_priority = get_priority(map->pos.x, map->pos.y + 1, NORTH); // 優先度を算出
-		if (map->size[map->pos.x][map->pos.y + 1] < min_steps)				// 一番歩数が小さい方向を見つける
-		{
-			min_steps = map->size[map->pos.x][map->pos.y + 1]; // ひとまず北が歩数が小さい事にする
-			*dir = NORTH;									// 方向を保存
-			priority = tmp_priority; // 優先度を保存
-		}
-		else if (map->size[map->pos.x][map->pos.y + 1] == min_steps) // 歩数が同じ場合は優先度から判断する
-		{
-			if (priority < tmp_priority) // 優先度を評価
-			{
-				*dir = NORTH; // 方向を更新
-				priority = tmp_priority; // 優先度を保存
-			}
-		}
-	}
-
-	if ((map->wall[map->pos.x][map->pos.y].east & mask) == NOWALL) // 東に壁がなければ
-	{
-		tmp_priority = get_priority(map->pos.x + 1, map->pos.y, EAST); // 優先度を算出
-		if (map->size[map->pos.x + 1][map->pos.y] < min_steps)			   // 一番歩数が小さい方向を見つける
-		{
-			min_steps = map->size[map->pos.x + 1][map->pos.y]; // ひとまず東が歩数が小さい事にする
-			*dir = EAST;									// 方向を保存
-			priority = tmp_priority; // 優先度を保存
-		}
-		else if (map->size[map->pos.x + 1][map->pos.y] == min_steps) // 歩数が同じ場合、優先度から判断
-		{
-			if (priority < tmp_priority) // 優先度を評価
-			{
-				*dir = EAST; // 方向を保存
-				priority = tmp_priority; // 優先度を保存
-			}
-		}
-	}
-
-	if ((map->wall[map->pos.x][map->pos.y].south & mask) == NOWALL) // 南に壁がなければ
-	{
-		tmp_priority = get_priority(map->pos.x, map->pos.y - 1, SOUTH); // 優先度を算出
-		if (map->size[map->pos.x][map->pos.y - 1] < min_steps)				// 一番歩数が小さい方向を見つける
-		{
-			min_steps = map->size[map->pos.x][map->pos.y - 1]; // ひとまず南が歩数が小さい事にする
-			*dir = SOUTH;									// 方向を保存
-			priority = tmp_priority; // 優先度を保存
-		}
-		else if (map->size[map->pos.x][map->pos.y - 1] == min_steps) // 歩数が同じ場合、優先度で評価
-		{
-			if (priority < tmp_priority) // 優先度を評価
-			{
-				*dir = SOUTH; // 方向を保存
-				priority = tmp_priority; // 優先度を保存
-			}
-		}
-	}
-
-	if ((map->wall[map->pos.x][map->pos.y].west & mask) == NOWALL) // 西に壁がなければ
-	{
-		tmp_priority = get_priority(map->pos.x - 1, map->pos.y, WEST); // 優先度を算出
-		if (map->size[map->pos.x - 1][map->pos.y] < min_steps)			   // 一番歩数が小さい方向を見つける
-		{
-			min_steps = map->size[map->pos.x - 1][map->pos.y]; // 西が歩数が小さい
-			*dir = WEST;									// 方向を保存
-			priority = tmp_priority; // 優先度を保存
-		}
-		else if (map->size[map->pos.x - 1][map->pos.y] == min_steps) // 歩数が同じ場合、優先度で評価
-		{
-			*dir = WEST; // 方向を保存
-			priority = tmp_priority; // 優先度を保存
-		}
-	}
+	// N/E/S は同値時に優先度ガードあり、W のみ無条件上書き（tie_break_guard=false）で現状を厳密再現
+	const int cx = map->pos.x;
+	const int cy = map->pos.y;
+	evaluate_direction(cx, cy + 1, NORTH, map->wall[cx][cy].north, mask, min_steps, priority, dir, true);
+	evaluate_direction(cx + 1, cy, EAST, map->wall[cx][cy].east, mask, min_steps, priority, dir, true);
+	evaluate_direction(cx, cy - 1, SOUTH, map->wall[cx][cy].south, mask, min_steps, priority, dir, true);
+	evaluate_direction(cx - 1, cy, WEST, map->wall[cx][cy].west, mask, min_steps, priority, dir, false);
 
 	return ((int)((4 + *dir - map->pos.dir) % 4)); // どっちに向かうべきかを返す。
 												   // 演算の意味はmytyedef.h内のenum宣言から。

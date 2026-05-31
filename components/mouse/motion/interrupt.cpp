@@ -109,46 +109,20 @@ void Interrupt::calc_target()
     return;
 }
 
+// 壁センサ値が閾値を超えていれば壁あり(TRUE)を返す純関数。
+// 旧 wall_control 前半の fl/fr/l/r 同型 if/else と等価。
+static inline Bool detect_wall(int val, int th)
+{
+    return (val > th) ? TRUE : FALSE;
+}
+
 void Interrupt::wall_control() //  壁制御
 {
-    // 左前壁センサ
-    if (sens->wall.val.fl > sens->wall.th_wall.fl)
-    {
-        sens->wall.exist.fl = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.fl = FALSE;
-    }
-
-    // 右前壁センサ
-    if (sens->wall.val.fr > sens->wall.th_wall.fr)
-    {
-        sens->wall.exist.fr = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.fr = FALSE;
-    }
-
-    // 左壁センサ
-    if (sens->wall.val.l > sens->wall.th_wall.l)
-    {
-        sens->wall.exist.l = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.l = FALSE;
-    }
-    // 右壁センサ
-    if (sens->wall.val.r > sens->wall.th_wall.r)
-    {
-        sens->wall.exist.r = TRUE;
-    }
-    else
-    {
-        sens->wall.exist.r = FALSE;
-    }
+    // 各壁センサの有無判定（fl:左前 / fr:右前 / l:左 / r:右）
+    sens->wall.exist.fl = detect_wall(sens->wall.val.fl, sens->wall.th_wall.fl);
+    sens->wall.exist.fr = detect_wall(sens->wall.val.fr, sens->wall.th_wall.fr);
+    sens->wall.exist.l = detect_wall(sens->wall.val.l, sens->wall.th_wall.l);
+    sens->wall.exist.r = detect_wall(sens->wall.val.r, sens->wall.th_wall.r);
 
     if (sens->wall.val.l > sens->wall.th_control.l)
     {
