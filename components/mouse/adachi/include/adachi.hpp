@@ -21,7 +21,6 @@ public:
 private:
     void init_map(int x, int y);
     void init_map_all(int x, int y);
-    void make_map(int x, int y, int mask);
     void make_map_fast(int x, int y, int mask);  // 高速版
     void make_map_original(int x, int y, int mask);  // 旧版（比較用）
     int get_nextdir_original(int x, int y, int mask, Direction *dir); // 旧版（比較用）

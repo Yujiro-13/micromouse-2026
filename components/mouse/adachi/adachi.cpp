@@ -75,58 +75,6 @@ bool Adachi::propagate_step(int nx, int ny, int wall_field, int mask, int from_s
 	return true;						   // 更新したことを通知
 }
 
-void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
-{
-	// 座標x,yをゴールとした歩数Mapを作成する。
-	// maskの値(MASK_SEARCH or MASK_SECOND)によって、
-	// 探索用の歩数Mapを作るか、最短走行の歩数Mapを作るかが切り替わる
-	int i, j;
-	Bool change_flag; // Map作成終了を見極めるためのフラグ
-
-	if (map->flag == SEARCH)
-	{
-		init_map(x, y);
-	}
-	else if (map->flag == ALL_SEARCH)
-	{
-		init_map_all(x, y);
-	}
-
-	do
-	{
-		change_flag = FALSE;			 // 変更がなかった場合にはループを抜ける
-		for (i = 0; i < MAZESIZE_X; i++) // 迷路の大きさ分ループ(x座標)
-		{
-			for (j = 0; j < MAZESIZE_Y; j++) // 迷路の大きさ分ループ(y座標)
-			{
-				if (map->size[i][j] == kUnexploredStep) // 255の場合は次へ
-				{
-					continue;
-				}
-
-				// 範囲チェックを満たす方位のみ伝播（OOB防止のため範囲チェックは呼び出し側に残す）
-				if (j < MAZESIZE_Y - 1)
-				{
-					if (propagate_step(i, j + 1, map->wall[i][j].north, mask, map->size[i][j])) change_flag = TRUE;
-				}
-				if (i < MAZESIZE_X - 1)
-				{
-					if (propagate_step(i + 1, j, map->wall[i][j].east, mask, map->size[i][j])) change_flag = TRUE;
-				}
-				if (j > 0)
-				{
-					if (propagate_step(i, j - 1, map->wall[i][j].south, mask, map->size[i][j])) change_flag = TRUE;
-				}
-				if (i > 0)
-				{
-					if (propagate_step(i - 1, j, map->wall[i][j].west, mask, map->size[i][j])) change_flag = TRUE;
-				}
-			}
-		}
-
-	} while (change_flag == TRUE); // 全体を作り終わるまで待つ
-}
-
 void Adachi::set_wall(int x, int y) // 壁情報を記録
 {
 	// 引数の座標x,yに壁情報を書き込む
