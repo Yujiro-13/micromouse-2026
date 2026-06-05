@@ -116,6 +116,22 @@ static inline Bool detect_wall(int val, int th)
     return (val > th) ? TRUE : FALSE;
 }
 
+// 制御閾値を超えていれば error=val-ref/enable=TRUE、そうでなければ error=0/enable=FALSE。
+// 旧 wall_control 中盤の l/r 同型 if/else と等価。
+static inline void update_control_error(int val, int th, int ref, int &error, bool &enable)
+{
+    if (val > th)
+    {
+        error = val - ref;
+        enable = true;
+    }
+    else
+    {
+        error = 0;
+        enable = false;
+    }
+}
+
 void Interrupt::wall_control() //  壁制御
 {
     // 各壁センサの有無判定（fl:左前 / fr:右前 / l:左 / r:右）
@@ -124,27 +140,11 @@ void Interrupt::wall_control() //  壁制御
     sens->wall.exist.l = detect_wall(sens->wall.val.l, sens->wall.th_wall.l);
     sens->wall.exist.r = detect_wall(sens->wall.val.r, sens->wall.th_wall.r);
 
-    if (sens->wall.val.l > sens->wall.th_control.l)
-    {
-        sens->wall.error.l = sens->wall.val.l - sens->wall.ref.l;
-        sens->wall.control_enable.l = TRUE;
-    }
-    else
-    {
-        sens->wall.error.l = 0;
-        sens->wall.control_enable.l = FALSE;
-    }
-
-    if (sens->wall.val.r > sens->wall.th_control.r)
-    {
-        sens->wall.error.r = sens->wall.val.r - sens->wall.ref.r;
-        sens->wall.control_enable.r = TRUE;
-    }
-    else
-    {
-        sens->wall.error.r = 0;
-        sens->wall.control_enable.r = FALSE;
-    }
+    // 左右の壁制御 error / control_enable を設定
+    update_control_error(sens->wall.val.l, sens->wall.th_control.l, sens->wall.ref.l,
+                         sens->wall.error.l, sens->wall.control_enable.l);
+    update_control_error(sens->wall.val.r, sens->wall.th_control.r, sens->wall.ref.r,
+                         sens->wall.error.r, sens->wall.control_enable.r);
 
     // === 柱検出ロジック（ヒステリシス付き） ===
     // 前壁センサが高い場合は柱検出を無効化（壁接近時の誤検出防止）
