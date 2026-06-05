@@ -28,6 +28,9 @@ private:
     void set_wall(int x, int y);
     Bool is_unknown(int x, int y);
     int get_priority(int x, int y, Direction dir);
+    // 歩数マップ伝播の共通処理。壁が無く隣接セル(nx,ny)が未探索なら from_step+1 を代入。
+    // 更新したら true を返す（呼び出し側で change_flag 設定 or BFSキュー push に使う）。
+    bool propagate_step(int nx, int ny, int wall_field, int mask, int from_step);
     // get_nextdir の N/E/S/W 同型ブロックを集約。
     // 隣接セル(nx,ny)・方位 dir・壁フィールド wall_field を見て min_steps/priority/*out_dir を更新。
     // tie_break_guard=false のとき歩数同値で無条件上書き（西ブロックの現状挙動を厳密再現）。

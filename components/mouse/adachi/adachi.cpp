@@ -61,6 +61,20 @@ void Adachi::init_map_all(int x, int y)
 	}
 }
 
+bool Adachi::propagate_step(int nx, int ny, int wall_field, int mask, int from_step)
+{
+	if ((wall_field & mask) != NOWALL) // 壁があれば伝播しない
+	{
+		return false;
+	}
+	if (map->size[nx][ny] != kUnexploredStep) // 既に値が入っていれば更新しない
+	{
+		return false;
+	}
+	map->size[nx][ny] = from_step + 1; // 値を代入
+	return true;						   // 更新したことを通知
+}
+
 void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 {
 	// 座標x,yをゴールとした歩数Mapを作成する。
@@ -90,52 +104,22 @@ void Adachi::make_map(int x, int y, int mask) // 歩数マップを作成する
 					continue;
 				}
 
-				if (j < MAZESIZE_Y - 1) // 範囲チェック
+				// 範囲チェックを満たす方位のみ伝播（OOB防止のため範囲チェックは呼び出し側に残す）
+				if (j < MAZESIZE_Y - 1)
 				{
-					if ((map->wall[i][j].north & mask) == NOWALL) // 壁がなければ(maskの意味はstatic_parametersを参照)
-					{
-						if (map->size[i][j + 1] == kUnexploredStep) // まだ値が入っていなければ
-						{
-							map->size[i][j + 1] = map->size[i][j] + 1; // 値を代入
-							change_flag = TRUE;						   // 値が更新されたことを示す
-						}
-					}
+					if (propagate_step(i, j + 1, map->wall[i][j].north, mask, map->size[i][j])) change_flag = TRUE;
 				}
-
-				if (i < MAZESIZE_X - 1) // 範囲チェック
+				if (i < MAZESIZE_X - 1)
 				{
-					if ((map->wall[i][j].east & mask) == NOWALL) // 壁がなければ
-					{
-						if (map->size[i + 1][j] == kUnexploredStep) // 値が入っていなければ
-						{
-							map->size[i + 1][j] = map->size[i][j] + 1; // 値を代入
-							change_flag = TRUE;						   // 値が更新されたことを示す
-						}
-					}
+					if (propagate_step(i + 1, j, map->wall[i][j].east, mask, map->size[i][j])) change_flag = TRUE;
 				}
-
-				if (j > 0) // 範囲チェック
+				if (j > 0)
 				{
-					if ((map->wall[i][j].south & mask) == NOWALL) // 壁がなければ
-					{
-						if (map->size[i][j - 1] == kUnexploredStep) // 値が入っていなければ
-						{
-							map->size[i][j - 1] = map->size[i][j] + 1; // 値を代入
-							change_flag = TRUE;						   // 値が更新されたことを示す
-						}
-					}
+					if (propagate_step(i, j - 1, map->wall[i][j].south, mask, map->size[i][j])) change_flag = TRUE;
 				}
-
-				if (i > 0) // 範囲チェック
+				if (i > 0)
 				{
-					if ((map->wall[i][j].west & mask) == NOWALL) // 壁がなければ
-					{
-						if (map->size[i - 1][j] == kUnexploredStep) // 値が入っていなければ
-						{
-							map->size[i - 1][j] = map->size[i][j] + 1; // 値を代入
-							change_flag = TRUE;						   // 値が更新されたことを示す
-						}
-					}
+					if (propagate_step(i - 1, j, map->wall[i][j].west, mask, map->size[i][j])) change_flag = TRUE;
 				}
 			}
 		}
@@ -1506,50 +1490,19 @@ void Adachi::make_map_original(int x, int y, int mask)
 
 				if (j < MAZESIZE_Y - 1)
 				{
-					if ((map->wall[i][j].north & mask) == NOWALL)
-					{
-						if (map->size[i][j + 1] == kUnexploredStep)
-						{
-							map->size[i][j + 1] = map->size[i][j] + 1;
-							change_flag = TRUE;
-						}
-					}
+					if (propagate_step(i, j + 1, map->wall[i][j].north, mask, map->size[i][j])) change_flag = TRUE;
 				}
-
 				if (i < MAZESIZE_X - 1)
 				{
-					if ((map->wall[i][j].east & mask) == NOWALL)
-					{
-						if (map->size[i + 1][j] == kUnexploredStep)
-						{
-							map->size[i + 1][j] = map->size[i][j] + 1;
-							change_flag = TRUE;
-						}
-					}
+					if (propagate_step(i + 1, j, map->wall[i][j].east, mask, map->size[i][j])) change_flag = TRUE;
 				}
-
 				if (j > 0)
 				{
-					if ((map->wall[i][j].south & mask) == NOWALL)
-					{
-						if (map->size[i][j - 1] == kUnexploredStep)
-						{
-							map->size[i][j - 1] = map->size[i][j] + 1;
-							change_flag = TRUE;
-						}
-					}
+					if (propagate_step(i, j - 1, map->wall[i][j].south, mask, map->size[i][j])) change_flag = TRUE;
 				}
-
 				if (i > 0)
 				{
-					if ((map->wall[i][j].west & mask) == NOWALL)
-					{
-						if (map->size[i - 1][j] == kUnexploredStep)
-						{
-							map->size[i - 1][j] = map->size[i][j] + 1;
-							change_flag = TRUE;
-						}
-					}
+					if (propagate_step(i - 1, j, map->wall[i][j].west, mask, map->size[i][j])) change_flag = TRUE;
 				}
 			}
 		}
@@ -1636,60 +1589,27 @@ void Adachi::make_map_fast(int goal_x, int goal_y, int mask)
 		Position current = queue[queue_front++];
 		iterations++;
 
-		// 北方向
+		// 4方向に伝播。propagate_step が更新したセルのみ BFS キューへ push
+		const int next_step = current.step + 1;
 		if (current.y < MAZESIZE_Y - 1)
 		{
-			if ((map->wall[current.x][current.y].north & mask) == NOWALL)
-			{
-				int new_step = current.step + 1;
-				if (map->size[current.x][current.y + 1] == kUnexploredStep)
-				{
-					map->size[current.x][current.y + 1] = new_step;
-					queue[queue_rear++] = {current.x, current.y + 1, new_step};
-				}
-			}
+			if (propagate_step(current.x, current.y + 1, map->wall[current.x][current.y].north, mask, current.step))
+				queue[queue_rear++] = {current.x, current.y + 1, next_step};
 		}
-
-		// 東方向
 		if (current.x < MAZESIZE_X - 1)
 		{
-			if ((map->wall[current.x][current.y].east & mask) == NOWALL)
-			{
-				int new_step = current.step + 1;
-				if (map->size[current.x + 1][current.y] == kUnexploredStep)
-				{
-					map->size[current.x + 1][current.y] = new_step;
-					queue[queue_rear++] = {current.x + 1, current.y, new_step};
-				}
-			}
+			if (propagate_step(current.x + 1, current.y, map->wall[current.x][current.y].east, mask, current.step))
+				queue[queue_rear++] = {current.x + 1, current.y, next_step};
 		}
-
-		// 南方向
 		if (current.y > 0)
 		{
-			if ((map->wall[current.x][current.y].south & mask) == NOWALL)
-			{
-				int new_step = current.step + 1;
-				if (map->size[current.x][current.y - 1] == kUnexploredStep)
-				{
-					map->size[current.x][current.y - 1] = new_step;
-					queue[queue_rear++] = {current.x, current.y - 1, new_step};
-				}
-			}
+			if (propagate_step(current.x, current.y - 1, map->wall[current.x][current.y].south, mask, current.step))
+				queue[queue_rear++] = {current.x, current.y - 1, next_step};
 		}
-
-		// 西方向
 		if (current.x > 0)
 		{
-			if ((map->wall[current.x][current.y].west & mask) == NOWALL)
-			{
-				int new_step = current.step + 1;
-				if (map->size[current.x - 1][current.y] == kUnexploredStep)
-				{
-					map->size[current.x - 1][current.y] = new_step;
-					queue[queue_rear++] = {current.x - 1, current.y, new_step};
-				}
-			}
+			if (propagate_step(current.x - 1, current.y, map->wall[current.x][current.y].west, mask, current.step))
+				queue[queue_rear++] = {current.x - 1, current.y, next_step};
 		}
 	}
 
