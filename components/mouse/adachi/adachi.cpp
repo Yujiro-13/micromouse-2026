@@ -321,13 +321,13 @@ int Adachi::get_nextdir(int x, int y, int mask, Direction *dir)
 	priority = 0;				 // 優先度の初期値は0
 
 	// maskの意味はstatic_parameter.hを参照
-	// N/E/S は同値時に優先度ガードあり、W のみ無条件上書き（tie_break_guard=false）で現状を厳密再現
+	// 全方位で同値時の優先度ガードを統一（旧実装は西のみ無条件上書きだった）
 	const int cx = map->pos.x;
 	const int cy = map->pos.y;
 	evaluate_direction(cx, cy + 1, NORTH, map->wall[cx][cy].north, mask, min_steps, priority, dir, true);
 	evaluate_direction(cx + 1, cy, EAST, map->wall[cx][cy].east, mask, min_steps, priority, dir, true);
 	evaluate_direction(cx, cy - 1, SOUTH, map->wall[cx][cy].south, mask, min_steps, priority, dir, true);
-	evaluate_direction(cx - 1, cy, WEST, map->wall[cx][cy].west, mask, min_steps, priority, dir, false);
+	evaluate_direction(cx - 1, cy, WEST, map->wall[cx][cy].west, mask, min_steps, priority, dir, true);
 
 	return ((int)((4 + *dir - map->pos.dir) % 4)); // どっちに向かうべきかを返す。
 												   // 演算の意味はmytyedef.h内のenum宣言から。
