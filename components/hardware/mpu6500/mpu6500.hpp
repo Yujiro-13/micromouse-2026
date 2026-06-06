@@ -45,8 +45,6 @@ public:
     // 加速度バイアス除去用メソッド
     float surveybias_accel_y(int reftime);
 
-    void share_sensor_data(SensorData *_sens) override;
-
 private:
     spi_device_handle_t _spi;
     spi_bus_config_t bus_imu;
@@ -58,8 +56,6 @@ private:
     uint8_t read(uint8_t reg);
     uint16_t read16(uint8_t reg);
     void write(uint8_t reg, uint8_t data);
-
-    SensorData *sens;
 };
 
 #endif

@@ -75,8 +75,3 @@ void MA730::set_filter(uint8_t fw_value)
     vTaskDelay(pdMS_TO_TICKS(12)); // 安定化のための待機
     ESP_LOGI("MA730", "Filter set to FW: %d", fw_value);
 }
-
-void MA730::share_sensor_data(SensorData *_sens)
-{
-    sens = _sens;
-}

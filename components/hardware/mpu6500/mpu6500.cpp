@@ -188,7 +188,3 @@ float MPU6500::gyro_y(){
 float MPU6500::gyro_z(){
     return (float)gyro_z_raw() * gyro_sensitivity;
 }
-
-void MPU6500::share_sensor_data(SensorData *_sens){
-    sens = _sens;
-}

@@ -69,11 +69,9 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     printf("finish motion struct\n");
 
     // センサ系
-    driver->adc->share_sensor_data(sens);
-    driver->imu->share_sensor_data(sens);
-    driver->encR->share_sensor_data(sens);
-    driver->encL->share_sensor_data(sens);
-
+    // NOTE: 旧 share_sensor_data(sens) はドライバがポインタを保持するだけの形骸処理
+    //       だったため除去（案C）。SensorData への詰め替えは wall_sensor / interrupt が
+    //       生値 getter を呼んで行う。
     printf("finish sensor struct\n");
 
     /* パラメータの設定 */
