@@ -6,7 +6,7 @@
 #include "freertos/semphr.h"
 #include "esp_timer.h"
 #include "drivers.hpp"
-#include "sens_structs.hpp"
+#include "structs.hpp"
 
 // 壁センサ(ADS7066)のサンプリングを担うクラス。
 // 充放電タイミング制御・EMA(指数移動平均)フィルタを内包し、結果を SensorData へ書き込む。

@@ -10,9 +10,8 @@
 //#include "esp_timer.h"
 #include <cstring>
 #include <iostream>
-#include "sensor.hpp"
 
-class ADS7066: public Sensor
+class ADS7066
 {
 public:
     ADS7066(spi_host_device_t, gpio_num_t);

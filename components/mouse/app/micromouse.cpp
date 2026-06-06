@@ -6,7 +6,7 @@
 #include "test.hpp"
 #include "adachi.hpp"
 #include "micromouse.hpp"
-#include "sens_structs.hpp"
+#include "structs.hpp"
 #include <functional>
 #include "task.hpp"
 

@@ -8,7 +8,6 @@
 #include "driver/spi_master.h"
 #include "esp_log.h"
 #include <cstring>
-#include "sensor.hpp"
 
 #define READ_COMMAND 0b010
 #define WRITE_COMMAND 0b100
@@ -21,7 +20,7 @@
 
 
 
-class MA730 : public Sensor
+class MA730
 {
     public:
     MA730(spi_host_device_t bus, gpio_num_t cs, uint8_t ccw);

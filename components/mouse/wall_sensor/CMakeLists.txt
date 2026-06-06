@@ -2,4 +2,4 @@
 # SensorData へ書き込む。タスク本体は tasks コンポーネントの薄いラッパーから呼ばれる。
 idf_component_register(SRCS "wall_sensor.cpp"
                        INCLUDE_DIRS "include"
-                       REQUIRES mouse_core sensor driver esp_timer esp_rom freertos)
+                       REQUIRES mouse_core driver esp_timer esp_rom freertos)
