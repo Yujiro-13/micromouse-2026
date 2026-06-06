@@ -23,3 +23,4 @@ CLAUDE.md
 # sdkconfig は idf.py が生成するローカル設定。共有設定は sdkconfig.defaults で管理する。
 # （2026-05-30: ビルド成功確認後に追跡解除済み）
 sdkconfig
+sdkconfig.old
