@@ -50,7 +50,7 @@ void Search::main_task() // Task Number 0
 
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 
-    motion.search_adachi(0,0);
+    // motion.search_adachi(0,0);
     map_write(map);
     
     //std::cout << "Search" << std::endl;

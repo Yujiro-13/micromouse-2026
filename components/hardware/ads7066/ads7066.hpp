@@ -10,9 +10,8 @@
 //#include "esp_timer.h"
 #include <cstring>
 #include <iostream>
-#include "sensor.hpp"
 
-class ADS7066: public Sensor
+class ADS7066
 {
 public:
     ADS7066(spi_host_device_t, gpio_num_t);
@@ -20,7 +19,6 @@ public:
     uint16_t read_one_shot(int8_t);
     uint16_t read_on_the_fly(int8_t channelID = -1);
 
-    void share_sensor_data(SensorData *_sens) override;
     float battery_voltage();
     //void WallSensor();
     //void adc_sensing();
@@ -49,9 +47,6 @@ private:
     //esp_timer_handle_t charge_timer;
     //static void timer_chargeCompleted(void *arg);
 
-    
-
-    SensorData *sens;
 };
 
 #endif

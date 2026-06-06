@@ -128,53 +128,7 @@ uint8_t ADS7066::read_register(uint8_t adrs)
     return cmd.rx_data[0];
 }
 
-void ADS7066::share_sensor_data(SensorData *_sens)
-{
-    sens = _sens;
-}
-
-
 float ADS7066::battery_voltage()
 {
     return (float)read_on_the_fly(SENS[0]) / 65535.0 * 3.3 * 5.0;
 }
-
-/*void ADS7066::WallSensor()
-{
-    for (int i = 0; i < 4; i++)
-        {
-            if (i > 0)
-                _on = read_on_the_fly(SENS[i]);
-                gpio_set_level(LED[i], 0);
-                esp_timer_start_once(charge_timer, charge_us);
-                xSemaphoreTake(wallCharged, portMAX_DELAY);
-                gpio_set_level(LED[i], 1);
-                esp_rom_delay_us(rise_us);
-                if (i > 0)
-                    value[i - 1] = _on - _off;
-                _off = read_on_the_fly(SENS[i]);
-        }
-        _on = read_on_the_fly(4);
-        value[3] = _on - _off;
-
-        sens->wall.val.fr = value[0];
-        sens->wall.val.l = value[2];
-        sens->wall.val.r = value[1];
-        sens->wall.val.fl = value[3];
-}
-
-void ADS7066::adc_sensing()
-{
-    esp_timer_create_args_t chargeTimerSetting = {
-        .callback = &timer_chargeCompleted,
-        .name = "wallCharge"};
-    esp_timer_handle_t chargeTimer;
-    ESP_ERROR_CHECK(esp_timer_create(&chargeTimerSetting, &chargeTimer));
-
-    wallCharged = xSemaphoreCreateBinary();
-    while(1)
-    {
-        sens->battery_voltage = battery_voltage();
-        WallSensor();
-    }
-}*/
