@@ -1,0 +1,54 @@
+menu "reRoMouse Application"
+
+    menu "WiFi (future feature)"
+        comment "WiFi 接続コードは未実装。ここでは設定項目のみ先行定義する。"
+        comment "SSID/パスワードをソースに直書きしないための受け皿。"
+
+        config RMOUSE_WIFI_ENABLE
+            bool "Enable WiFi feature"
+            default n
+            help
+                将来の WiFi 機能を有効化するフラグ。現状はビルドへ影響しない。
+
+        config RMOUSE_WIFI_SSID
+            string "WiFi SSID"
+            depends on RMOUSE_WIFI_ENABLE
+            default "reromouse-ap"
+            help
+                接続先(STA)もしくは自機(AP)の SSID。
+
+        config RMOUSE_WIFI_PASSWORD
+            string "WiFi password"
+            depends on RMOUSE_WIFI_ENABLE
+            default ""
+            help
+                WiFi パスワード。空文字でオープン(認証なし)。
+                秘匿したい場合は sdkconfig.defaults ではなく
+                git 管理外の sdkconfig.defaults.* / sdkconfig へ設定すること。
+
+        config RMOUSE_WIFI_MAX_RETRY
+            int "WiFi connection max retry"
+            depends on RMOUSE_WIFI_ENABLE
+            range 0 100
+            default 5
+    endmenu
+
+    menu "Debug / Log"
+        comment "ESP_LOG のレベルは Component config -> Log -> Default log verbosity で調整。"
+        comment "ここでは生 printf によるトレースの有効/無効を切り替える。"
+
+        config RMOUSE_DEBUG_BOOT_TRACE
+            bool "Boot trace via printf (run_micromouse init)"
+            default y
+            help
+                run_micromouse 初期化中の "finish ..." トレース printf を出力する。
+                量産・計測時は n にしてシリアル出力を減らせる。
+
+        config RMOUSE_DEBUG_MAINLOOP_TRACE
+            bool "Main loop trace via printf"
+            default n
+            help
+                メインループのデバッグ printf を出力する(将来配線用の予約フラグ)。
+    endmenu
+
+endmenu

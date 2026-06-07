@@ -1,0 +1,162 @@
+menu "reRoMouse Board Hardware (GPIO / SPI / I2C)"
+
+    comment "ボード固有のハードウェア配線。"
+
+    config BOARD_PINS_FROM_MENUCONFIG
+        bool "Use menuconfig values for board pins"
+        default n
+        help
+            ピン割り当ての参照元を選ぶマスタースイッチ。
+              n (既定): board_config.h にソース定義された値を使う。
+              y       : 以下の menuconfig 項目の値を使う(基板移植・派生機向け)。
+            どちらでも既定値は同一なので、切り替えても現行基板の配線は変わらない。
+
+    if BOARD_PINS_FROM_MENUCONFIG
+
+    menu "Startup output GPIOs"
+        config BOARD_STARTUP_OUTPUT_GPIO0
+            int "Startup output GPIO #0"
+            range -1 48
+            default 10
+            help
+                app_main 冒頭で出力設定する GPIO。未使用にする場合は -1。
+        config BOARD_STARTUP_OUTPUT_GPIO1
+            int "Startup output GPIO #1"
+            range -1 48
+            default 17
+        config BOARD_STARTUP_OUTPUT_GPIO2
+            int "Startup output GPIO #2"
+            range -1 48
+            default 18
+        config BOARD_STARTUP_OUTPUT_GPIO3
+            int "Startup output GPIO #3"
+            range -1 48
+            default 21
+    endmenu
+
+    menu "SPI bus: IMU(MPU6500) + Wall ADC(ADS7066)"
+        choice BOARD_IMU_ADC_SPI_HOST
+            prompt "IMU/ADC SPI host"
+            default BOARD_IMU_ADC_SPI_HOST_SPI2
+            config BOARD_IMU_ADC_SPI_HOST_SPI2
+                bool "SPI2_HOST"
+            config BOARD_IMU_ADC_SPI_HOST_SPI3
+                bool "SPI3_HOST"
+        endchoice
+        config BOARD_IMU_ADC_SPI_MISO_GPIO
+            int "IMU/ADC SPI MISO GPIO"
+            range 0 48
+            default 2
+        config BOARD_IMU_ADC_SPI_MOSI_GPIO
+            int "IMU/ADC SPI MOSI GPIO"
+            range 0 48
+            default 4
+        config BOARD_IMU_ADC_SPI_SCLK_GPIO
+            int "IMU/ADC SPI SCLK GPIO"
+            range 0 48
+            default 3
+        config BOARD_ADC_CS_GPIO
+            int "ADS7066 (ADC) chip select GPIO"
+            range 0 48
+            default 5
+        config BOARD_IMU_CS_GPIO
+            int "MPU6500 (IMU) chip select GPIO"
+            range 0 48
+            default 1
+    endmenu
+
+    menu "SPI bus: Encoders(MA730) left/right"
+        choice BOARD_ENCODER_SPI_HOST
+            prompt "Encoder SPI host"
+            default BOARD_ENCODER_SPI_HOST_SPI3
+            config BOARD_ENCODER_SPI_HOST_SPI2
+                bool "SPI2_HOST"
+            config BOARD_ENCODER_SPI_HOST_SPI3
+                bool "SPI3_HOST"
+        endchoice
+        config BOARD_ENCODER_SPI_MOSI_GPIO
+            int "Encoder SPI MOSI GPIO"
+            range 0 48
+            default 9
+        config BOARD_ENCODER_SPI_MISO_GPIO
+            int "Encoder SPI MISO GPIO"
+            range 0 48
+            default 8
+        config BOARD_ENCODER_SPI_SCLK_GPIO
+            int "Encoder SPI SCLK GPIO"
+            range 0 48
+            default 7
+        config BOARD_ENCODER_LEFT_CS_GPIO
+            int "Left encoder chip select GPIO"
+            range 0 48
+            default 6
+        config BOARD_ENCODER_RIGHT_CS_GPIO
+            int "Right encoder chip select GPIO"
+            range 0 48
+            default 14
+    endmenu
+
+    menu "I2C bus: LED driver(PCA9632)"
+        config BOARD_LED_I2C_PORT
+            int "LED I2C port number"
+            range 0 1
+            default 0
+        config BOARD_LED_I2C_SDA_GPIO
+            int "LED I2C SDA GPIO"
+            range 0 48
+            default 38
+        config BOARD_LED_I2C_SCL_GPIO
+            int "LED I2C SCL GPIO"
+            range 0 48
+            default 39
+        config BOARD_LED_I2C_ADDR
+            hex "PCA9632 I2C address (7bit)"
+            range 0x00 0x7f
+            default 0x62
+        config BOARD_LED_I2C_CLOCK_HZ
+            int "LED I2C clock (Hz)"
+            range 100000 1000000
+            default 1000000
+    endmenu
+
+    menu "Buzzer / NeoPixel"
+        config BOARD_BUZZER_GPIO
+            int "Buzzer GPIO"
+            range 0 48
+            default 15
+        config BOARD_NEOPIXEL_GPIO
+            int "NeoPixel (RGB LED) GPIO"
+            range 0 48
+            default 13
+    endmenu
+
+    menu "Motor driver"
+        config BOARD_MOTOR_PHASE_RIGHT_GPIO
+            int "Right motor PHASE GPIO"
+            range 0 48
+            default 41
+        config BOARD_MOTOR_ENABLE_RIGHT_GPIO
+            int "Right motor ENABLE GPIO"
+            range 0 48
+            default 42
+        config BOARD_MOTOR_PHASE_LEFT_GPIO
+            int "Left motor PHASE GPIO"
+            range 0 48
+            default 45
+        config BOARD_MOTOR_ENABLE_LEFT_GPIO
+            int "Left motor ENABLE GPIO"
+            range 0 48
+            default 46
+        config BOARD_MOTOR_FAN_GPIO
+            int "Suction fan motor GPIO"
+            range 0 48
+            default 11
+        config BOARD_MOTOR_MODE_GPIO
+            int "Motor driver MODE GPIO"
+            range 0 48
+            default 40
+    endmenu
+
+    endif # BOARD_PINS_FROM_MENUCONFIG
+
+endmenu

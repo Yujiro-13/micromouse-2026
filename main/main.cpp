@@ -36,6 +36,7 @@ static void init_hardware(void)
     uint64_t startup_output_mask = 0;
     for (gpio_num_t pin : board::kStartupOutputPins)
     {
+        if (pin < 0) continue;  // -1 = 未使用スロット（menuconfig で無効化）
         startup_output_mask |= (1ULL << pin);
     }
     io_conf.pin_bit_mask = startup_output_mask;

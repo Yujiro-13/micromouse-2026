@@ -63,6 +63,23 @@ idf.py menuconfig
 idf.py fullclean
 ```
 
+## ピン設定（menuconfig）
+
+ボードの GPIO / SPI / I2C 配線は `components/hardware/board_config/` に集約している。
+参照元は menuconfig のマスタースイッチで切り替えられる。
+
+- **OFF（既定）**: `board_config.h` にソース定義した値を使う（現行基板はこのまま）
+- **ON**: menuconfig で設定した値（`CONFIG_BOARD_*`）を使う（基板移植・派生機向け）
+
+```bash
+idf.py menuconfig
+# reRoMouse Board Hardware (GPIO / SPI / I2C)
+#   └ [*] Use menuconfig values for board pins   ← ON で配下のピン項目を編集可能
+```
+
+将来の WiFi 設定（SSID/パスワード等）やデバッグフラグは `reRoMouse Application` メニューに定義済み。
+詳細は [`components/hardware/board_config/README.md`](components/hardware/board_config/README.md) を参照。
+
 ## 主な機能
 
 - **迷路探索**: 足立法による最短経路探索と動的な地図構築（探索 / 全面探索モード）

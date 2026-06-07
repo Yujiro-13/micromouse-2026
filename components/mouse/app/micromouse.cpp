@@ -1,4 +1,5 @@
 
+#include "sdkconfig.h"
 #include "interrupt.hpp"
 #include "fast.hpp"
 #include "log.hpp"
@@ -9,6 +10,13 @@
 #include "structs.hpp"
 #include <functional>
 #include "task.hpp"
+
+// 初期化トレースの出力可否は menuconfig (RMOUSE_DEBUG_BOOT_TRACE) で切り替える。
+#if CONFIG_RMOUSE_DEBUG_BOOT_TRACE
+#define RMOUSE_BOOT_TRACE(...) printf(__VA_ARGS__)
+#else
+#define RMOUSE_BOOT_TRACE(...) ((void)0)
+#endif
 
 std::vector<std::shared_ptr<UI>> ui;
 
@@ -37,7 +45,7 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     FileWallThreshold wall_threshold;
     FileCenterSensValue center_sens_val;
 
-    printf("finish struct\n");
+    RMOUSE_BOOT_TRACE("finish struct\n");
 
     /* ログ取得用ハンドルの設定 */
     SemaphoreHandle_t on_logging = xSemaphoreCreateBinary();
@@ -47,15 +55,15 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     // 制御系
     Interrupt interrupt;
     interrupt.set_device_driver(driver);
-    printf("finish set device\n");
+    RMOUSE_BOOT_TRACE("finish set device\n");
     interrupt.ptr_by_sensor(sens);
     interrupt.ptr_by_motion(&val);
     interrupt.ptr_by_control(&control);
     interrupt.ptr_by_map(&map);
-    printf("finish pass pointer\n");
+    RMOUSE_BOOT_TRACE("finish pass pointer\n");
     interrupt.get_semphr_handle(&on_logging);
 
-    printf("finish interrupt struct\n");
+    RMOUSE_BOOT_TRACE("finish interrupt struct\n");
 
     // モーション系
     Adachi motion;
@@ -66,13 +74,13 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     motion.ptr_by_map(&map);
     motion.get_semphr_handle(&on_logging);
 
-    printf("finish motion struct\n");
+    RMOUSE_BOOT_TRACE("finish motion struct\n");
 
     // センサ系
     // NOTE: 旧 share_sensor_data(sens) はドライバがポインタを保持するだけの形骸処理
     //       だったため除去（案C）。SensorData への詰め替えは wall_sensor / interrupt が
     //       生値 getter を呼んで行う。
-    printf("finish sensor struct\n");
+    RMOUSE_BOOT_TRACE("finish sensor struct\n");
 
     /* パラメータの設定 */
     //pid_gain = read_file_pid();
@@ -81,11 +89,11 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
 
     set_default_params(val, control, sens, map);
 
-    printf("finish parameter\n"); // ここまでOK
+    RMOUSE_BOOT_TRACE("finish parameter\n"); // ここまでOK
     // タスク優先順位 1 ~ 25    25が最高優先度
     xTaskCreatePinnedToCore(myTaskInterrupt,
                             "interrupt", 8192, &interrupt, configMAX_PRIORITIES - 1, NULL, APP_CPU_NUM);
-    printf("finish interrupt task\n");
+    RMOUSE_BOOT_TRACE("finish interrupt task\n");
     // ADC タスクは init_hardware(main.cpp) で起動済み。
     xTaskCreatePinnedToCore(myTaskLog,
                             "log", 8192, &interrupt, configMAX_PRIORITIES - 3, NULL, APP_CPU_NUM);
