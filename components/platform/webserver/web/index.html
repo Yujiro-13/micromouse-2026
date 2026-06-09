@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reRoMouse Telemetry</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      margin: 0; padding: 2rem; line-height: 1.6;
+    }
+    h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
+    .badge {
+      display: inline-block; padding: .15rem .6rem; border-radius: 999px;
+      background: #2ecc71; color: #053; font-size: .8rem; font-weight: 700;
+      vertical-align: middle;
+    }
+    .muted { opacity: .7; font-size: .9rem; margin-top: .25rem; }
+    .card {
+      max-width: 38rem; margin: 1.5rem 0; padding: 1rem 1.25rem;
+      border: 1px solid #8884; border-radius: 12px;
+    }
+    .card h2 { margin: 0 0 .5rem; font-size: 1rem; }
+    code {
+      background: #8882; padding: .1rem .4rem; border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    ul { margin: .25rem 0 0; padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <h1>🐭 reRoMouse <span class="badge">ONLINE</span></h1>
+  <p class="muted">ESP32-S3 telemetry server &middot; Phase 2 (HTTP static serving)</p>
+
+  <div class="card">
+    <h2>サーバ稼働中</h2>
+    <p>このページは機体の HTTP サーバ（<code>esp_http_server</code>）から gzip 配信されています。</p>
+  </div>
+
+  <div class="card">
+    <h2>今後の予定</h2>
+    <ul>
+      <li>Phase 3: 静的情報 API（<code>GET /api/info</code>）</li>
+      <li>Phase 4: WebSocket ストリーム（<code>/ws</code>, 20&nbsp;Hz）</li>
+      <li>Phase 5: リアルタイム数値ダッシュボード</li>
+      <li>Phase 6: グラフ表示・タスク負荷の可視化</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>接続情報</h2>
+    <ul>
+      <li>AP 直結: <code>http://192.168.4.1/</code></li>
+      <li>mDNS: <code>http://&lt;hostname&gt;.local/</code>（既定 <code>reromouse</code>）</li>
+    </ul>
+  </div>
+</body>
+</html>

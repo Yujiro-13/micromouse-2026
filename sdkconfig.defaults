@@ -25,3 +25,24 @@ CONFIG_FREERTOS_HZ=1000
 # For log / parameter persistence (FAT partition). Sector size 4096.
 CONFIG_FATFS_SECTOR_4096=y
 CONFIG_WL_SECTOR_SIZE_4096=y
+
+# ===== WiFi Telemetry (effective only when RMOUSE_WIFI_ENABLE=y) =====
+# 下記は esp_wifi / lwip のシンボル。WiFi 機能が有効でこれらのコンポーネントが
+# ビルドに入る時のみ効く。OFF ビルドでは未ビルドのため idf.py が
+# "unknown symbol" 警告を出すことがあるが無害(適用されず挙動は不変)。
+# freertos 等の常時ビルドされるコンポーネントの設定は OFF にも影響するため
+# ここには置かない(OFF=従来同一を堅持)。
+#
+# 重要: sdkconfig.defaults は「sdkconfig が無い初回生成時」にのみシードされる。
+# 既に sdkconfig があり後から menuconfig で WiFi を有効化した場合、新規に現れた
+# esp_wifi/lwip シンボルには IDF 既定値が書かれ、下記は反映されないことがある。
+# その場合は menuconfig で設定する:
+#   Component config > LWIP > TCP/IP Task Affinity > CPU0
+#
+# WiFi/lwIP を core0(PRO_CPU) に固定し、制御の core1(APP_CPU/1ms) を不可侵に保つ。
+# WiFi タスクは choice ESP_WIFI_TASK_CORE_ID の選択肢 PINNED_TO_CORE_0(IDF既定でもある)。
+CONFIG_ESP_WIFI_TASK_PINNED_TO_CORE_0=y
+CONFIG_LWIP_TCPIP_TASK_AFFINITY_CPU0=y
+# 注: ESP_WIFI_IRAM_OPT は ESP32-S3 では WiFi コードが DIRAM(命令可)へ載るため、
+#     既定(y)でも idf.py size の 16KB IRAM 区画は増えない(実測 OFF と同値 16,383)。
+#     よって IRAM 退避は不要と判断し既定(y)のままとする(過去の n 指定は撤去)。
