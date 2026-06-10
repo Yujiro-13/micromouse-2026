@@ -35,7 +35,13 @@
 </head>
 <body>
   <h1>🐭 reRoMouse <span class="badge">ONLINE</span></h1>
-  <p class="muted">ESP32-S3 telemetry server &middot; Phase 3 (static info API)</p>
+  <p class="muted">ESP32-S3 telemetry server &middot; Phase 4 (WebSocket stream)</p>
+
+  <div class="card">
+    <h2>ライブ <code>WS /ws</code> <span id="wsstat" class="badge" style="background:#aaa;color:#222">…</span></h2>
+    <p class="muted" id="wsmeta">接続待ち</p>
+    <table id="live"><tbody><tr><td class="v" colspan="2">—</td></tr></tbody></table>
+  </div>
 
   <div class="card">
     <h2>デバイス情報 <code>GET /api/info</code></h2>
@@ -45,8 +51,7 @@
   <div class="card">
     <h2>今後の予定</h2>
     <ul>
-      <li>Phase 4: WebSocket ストリーム（<code>/ws</code>, 20&nbsp;Hz）</li>
-      <li>Phase 5: リアルタイム数値ダッシュボード</li>
+      <li>Phase 5: リアルタイム数値ダッシュボード（データ駆動）</li>
       <li>Phase 6: グラフ表示・タスク負荷の可視化</li>
     </ul>
   </div>
@@ -85,6 +90,58 @@
         body.innerHTML = '<tr><td class="v" colspan="2"></td></tr>';
         body.querySelector('td').textContent = '取得失敗: ' + e;
       });
+    })();
+
+    // /ws のライブストリームを購読し、最新フレームを key→value 表で表示する暫定ビュー。
+    // 受信レート(fps)も表示して 20Hz 配信を確認できる。(Phase 5 で本実装に置換)
+    (function () {
+      const stat = document.getElementById('wsstat');
+      const meta = document.getElementById('wsmeta');
+      const body = document.querySelector('#live tbody');
+      const flat = (obj, prefix, rows) => {
+        for (const [k, v] of Object.entries(obj)) {
+          const key = prefix ? prefix + '.' + k : k;
+          if (v !== null && typeof v === 'object') flat(v, key, rows);
+          else rows.push([key, typeof v === 'number' ? (+v.toFixed(4)).toString() : String(v)]);
+        }
+        return rows;
+      };
+      let frames = 0, lastT = performance.now();
+      setInterval(() => {
+        const now = performance.now();
+        const fps = frames * 1000 / (now - lastT);
+        meta.textContent = 'fps: ' + fps.toFixed(1);
+        frames = 0; lastT = now;
+      }, 1000);
+
+      let backoff = 500;
+      function connect() {
+        const ws = new WebSocket('ws://' + location.host + '/ws');
+        ws.onopen = () => {
+          stat.textContent = 'LIVE'; stat.style.background = '#2ecc71'; stat.style.color = '#053';
+          backoff = 500;
+        };
+        ws.onmessage = (ev) => {
+          frames++;
+          let msg; try { msg = JSON.parse(ev.data); } catch { return; }
+          const data = msg.data || msg;
+          const rows = flat(data, '', []);
+          if (body.children.length !== rows.length) {
+            body.innerHTML = rows.map(() => '<tr><td class="k"></td><td class="v"></td></tr>').join('');
+          }
+          body.querySelectorAll('tr').forEach((tr, i) => {
+            tr.children[0].textContent = rows[i][0];
+            tr.children[1].textContent = rows[i][1];
+          });
+        };
+        ws.onclose = () => {
+          stat.textContent = 'OFF'; stat.style.background = '#e74c3c'; stat.style.color = '#fff';
+          setTimeout(connect, backoff);
+          backoff = Math.min(backoff * 2, 5000);
+        };
+        ws.onerror = () => ws.close();
+      }
+      connect();
     })();
   </script>
 </body>

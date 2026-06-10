@@ -10,6 +10,7 @@
 #include "esp_system.h"
 #include "esp_mac.h"
 #include "esp_netif.h"
+#include "esp_timer.h"
 #include "esp_log.h"
 #include "sdkconfig.h"
 
@@ -22,6 +23,10 @@ const SensorData *s_sens = nullptr;
 const MotionValues *s_val = nullptr;
 const Control *s_control = nullptr;
 const MazeMap *s_map = nullptr;
+
+// WS 配信レート/一時停止の状態(クライアント cmd で更新)。単語アクセスのみでロックフリー。
+int s_rate_hz = CONFIG_RMOUSE_TELEMETRY_HZ;
+bool s_paused = false;
 
 const char *chip_model_str(esp_chip_model_t model)
 {
@@ -142,6 +147,163 @@ char *telemetry_info_json(void)
     char *out = cJSON_PrintUnformatted(root);
     cJSON_Delete(root);
     return out; // 呼び出し側が free()
+}
+
+char *telemetry_frame_json(void)
+{
+    cJSON *root = cJSON_CreateObject();
+    if (root == nullptr)
+    {
+        return nullptr;
+    }
+
+    // --- envelope(§5.10): 型付き封筒 + スキーマ版 v + タイムスタンプ ---
+    cJSON_AddStringToObject(root, "type", "telemetry");
+    cJSON_AddNumberToObject(root, "v", 1);
+    cJSON_AddNumberToObject(root, "t", static_cast<double>(esp_timer_get_time() / 1000)); // ms
+    cJSON *data = cJSON_AddObjectToObject(root, "data");
+
+    // --- hw(本フェーズはヒープのみ。タスク loop/CPU% は Phase 6) ---
+    cJSON *hw = cJSON_AddObjectToObject(data, "hw");
+    if (hw != nullptr)
+    {
+        cJSON_AddNumberToObject(hw, "heap", esp_get_free_heap_size());
+        cJSON_AddNumberToObject(hw, "heap_min", esp_get_minimum_free_heap_size());
+    }
+    cJSON_AddBoolToObject(data, "bound", s_sens != nullptr);
+
+    // --- sens ---
+    if (s_sens != nullptr)
+    {
+        const SensorData *s = s_sens;
+        cJSON *sens = cJSON_AddObjectToObject(data, "sens");
+        cJSON *wall = cJSON_AddObjectToObject(sens, "wall");
+        cJSON_AddNumberToObject(wall, "fl", s->wall.val.fl);
+        cJSON_AddNumberToObject(wall, "l", s->wall.val.l);
+        cJSON_AddNumberToObject(wall, "r", s->wall.val.r);
+        cJSON_AddNumberToObject(wall, "fr", s->wall.val.fr);
+        cJSON *exist = cJSON_AddObjectToObject(sens, "exist");
+        cJSON_AddBoolToObject(exist, "fl", s->wall.exist.fl);
+        cJSON_AddBoolToObject(exist, "l", s->wall.exist.l);
+        cJSON_AddBoolToObject(exist, "r", s->wall.exist.r);
+        cJSON_AddBoolToObject(exist, "fr", s->wall.exist.fr);
+        cJSON_AddNumberToObject(sens, "batt", s->battery_voltage);
+        cJSON *gyro = cJSON_AddObjectToObject(sens, "gyro");
+        cJSON_AddNumberToObject(gyro, "deg", s->gyro.degree);
+        cJSON_AddNumberToObject(gyro, "rad", s->gyro.radian);
+        cJSON_AddNumberToObject(gyro, "ref", s->gyro.ref);
+        cJSON *enc = cJSON_AddObjectToObject(sens, "enc");
+        cJSON_AddNumberToObject(enc, "l", s->enc.data.l);
+        cJSON_AddNumberToObject(enc, "r", s->enc.data.r);
+    }
+
+    // --- pose(自己位置: control->odom) ---
+    if (s_control != nullptr)
+    {
+        const Odometry *o = &s_control->odom;
+        cJSON *pose = cJSON_AddObjectToObject(data, "pose");
+        cJSON_AddNumberToObject(pose, "x", o->x_pos);
+        cJSON_AddNumberToObject(pose, "y", o->y_pos);
+        cJSON_AddNumberToObject(pose, "th", o->theta);
+        cJSON_AddNumberToObject(pose, "xc", o->x_pos_corrected);
+        cJSON_AddNumberToObject(pose, "yc", o->y_pos_corrected);
+        cJSON_AddNumberToObject(pose, "thc", o->theta_corrected);
+        cJSON_AddNumberToObject(pose, "perr", o->position_error);
+        cJSON_AddNumberToObject(pose, "therr", o->theta_error);
+        cJSON_AddNumberToObject(pose, "vx", o->vel_x);
+        cJSON_AddNumberToObject(pose, "vy", o->vel_y);
+    }
+
+    // --- motion(走行値: val + Duty は control) ---
+    if (s_val != nullptr)
+    {
+        const MotionValues *v = s_val;
+        cJSON *motion = cJSON_AddObjectToObject(data, "motion");
+        cJSON_AddNumberToObject(motion, "vel", v->current.vel);
+        cJSON_AddNumberToObject(motion, "vtar", v->tar.vel);
+        cJSON_AddNumberToObject(motion, "w", v->current.ang_vel);
+        cJSON_AddNumberToObject(motion, "wtar", v->tar.ang_vel);
+        cJSON_AddNumberToObject(motion, "len", v->current.len);
+        if (s_control != nullptr)
+        {
+            cJSON_AddNumberToObject(motion, "dl", s_control->Duty_l);
+            cJSON_AddNumberToObject(motion, "dr", s_control->Duty_r);
+        }
+    }
+
+    // --- stat(その他: モード/フラグ/セル) ---
+    if (s_map != nullptr)
+    {
+        const MazeMap *m = s_map;
+        cJSON *stat = cJSON_AddObjectToObject(data, "stat");
+        cJSON_AddBoolToObject(stat, "think", m->thinking_flag != FALSE);
+        cJSON_AddNumberToObject(stat, "stime", static_cast<double>(m->search_time));
+        cJSON *cell = cJSON_AddObjectToObject(stat, "cell");
+        cJSON_AddNumberToObject(cell, "x", m->pos.x);
+        cJSON_AddNumberToObject(cell, "y", m->pos.y);
+        cJSON_AddNumberToObject(cell, "dir", m->pos.dir);
+        if (s_control != nullptr)
+        {
+            cJSON_AddBoolToObject(stat, "log", s_control->log_flag != FALSE);
+        }
+    }
+
+    char *out = cJSON_PrintUnformatted(root);
+    cJSON_Delete(root);
+    return out; // 呼び出し側が free()
+}
+
+void telemetry_handle_cmd(const char *data, int len)
+{
+    if (data == nullptr || len <= 0)
+    {
+        return;
+    }
+    cJSON *root = cJSON_ParseWithLength(data, static_cast<size_t>(len));
+    if (root == nullptr)
+    {
+        return;
+    }
+
+    // envelope {"type":"cmd","data":{...}} なら data を、なければトップレベルを見る。
+    cJSON *obj = root;
+    cJSON *d = cJSON_GetObjectItem(root, "data");
+    if (cJSON_IsObject(d))
+    {
+        obj = d;
+    }
+
+    cJSON *rate = cJSON_GetObjectItem(obj, "rate");
+    if (cJSON_IsNumber(rate))
+    {
+        int v = static_cast<int>(rate->valuedouble);
+        if (v < 1) v = 1;
+        if (v > 50) v = 50;
+        s_rate_hz = v;
+        ESP_LOGI(TAG, "WS cmd: rate=%d Hz", v);
+    }
+
+    cJSON *pause = cJSON_GetObjectItem(obj, "pause");
+    if (cJSON_IsBool(pause))
+    {
+        s_paused = cJSON_IsTrue(pause);
+        ESP_LOGI(TAG, "WS cmd: pause=%s", s_paused ? "true" : "false");
+    }
+
+    cJSON_Delete(root);
+}
+
+int telemetry_rate_hz(void)
+{
+    int r = s_rate_hz;
+    if (r < 1) r = 1;
+    if (r > 50) r = 50;
+    return r;
+}
+
+bool telemetry_paused(void)
+{
+    return s_paused;
 }
 
 #endif // CONFIG_RMOUSE_WIFI_ENABLE

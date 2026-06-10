@@ -43,6 +43,11 @@ CONFIG_WL_SECTOR_SIZE_4096=y
 # WiFi タスクは choice ESP_WIFI_TASK_CORE_ID の選択肢 PINNED_TO_CORE_0(IDF既定でもある)。
 CONFIG_ESP_WIFI_TASK_PINNED_TO_CORE_0=y
 CONFIG_LWIP_TCPIP_TASK_AFFINITY_CPU0=y
+# esp_http_server の WebSocket サポート(Phase 4: WS /ws テレメトリ配信に必須)。
+# 既存 sdkconfig がある場合はここに追記しても反映されないため(上記「重要」参照)、
+# menuconfig で有効化する:
+#   Component config > HTTP Server > WebSocket support
+CONFIG_HTTPD_WS_SUPPORT=y
 # 注: ESP_WIFI_IRAM_OPT は ESP32-S3 では WiFi コードが DIRAM(命令可)へ載るため、
 #     既定(y)でも idf.py size の 16KB IRAM 区画は増えない(実測 OFF と同値 16,383)。
 #     よって IRAM 退避は不要と判断し既定(y)のままとする(過去の n 指定は撤去)。

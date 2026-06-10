@@ -10,7 +10,7 @@
 idf_component_register(
     SRCS "telemetry.cpp" "http_server.cpp"
     INCLUDE_DIRS "include"
-    PRIV_REQUIRES esp_http_server json esp_app_format esp_netif spi_flash mouse_core
+    PRIV_REQUIRES esp_http_server json esp_app_format esp_netif spi_flash esp_timer mouse_core
 )
 
 # --- 静的アセット(web/index.html)を gzip 圧縮してバイナリ埋め込み ---
