@@ -11,6 +11,12 @@
 #include <functional>
 #include "task.hpp"
 
+#if CONFIG_RMOUSE_WIFI_ENABLE
+// テレメトリ層(platform/webserver)へローカル構造体を読み取り専用で公開するための宣言。
+// 宣言は mouse_core(neutral)、実体は telemetry.cpp(WiFi 有効時のみビルド)。
+#include "telemetry_bind.hpp"
+#endif
+
 // 初期化トレースの出力可否は menuconfig (RMOUSE_DEBUG_BOOT_TRACE) で切り替える。
 #if CONFIG_RMOUSE_DEBUG_BOOT_TRACE
 #define RMOUSE_BOOT_TRACE(...) printf(__VA_ARGS__)
@@ -88,6 +94,12 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     //center_sens_val = read_file_center_sens_val();
 
     set_default_params(val, control, sens, map);
+
+#if CONFIG_RMOUSE_WIFI_ENABLE
+    // パラメータ確定後、ローカル構造体をテレメトリ層へ読み取り専用で公開。
+    // OFF 時は本行ごと除去され、従来挙動・サイズに影響しない。
+    telemetry_bind(sens, &val, &control, &map);
+#endif
 
     RMOUSE_BOOT_TRACE("finish parameter\n"); // ここまでOK
     // タスク優先順位 1 ~ 25    25が最高優先度

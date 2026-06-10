@@ -27,21 +27,24 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
     ul { margin: .25rem 0 0; padding-left: 1.2rem; }
+    table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+    td { padding: .2rem .5rem; border-bottom: 1px solid #8883; vertical-align: top; }
+    td.k { color: #888; white-space: nowrap; width: 9rem; }
+    td.v { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   </style>
 </head>
 <body>
   <h1>🐭 reRoMouse <span class="badge">ONLINE</span></h1>
-  <p class="muted">ESP32-S3 telemetry server &middot; Phase 2 (HTTP static serving)</p>
+  <p class="muted">ESP32-S3 telemetry server &middot; Phase 3 (static info API)</p>
 
   <div class="card">
-    <h2>サーバ稼働中</h2>
-    <p>このページは機体の HTTP サーバ（<code>esp_http_server</code>）から gzip 配信されています。</p>
+    <h2>デバイス情報 <code>GET /api/info</code></h2>
+    <table id="info"><tbody><tr><td class="v" colspan="2">読み込み中…</td></tr></tbody></table>
   </div>
 
   <div class="card">
     <h2>今後の予定</h2>
     <ul>
-      <li>Phase 3: 静的情報 API（<code>GET /api/info</code>）</li>
       <li>Phase 4: WebSocket ストリーム（<code>/ws</code>, 20&nbsp;Hz）</li>
       <li>Phase 5: リアルタイム数値ダッシュボード</li>
       <li>Phase 6: グラフ表示・タスク負荷の可視化</li>
@@ -55,5 +58,34 @@
       <li>mDNS: <code>http://&lt;hostname&gt;.local/</code>（既定 <code>reromouse</code>）</li>
     </ul>
   </div>
+
+  <script>
+    // /api/info の JSON を取得し、key→value をフラットに表示する暫定ビュー。
+    // (Phase 5 でデータ駆動ダッシュボードに置換予定)
+    (function () {
+      const body = document.querySelector('#info tbody');
+      const flat = (obj, prefix, rows) => {
+        for (const [k, v] of Object.entries(obj)) {
+          const key = prefix ? prefix + '.' + k : k;
+          if (v !== null && typeof v === 'object') flat(v, key, rows);
+          else rows.push([key, String(v)]);
+        }
+        return rows;
+      };
+      fetch('/api/info').then(r => r.json()).then(j => {
+        const rows = flat(j, '', []);
+        body.innerHTML = rows
+          .map(([k, v]) => `<tr><td class="k"></td><td class="v"></td></tr>`)
+          .join('');
+        body.querySelectorAll('tr').forEach((tr, i) => {
+          tr.children[0].textContent = rows[i][0];
+          tr.children[1].textContent = rows[i][1];
+        });
+      }).catch(e => {
+        body.innerHTML = '<tr><td class="v" colspan="2"></td></tr>';
+        body.querySelector('td').textContent = '取得失敗: ' + e;
+      });
+    })();
+  </script>
 </body>
 </html>

@@ -2,9 +2,11 @@
 
 #if CONFIG_RMOUSE_WIFI_ENABLE
 
+#include <cstdlib>
 #include "esp_http_server.h"
 #include "esp_log.h"
 #include "sdkconfig.h"
+#include "telemetry.hpp"
 
 namespace
 {
@@ -25,6 +27,21 @@ esp_err_t root_get_handler(httpd_req_t *req)
     httpd_resp_set_type(req, "text/html");
     httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
     return httpd_resp_send(req, reinterpret_cast<const char *>(index_html_gz_start), gz_len);
+}
+
+// GET /api/info : デバイス静的情報(チップ/MAC/IP/FW/ヒープ等)を JSON で返す(1 回取得用)。
+esp_err_t info_get_handler(httpd_req_t *req)
+{
+    char *json = telemetry_info_json();
+    if (json == nullptr)
+    {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "info json build failed");
+        return ESP_FAIL;
+    }
+    httpd_resp_set_type(req, "application/json");
+    esp_err_t r = httpd_resp_sendstr(req, json);
+    free(json);
+    return r;
 }
 
 } // namespace
@@ -58,7 +75,14 @@ void webserver_start(void)
     root.user_ctx = nullptr;
     httpd_register_uri_handler(s_server, &root);
 
-    ESP_LOGI(TAG, "HTTP server up on port %d (core0); GET / -> index.html (gzip)",
+    httpd_uri_t info = {};
+    info.uri = "/api/info";
+    info.method = HTTP_GET;
+    info.handler = info_get_handler;
+    info.user_ctx = nullptr;
+    httpd_register_uri_handler(s_server, &info);
+
+    ESP_LOGI(TAG, "HTTP server up on port %d (core0); GET / -> index.html (gzip), GET /api/info -> json",
              CONFIG_RMOUSE_TELEMETRY_PORT);
 }
 

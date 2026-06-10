@@ -1,4 +1,5 @@
-# platform/webserver : HTTP サーバ(esp_http_server)。GET / で最小ダッシュボードを配信。
+# platform/webserver : HTTP サーバ(esp_http_server)。GET / で最小ダッシュボードを配信、
+#                      GET /api/info で静的デバイス情報 JSON(telemetry)を返す。
 #
 # 本コンポーネントは WiFi 無効時、トップレベル CMakeLists の EXCLUDE_COMPONENTS で
 # ビルドから完全に除外される。したがってここでは無条件に登録してよい。
@@ -7,9 +8,9 @@
 #       CONFIG_* を参照できない。よって CONFIG による出し分けは行わない
 #       (出し分けは上記 EXCLUDE_COMPONENTS とソースの #if で行う)。
 idf_component_register(
-    SRCS "http_server.cpp"
+    SRCS "telemetry.cpp" "http_server.cpp"
     INCLUDE_DIRS "include"
-    PRIV_REQUIRES esp_http_server
+    PRIV_REQUIRES esp_http_server json esp_app_format esp_netif spi_flash mouse_core
 )
 
 # --- 静的アセット(web/index.html)を gzip 圧縮してバイナリ埋め込み ---
