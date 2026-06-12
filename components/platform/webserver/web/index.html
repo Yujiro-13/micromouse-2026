@@ -22,14 +22,21 @@
     }
     .stat { font-size: .85rem; opacity: .8; }
     .stat b { font-variant-numeric: tabular-nums; }
-    #cards {
+    .hint { font-size: .8rem; opacity: .65; margin: 0 0 .75rem; }
+    #graphs, #cards {
       display: grid; gap: 1rem;
       grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
     }
+    #graphs:empty { display: none; }
+    #graphs { margin-bottom: 1rem; }
     .card {
       padding: .75rem 1rem; border: 1px solid #8884; border-radius: 12px;
     }
-    .card h2 { margin: 0 0 .5rem; font-size: 1rem; }
+    .card h2 {
+      margin: 0 0 .5rem; font-size: 1rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .card h2 .sp { flex: 1; }
     code {
       background: #8882; padding: .05rem .35rem; border-radius: 6px; font-size: .8em;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace; opacity: .8;
@@ -39,6 +46,30 @@
     td.k { color: #888; white-space: nowrap; }
     td.v {
       text-align: right; font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    tr.pinnable { cursor: pointer; }
+    tr.pinnable:hover td { background: #8881; }
+    tr.pinned td.k::before { content: "📈 "; }
+    /* グラフ */
+    .chart canvas { width: 100%; height: 120px; display: block; }
+    .chart .meta {
+      display: flex; justify-content: space-between;
+      font-size: .75rem; opacity: .7; font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .btn-x {
+      cursor: pointer; border: none; background: #8883; color: inherit;
+      border-radius: 6px; padding: 0 .45rem; font-size: .85rem;
+    }
+    /* 自己位置 2D */
+    #pose-card { width: max-content; max-width: 100%; margin-bottom: 1rem; }
+    #poseCanvas { width: 320px; height: 320px; display: block; max-width: 100%; }
+    .legend { display: flex; gap: 1rem; font-size: .75rem; opacity: .8; margin-top: .4rem; }
+    .legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: .25rem; }
+    .pose-info {
+      font-size: .8rem; opacity: .85; margin-top: .35rem;
+      font-variant-numeric: tabular-nums;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
   </style>
@@ -52,6 +83,22 @@
     <span class="stat" id="ver">schema —</span>
   </header>
 
+  <p class="hint">数値の行をクリックすると、その項目を時系列グラフにピン留めできます。</p>
+
+  <section id="viz">
+    <div class="card" id="pose-card">
+      <h2>自己位置 2D <code>pose</code></h2>
+      <canvas id="poseCanvas"></canvas>
+      <div class="legend">
+        <span><i style="background:#3498db"></i>生</span>
+        <span><i style="background:#e67e22"></i>セル補正後</span>
+        <span><i style="background:#2ecc71"></i>現在セル/方位</span>
+      </div>
+      <div id="pose-info" class="pose-info">—</div>
+    </div>
+  </section>
+
+  <div id="graphs"></div>
   <div id="cards"></div>
 
   <script src="/app.js"></script>
