@@ -8,6 +8,7 @@
 #include "adachi.hpp"
 #include "micromouse.hpp"
 #include "structs.hpp"
+#include "pose_init.hpp" // 自己位置初期化の一元化(起動時/各モード冒頭で共用)
 #include <functional>
 #include "task.hpp"
 
@@ -94,6 +95,9 @@ void run_micromouse(std::shared_ptr<Drivers> driver, SensorData *sens)
     //center_sens_val = read_file_center_sens_val();
 
     set_default_params(val, control, sens, map);
+
+    // 走行前(待機状態)から自己位置を定義しておく。各モード開始時にも再初期化される。
+    reset_pose_to_start(&control, &val, &map);
 
 #if CONFIG_RMOUSE_WIFI_ENABLE
     // パラメータ確定後、ローカル構造体をテレメトリ層へ読み取り専用で公開。

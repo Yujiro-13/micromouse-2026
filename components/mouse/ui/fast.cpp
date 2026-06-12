@@ -1,5 +1,6 @@
 
 #include "fast.hpp"
+#include "pose_init.hpp" // 自己位置初期化の一元化
 
 void Fast::ptr_by_sensor(SensorData *_sens) { sens = _sens; }
 
@@ -79,26 +80,7 @@ void Fast2::main_task() // Task Number 3
     // 通常探索->折返し重ね全面探索
     val->current.rad = 0.0;
     val->sum.len = 0.0;
-    map->pos.x = 0;
-    map->pos.y = 0;
-    map->pos.dir = NORTH;
-
-    // === オドメトリ初期化 ===
-    // 実際のロボット位置（センサベース）とセル基準位置（真値）は異なる
-    const float ROBOT_START_X = 0.045; // 45mm - ロボット実際のX位置
-    const float ROBOT_START_Y = 0.030; // 30mm - ロボット実際のY位置（セル中心より15mm手前）
-    const float CELL_CENTER_X = 0.045; // 45mm - セル(0,0)中心X
-    const float CELL_CENTER_Y = 0.045; // 45mm - セル(0,0)中心Y
-    
-    // センサベース推定位置を実際のロボット位置で初期化
-    control->odom.x_pos = ROBOT_START_X;
-    control->odom.y_pos = ROBOT_START_Y;
-    control->odom.theta = 0.0; // NORTH
-    
-    // 補正後オドメトリはセル中心位置で初期化（真値として扱う）
-    control->odom.x_pos_corrected = CELL_CENTER_X;
-    control->odom.y_pos_corrected = CELL_CENTER_Y;
-    control->odom.theta_corrected = 0.0;
+    reset_pose_to_start(control, val, map);
 
     map->flag = SEARCH;
     control->log_flag = TRUE;
@@ -138,26 +120,7 @@ void Fast3::main_task() // Task Number 4
     *map = map_read();
     
     // 手動でロボットをスタート地点に戻した後なので、位置と向きを正しく設定
-    map->pos.x = 0;
-    map->pos.y = 0;
-    map->pos.dir = NORTH;
-
-    // === オドメトリ初期化 ===
-    // 実際のロボット位置（センサベース）とセル基準位置（真値）は異なる
-    const float ROBOT_START_X = 0.045; // 45mm - ロボット実際のX位置
-    const float ROBOT_START_Y = 0.030; // 30mm - ロボット実際のY位置（セル中心より15mm手前）
-    const float CELL_CENTER_X = 0.045; // 45mm - セル(0,0)中心X
-    const float CELL_CENTER_Y = 0.045; // 45mm - セル(0,0)中心Y
-    
-    // センサベース推定位置を実際のロボット位置で初期化
-    control->odom.x_pos = ROBOT_START_X;
-    control->odom.y_pos = ROBOT_START_Y;
-    control->odom.theta = 0.0; // NORTH
-    
-    // 補正後オドメトリはセル中心位置で初期化（真値として扱う）
-    control->odom.x_pos_corrected = CELL_CENTER_X;
-    control->odom.y_pos_corrected = CELL_CENTER_Y;
-    control->odom.theta_corrected = 0.0;
+    reset_pose_to_start(control, val, map);
 
     map->flag = SEARCH;
     control->log_flag = TRUE;
@@ -193,26 +156,7 @@ void Fast4::main_task() // Task Number 5
     *map = map_read();
     
     // 手動でロボットをスタート地点に戻した後なので、位置と向きを正しく設定
-    map->pos.x = 0;
-    map->pos.y = 0;
-    map->pos.dir = NORTH;
-
-    // === オドメトリ初期化 ===
-    // 実際のロボット位置（センサベース）とセル基準位置（真値）は異なる
-    const float ROBOT_START_X = 0.045; // 45mm - ロボット実際のX位置
-    const float ROBOT_START_Y = 0.030; // 30mm - ロボット実際のY位置（セル中心より15mm手前）
-    const float CELL_CENTER_X = 0.045; // 45mm - セル(0,0)中心X
-    const float CELL_CENTER_Y = 0.045; // 45mm - セル(0,0)中心Y
-    
-    // センサベース推定位置を実際のロボット位置で初期化
-    control->odom.x_pos = ROBOT_START_X;
-    control->odom.y_pos = ROBOT_START_Y;
-    control->odom.theta = 0.0; // NORTH
-    
-    // 補正後オドメトリはセル中心位置で初期化（真値として扱う）
-    control->odom.x_pos_corrected = CELL_CENTER_X;
-    control->odom.y_pos_corrected = CELL_CENTER_Y;
-    control->odom.theta_corrected = 0.0;
+    reset_pose_to_start(control, val, map);
 
     map->flag = SEARCH;
     control->log_flag = TRUE;
