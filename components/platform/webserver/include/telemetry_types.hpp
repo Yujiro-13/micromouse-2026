@@ -10,8 +10,9 @@
 // テレメトリ専用のデータ型。制御用データの正本(structs.hpp)とは責務を分け、
 // 通信層が必要とする「計測値・スナップショット」だけをここに定義する。
 //
-// Phase 3 では型の定義のみ(/api/info は静的情報なので未使用)。
-// Phase 4(WS ストリーム)で telemetry_task が値を充填し 20Hz で配信する。
+// Phase 6 の実装ではループ計測を telemetry.cpp 内の軽量配列で保持し(s_loop_us/s_period_us、
+// 制御タスクが telemetry_report_loop で更新)、stack/core/prio は RTOS から低レートで取得して
+// hw.tasks[] へ直接シリアライズする。下記の HwStats/HwTaskStat は当初設計の参照型として残す。
 
 // 1 タスク分のループ計測。各制御タスクが自身の実行時間/周期を書き込み、telemetry が読む。
 struct HwTaskStat

@@ -28,6 +28,20 @@ extern "C"
                         const Control *control,
                         const MazeMap *map);
 
+    // 各制御タスクのループ計測 ID。telemetry 側の tasks[] 添字と対応する。
+    enum
+    {
+        TELEM_TASK_INTERRUPT = 0, // 1ms 制御ループ(core1)
+        TELEM_TASK_ADC = 1,       // 壁センササンプリング(core1)
+        TELEM_TASK_LOG = 2,       // ログ書き込み(core1, イベント駆動)
+        TELEM_TASK_COUNT = 3,
+    };
+
+    // 各制御タスクが自身のループ末尾で 1 回呼び、直近の実行時間/周期を公開する。
+    // 書き込みは uint32 のワード単位ストアのみ(ロックフリー)。telemetry_task が低レートで読む。
+    // OFF 時は呼び出しごと #if 除去され、計測コード自体が存在しない(従来同一)。
+    void telemetry_report_loop(int task_id, uint32_t loop_us, uint32_t period_us);
+
 #ifdef __cplusplus
 }
 #endif

@@ -4,6 +4,8 @@
 
 #include <cstdio>
 #include "cJSON.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_app_desc.h"
 #include "esp_chip_info.h"
 #include "esp_flash.h"
@@ -27,6 +29,28 @@ const MazeMap *s_map = nullptr;
 // WS 配信レート/一時停止の状態(クライアント cmd で更新)。単語アクセスのみでロックフリー。
 int s_rate_hz = CONFIG_RMOUSE_TELEMETRY_HZ;
 bool s_paused = false;
+
+// 各制御タスクのループ計測(制御タスクが core1 から書き、telemetry_task が core0 から読む)。
+// uint32 のワード単位アクセスのみでロックフリー(§5.3)。volatile で読み書きの消失を防ぐ。
+volatile uint32_t s_loop_us[TELEM_TASK_COUNT] = {};
+volatile uint32_t s_period_us[TELEM_TASK_COUNT] = {};
+
+// HW タスク表のメタ情報。ハンドルは生成後不変なので初回ルックアップ結果をキャッシュする。
+// stack/prio/core は緩変かつ取得が重い(特に stack 高水位はスタック全走査)ため、
+// 毎フレームではなく一定間隔でのみ更新しキャッシュ値を配信する(loop/period は常に最新)。
+struct HwTaskMeta
+{
+    const char *name;    // FreeRTOS タスク名(= xTaskGetHandle のキー)
+    TaskHandle_t handle; // キャッシュ済みハンドル(未取得は nullptr)
+    uint32_t stack;      // スタック起動来最小空き [byte]
+    int prio;            // 優先度
+    int core;            // 実行コア(-1=未固定)
+};
+HwTaskMeta s_hw_tasks[TELEM_TASK_COUNT] = {
+    {"interrupt", nullptr, 0, 0, -1},
+    {"adc", nullptr, 0, 0, -1},
+    {"log", nullptr, 0, 0, -1},
+};
 
 const char *chip_model_str(esp_chip_model_t model)
 {
@@ -69,7 +93,71 @@ void add_netif_ip(cJSON *root, const char *ifkey, const char *json_key)
     cJSON_AddStringToObject(root, json_key, buf);
 }
 
+// hw へ各制御タスクの計測(loop µs/周期/スタック残/コア/優先度)を tasks 配列で追加する。
+// ハンドルは初回のみ名前ルックアップし以降キャッシュ。RTOS 問い合わせは telemetry_task
+// (core0, 低レート)からのみ行い、制御 core1 を侵さない。
+void add_hw_tasks(cJSON *hw)
+{
+    cJSON *tasks = cJSON_AddArrayToObject(hw, "tasks");
+    if (tasks == nullptr)
+    {
+        return;
+    }
+
+    // 重い RTOS 問い合わせ(stack 高水位ほか)は一定間隔でのみ更新する。
+    static int64_t s_last_refresh_us = 0;
+    int64_t now = esp_timer_get_time();
+    bool refresh = (s_last_refresh_us == 0) || (now - s_last_refresh_us >= 500000); // 0.5s
+    if (refresh)
+    {
+        s_last_refresh_us = now;
+    }
+
+    for (int i = 0; i < TELEM_TASK_COUNT; i++)
+    {
+        HwTaskMeta &m = s_hw_tasks[i];
+        if (m.handle == nullptr)
+        {
+            m.handle = xTaskGetHandle(m.name);
+        }
+        if (refresh && m.handle != nullptr)
+        {
+            // uxTaskGetStackHighWaterMark は ESP-IDF ではバイト単位で「起動来の最小空き」を返す。
+            m.stack = uxTaskGetStackHighWaterMark(m.handle);
+            m.prio = static_cast<int>(uxTaskPriorityGet(m.handle));
+            BaseType_t core = xTaskGetCoreID(m.handle);
+            m.core = (core == tskNO_AFFINITY) ? -1 : static_cast<int>(core);
+        }
+
+        cJSON *t = cJSON_CreateObject();
+        if (t == nullptr)
+        {
+            continue;
+        }
+        cJSON_AddStringToObject(t, "n", m.name);
+        cJSON_AddNumberToObject(t, "us", s_loop_us[i]);       // 常に最新(ワード read)
+        cJSON_AddNumberToObject(t, "period", s_period_us[i]); // 常に最新
+        if (m.handle != nullptr)
+        {
+            cJSON_AddNumberToObject(t, "stack", m.stack);
+            cJSON_AddNumberToObject(t, "prio", m.prio);
+            cJSON_AddNumberToObject(t, "core", m.core);
+        }
+        cJSON_AddItemToArray(tasks, t);
+    }
+}
+
 } // namespace
+
+void telemetry_report_loop(int task_id, uint32_t loop_us, uint32_t period_us)
+{
+    if (task_id < 0 || task_id >= TELEM_TASK_COUNT)
+    {
+        return;
+    }
+    s_loop_us[task_id] = loop_us;
+    s_period_us[task_id] = period_us;
+}
 
 void telemetry_bind(const SensorData *sens, const MotionValues *val,
                     const Control *control, const MazeMap *map)
@@ -163,12 +251,13 @@ char *telemetry_frame_json(void)
     cJSON_AddNumberToObject(root, "t", static_cast<double>(esp_timer_get_time() / 1000)); // ms
     cJSON *data = cJSON_AddObjectToObject(root, "data");
 
-    // --- hw(本フェーズはヒープのみ。タスク loop/CPU% は Phase 6) ---
+    // --- hw(ヒープ + 各制御タスクの loop µs/周期/スタック/コア/優先度) ---
     cJSON *hw = cJSON_AddObjectToObject(data, "hw");
     if (hw != nullptr)
     {
         cJSON_AddNumberToObject(hw, "heap", esp_get_free_heap_size());
         cJSON_AddNumberToObject(hw, "heap_min", esp_get_minimum_free_heap_size());
+        add_hw_tasks(hw);
     }
     cJSON_AddBoolToObject(data, "bound", s_sens != nullptr);
 
