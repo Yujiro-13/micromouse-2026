@@ -25,18 +25,33 @@ TaskHandle_t s_telem_task = nullptr;
 constexpr size_t kMaxClients = 8;
 #endif
 
-// EMBED した gzip 済み index.html(CMake: target_add_binary_data)。
-// シンボル名は埋め込み元ファイル名 index.html.gz 由来('.'→'_')。
+// EMBED した gzip 済みアセット(CMake: target_add_binary_data)。
+// シンボル名は埋め込み元ファイル名由来('.'→'_')。
 extern const uint8_t index_html_gz_start[] asm("_binary_index_html_gz_start");
 extern const uint8_t index_html_gz_end[] asm("_binary_index_html_gz_end");
+extern const uint8_t app_js_gz_start[] asm("_binary_app_js_gz_start");
+extern const uint8_t app_js_gz_end[] asm("_binary_app_js_gz_end");
 
-// GET / : 最小ダッシュボード(静的, gzip)を返す。
+// gzip 済みアセットを Content-Encoding: gzip 付きで配信する共通処理。
+esp_err_t send_gzip(httpd_req_t *req, const char *content_type,
+                    const uint8_t *start, const uint8_t *end)
+{
+    const size_t gz_len = static_cast<size_t>(end - start);
+    httpd_resp_set_type(req, content_type);
+    httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
+    return httpd_resp_send(req, reinterpret_cast<const char *>(start), gz_len);
+}
+
+// GET / : ダッシュボード本体(静的, gzip)。
 esp_err_t root_get_handler(httpd_req_t *req)
 {
-    const size_t gz_len = static_cast<size_t>(index_html_gz_end - index_html_gz_start);
-    httpd_resp_set_type(req, "text/html");
-    httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
-    return httpd_resp_send(req, reinterpret_cast<const char *>(index_html_gz_start), gz_len);
+    return send_gzip(req, "text/html", index_html_gz_start, index_html_gz_end);
+}
+
+// GET /app.js : ダッシュボードのスクリプト(静的, gzip)。
+esp_err_t app_js_get_handler(httpd_req_t *req)
+{
+    return send_gzip(req, "application/javascript", app_js_gz_start, app_js_gz_end);
 }
 
 // GET /api/info : デバイス静的情報(チップ/MAC/IP/FW/ヒープ等)を JSON で返す(1 回取得用)。
@@ -186,6 +201,13 @@ void webserver_start(void)
     root.user_ctx = nullptr;
     httpd_register_uri_handler(s_server, &root);
 
+    httpd_uri_t app_js = {};
+    app_js.uri = "/app.js";
+    app_js.method = HTTP_GET;
+    app_js.handler = app_js_get_handler;
+    app_js.user_ctx = nullptr;
+    httpd_register_uri_handler(s_server, &app_js);
+
     httpd_uri_t info = {};
     info.uri = "/api/info";
     info.method = HTTP_GET;
@@ -208,7 +230,7 @@ void webserver_start(void)
         xTaskCreatePinnedToCore(telemetry_task, "telem", 6144, nullptr,
                                 tskIDLE_PRIORITY + 2, &s_telem_task, 0);
     }
-    ESP_LOGI(TAG, "HTTP server up on port %d (core0); GET / , /api/info, WS /ws @ %d Hz",
+    ESP_LOGI(TAG, "HTTP server up on port %d (core0); GET / , /app.js , /api/info, WS /ws @ %d Hz",
              CONFIG_RMOUSE_TELEMETRY_PORT, telemetry_rate_hz());
 #else
     ESP_LOGW(TAG, "HTTP server up on port %d (core0); GET / , /api/info "

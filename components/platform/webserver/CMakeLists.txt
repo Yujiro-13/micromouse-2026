@@ -1,5 +1,5 @@
-# platform/webserver : HTTP サーバ(esp_http_server)。GET / で最小ダッシュボードを配信、
-#                      GET /api/info で静的デバイス情報 JSON(telemetry)を返す。
+# platform/webserver : HTTP サーバ(esp_http_server)。GET / でダッシュボード(index.html/app.js)、
+#                      GET /api/info で静的デバイス情報 JSON、WS /ws で 20Hz テレメトリを配信。
 #
 # 本コンポーネントは WiFi 無効時、トップレベル CMakeLists の EXCLUDE_COMPONENTS で
 # ビルドから完全に除外される。したがってここでは無条件に登録してよい。
@@ -13,25 +13,31 @@ idf_component_register(
     PRIV_REQUIRES esp_http_server json esp_app_format esp_netif spi_flash esp_timer mouse_core
 )
 
-# --- 静的アセット(web/index.html)を gzip 圧縮してバイナリ埋め込み ---
+# --- 静的アセット(web/*)を gzip 圧縮してバイナリ埋め込み ---
 # 配信時に Content-Encoding: gzip を付けて返す(ブラウザが透過展開する)。
-# Flash 肥大(factory 超過リスク, 仕様書§13)対策として、後続フェーズで増える
-# JS/CSS も同じパイプラインで圧縮埋め込みできるよう、最小ページで先に確立しておく。
+# Flash 肥大(factory 超過リスク, 仕様書§13)対策と Flash 競合回避(NFR-5)のため、
+# アセットは実行時の SPIFFS/FAT 読み出しではなく .rodata へ埋め込む。
 # シェルのリダイレクトに依存しないよう「build へコピー → その場で gzip」する
 # (gzip は -f で上書き、-n で名前/時刻を残さず再現性確保)。要 gzip(Linux 標準)。
-set(_web_src "${COMPONENT_DIR}/web/index.html")
-set(_web_gz "${CMAKE_CURRENT_BINARY_DIR}/index.html.gz")
-add_custom_command(
-    OUTPUT "${_web_gz}"
-    COMMAND "${CMAKE_COMMAND}" -E copy "${_web_src}" "${CMAKE_CURRENT_BINARY_DIR}/index.html"
-    COMMAND gzip -9 -f -n "${CMAKE_CURRENT_BINARY_DIR}/index.html"
-    DEPENDS "${_web_src}"
-    COMMENT "Gzipping web asset: index.html -> index.html.gz"
-    VERBATIM
-)
-add_custom_target(rmouse_web_assets DEPENDS "${_web_gz}")
+# 生成シンボルは埋め込み元ファイル名由来('.'→'_'): 例 _binary_index_html_gz_start /
+# _binary_app_js_gz_start。アセット追加時はこのリストへ 1 行足すだけでよい。
+set(_web_assets "index.html" "app.js")
+set(_web_gz_files "")
+foreach(_asset ${_web_assets})
+    set(_src "${COMPONENT_DIR}/web/${_asset}")
+    set(_gz "${CMAKE_CURRENT_BINARY_DIR}/${_asset}.gz")
+    add_custom_command(
+        OUTPUT "${_gz}"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${_src}" "${CMAKE_CURRENT_BINARY_DIR}/${_asset}"
+        COMMAND gzip -9 -f -n "${CMAKE_CURRENT_BINARY_DIR}/${_asset}"
+        DEPENDS "${_src}"
+        COMMENT "Gzipping web asset: ${_asset} -> ${_asset}.gz"
+        VERBATIM
+    )
+    list(APPEND _web_gz_files "${_gz}")
+endforeach()
+add_custom_target(rmouse_web_assets DEPENDS ${_web_gz_files})
 add_dependencies(${COMPONENT_LIB} rmouse_web_assets)
-
-# gzip 済みファイルを .rodata へ埋め込む(BINARY=末尾 NUL を付けない)。
-# 生成シンボル: _binary_index_html_gz_start / _binary_index_html_gz_end
-target_add_binary_data(${COMPONENT_LIB} "${_web_gz}" BINARY)
+foreach(_gz ${_web_gz_files})
+    target_add_binary_data(${COMPONENT_LIB} "${_gz}" BINARY)
+endforeach()

@@ -6,143 +6,54 @@
   <title>reRoMouse Telemetry</title>
   <style>
     :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
     body {
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      margin: 0; padding: 2rem; line-height: 1.6;
+      margin: 0; padding: 1rem; line-height: 1.5;
     }
-    h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
+    header {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem;
+      padding-bottom: .75rem; border-bottom: 1px solid #8884; margin-bottom: 1rem;
+    }
+    h1 { margin: 0; font-size: 1.3rem; }
     .badge {
       display: inline-block; padding: .15rem .6rem; border-radius: 999px;
-      background: #2ecc71; color: #053; font-size: .8rem; font-weight: 700;
-      vertical-align: middle;
+      background: #aaa; color: #222; font-size: .8rem; font-weight: 700;
     }
-    .muted { opacity: .7; font-size: .9rem; margin-top: .25rem; }
+    .stat { font-size: .85rem; opacity: .8; }
+    .stat b { font-variant-numeric: tabular-nums; }
+    #cards {
+      display: grid; gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    }
     .card {
-      max-width: 38rem; margin: 1.5rem 0; padding: 1rem 1.25rem;
-      border: 1px solid #8884; border-radius: 12px;
+      padding: .75rem 1rem; border: 1px solid #8884; border-radius: 12px;
     }
     .card h2 { margin: 0 0 .5rem; font-size: 1rem; }
     code {
-      background: #8882; padding: .1rem .4rem; border-radius: 6px;
+      background: #8882; padding: .05rem .35rem; border-radius: 6px; font-size: .8em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; opacity: .8;
+    }
+    table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+    td { padding: .15rem .4rem; border-bottom: 1px solid #8883; }
+    td.k { color: #888; white-space: nowrap; }
+    td.v {
+      text-align: right; font-variant-numeric: tabular-nums;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
-    ul { margin: .25rem 0 0; padding-left: 1.2rem; }
-    table { border-collapse: collapse; width: 100%; font-size: .9rem; }
-    td { padding: .2rem .5rem; border-bottom: 1px solid #8883; vertical-align: top; }
-    td.k { color: #888; white-space: nowrap; width: 9rem; }
-    td.v { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   </style>
 </head>
 <body>
-  <h1>🐭 reRoMouse <span class="badge">ONLINE</span></h1>
-  <p class="muted">ESP32-S3 telemetry server &middot; Phase 4 (WebSocket stream)</p>
+  <header>
+    <h1>🐭 reRoMouse Telemetry</h1>
+    <span id="status" class="badge">…</span>
+    <span class="stat">batt <b id="batt">—</b></span>
+    <span class="stat"><b id="fps">0</b> fps</span>
+    <span class="stat" id="ver">schema —</span>
+  </header>
 
-  <div class="card">
-    <h2>ライブ <code>WS /ws</code> <span id="wsstat" class="badge" style="background:#aaa;color:#222">…</span></h2>
-    <p class="muted" id="wsmeta">接続待ち</p>
-    <table id="live"><tbody><tr><td class="v" colspan="2">—</td></tr></tbody></table>
-  </div>
+  <div id="cards"></div>
 
-  <div class="card">
-    <h2>デバイス情報 <code>GET /api/info</code></h2>
-    <table id="info"><tbody><tr><td class="v" colspan="2">読み込み中…</td></tr></tbody></table>
-  </div>
-
-  <div class="card">
-    <h2>今後の予定</h2>
-    <ul>
-      <li>Phase 5: リアルタイム数値ダッシュボード（データ駆動）</li>
-      <li>Phase 6: グラフ表示・タスク負荷の可視化</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>接続情報</h2>
-    <ul>
-      <li>AP 直結: <code>http://192.168.4.1/</code></li>
-      <li>mDNS: <code>http://&lt;hostname&gt;.local/</code>（既定 <code>reromouse</code>）</li>
-    </ul>
-  </div>
-
-  <script>
-    // /api/info の JSON を取得し、key→value をフラットに表示する暫定ビュー。
-    // (Phase 5 でデータ駆動ダッシュボードに置換予定)
-    (function () {
-      const body = document.querySelector('#info tbody');
-      const flat = (obj, prefix, rows) => {
-        for (const [k, v] of Object.entries(obj)) {
-          const key = prefix ? prefix + '.' + k : k;
-          if (v !== null && typeof v === 'object') flat(v, key, rows);
-          else rows.push([key, String(v)]);
-        }
-        return rows;
-      };
-      fetch('/api/info').then(r => r.json()).then(j => {
-        const rows = flat(j, '', []);
-        body.innerHTML = rows
-          .map(([k, v]) => `<tr><td class="k"></td><td class="v"></td></tr>`)
-          .join('');
-        body.querySelectorAll('tr').forEach((tr, i) => {
-          tr.children[0].textContent = rows[i][0];
-          tr.children[1].textContent = rows[i][1];
-        });
-      }).catch(e => {
-        body.innerHTML = '<tr><td class="v" colspan="2"></td></tr>';
-        body.querySelector('td').textContent = '取得失敗: ' + e;
-      });
-    })();
-
-    // /ws のライブストリームを購読し、最新フレームを key→value 表で表示する暫定ビュー。
-    // 受信レート(fps)も表示して 20Hz 配信を確認できる。(Phase 5 で本実装に置換)
-    (function () {
-      const stat = document.getElementById('wsstat');
-      const meta = document.getElementById('wsmeta');
-      const body = document.querySelector('#live tbody');
-      const flat = (obj, prefix, rows) => {
-        for (const [k, v] of Object.entries(obj)) {
-          const key = prefix ? prefix + '.' + k : k;
-          if (v !== null && typeof v === 'object') flat(v, key, rows);
-          else rows.push([key, typeof v === 'number' ? (+v.toFixed(4)).toString() : String(v)]);
-        }
-        return rows;
-      };
-      let frames = 0, lastT = performance.now();
-      setInterval(() => {
-        const now = performance.now();
-        const fps = frames * 1000 / (now - lastT);
-        meta.textContent = 'fps: ' + fps.toFixed(1);
-        frames = 0; lastT = now;
-      }, 1000);
-
-      let backoff = 500;
-      function connect() {
-        const ws = new WebSocket('ws://' + location.host + '/ws');
-        ws.onopen = () => {
-          stat.textContent = 'LIVE'; stat.style.background = '#2ecc71'; stat.style.color = '#053';
-          backoff = 500;
-        };
-        ws.onmessage = (ev) => {
-          frames++;
-          let msg; try { msg = JSON.parse(ev.data); } catch { return; }
-          const data = msg.data || msg;
-          const rows = flat(data, '', []);
-          if (body.children.length !== rows.length) {
-            body.innerHTML = rows.map(() => '<tr><td class="k"></td><td class="v"></td></tr>').join('');
-          }
-          body.querySelectorAll('tr').forEach((tr, i) => {
-            tr.children[0].textContent = rows[i][0];
-            tr.children[1].textContent = rows[i][1];
-          });
-        };
-        ws.onclose = () => {
-          stat.textContent = 'OFF'; stat.style.background = '#e74c3c'; stat.style.color = '#fff';
-          setTimeout(connect, backoff);
-          backoff = Math.min(backoff * 2, 5000);
-        };
-        ws.onerror = () => ws.close();
-      }
-      connect();
-    })();
-  </script>
+  <script src="/app.js"></script>
 </body>
 </html>
