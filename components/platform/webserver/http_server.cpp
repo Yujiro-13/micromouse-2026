@@ -194,36 +194,36 @@ void webserver_start(void)
         return;
     }
 
-    httpd_uri_t root = {};
-    root.uri = "/";
-    root.method = HTTP_GET;
-    root.handler = root_get_handler;
-    root.user_ctx = nullptr;
-    httpd_register_uri_handler(s_server, &root);
-
-    httpd_uri_t app_js = {};
-    app_js.uri = "/app.js";
-    app_js.method = HTTP_GET;
-    app_js.handler = app_js_get_handler;
-    app_js.user_ctx = nullptr;
-    httpd_register_uri_handler(s_server, &app_js);
-
-    httpd_uri_t info = {};
-    info.uri = "/api/info";
-    info.method = HTTP_GET;
-    info.handler = info_get_handler;
-    info.user_ctx = nullptr;
-    httpd_register_uri_handler(s_server, &info);
+    // ルートテーブル: エンドポイント登録を 1 箇所に集約。追加はこの配列へ 1 行足すだけ(FR-10)。
+    struct Route
+    {
+        const char *uri;
+        httpd_method_t method;
+        esp_err_t (*handler)(httpd_req_t *);
+        bool is_websocket;
+    };
+    static const Route routes[] = {
+        {"/", HTTP_GET, root_get_handler, false},
+        {"/app.js", HTTP_GET, app_js_get_handler, false},
+        {"/api/info", HTTP_GET, info_get_handler, false},
+#if CONFIG_HTTPD_WS_SUPPORT
+        {"/ws", HTTP_GET, ws_handler, true},
+#endif
+    };
+    for (const Route &r : routes)
+    {
+        httpd_uri_t u = {};
+        u.uri = r.uri;
+        u.method = r.method;
+        u.handler = r.handler;
+        u.user_ctx = nullptr;
+#if CONFIG_HTTPD_WS_SUPPORT
+        u.is_websocket = r.is_websocket; // WS 無効時は構造体にこのメンバが無いので #if で保護
+#endif
+        httpd_register_uri_handler(s_server, &u);
+    }
 
 #if CONFIG_HTTPD_WS_SUPPORT
-    httpd_uri_t ws = {};
-    ws.uri = "/ws";
-    ws.method = HTTP_GET;
-    ws.handler = ws_handler;
-    ws.user_ctx = nullptr;
-    ws.is_websocket = true;
-    httpd_register_uri_handler(s_server, &ws);
-
     // 配信タスクを core0(PRO_CPU) に固定・低優先度で起動(制御 core1 を不可侵に保つ)。
     if (s_telem_task == nullptr)
     {

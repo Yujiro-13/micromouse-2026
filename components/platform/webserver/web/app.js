@@ -361,6 +361,25 @@
     .then((j) => renderSection('info', j))
     .catch(() => {});
 
+  // --- レート / 一時停止 操作(既存 WS cmd backend へ送信) ---
+  let sock = null;     // 現在の WS(送信用)
+  let paused = false;  // UI 側の一時停止状態
+  const elRate = $('#rate');
+  const elRateV = $('#ratev');
+  const elPause = $('#pause');
+  function sendCmd(obj) {
+    if (sock && sock.readyState === WebSocket.OPEN) sock.send(JSON.stringify(obj));
+  }
+  elRate.addEventListener('input', () => {
+    elRateV.textContent = elRate.value;
+    sendCmd({ rate: +elRate.value });
+  });
+  elPause.addEventListener('click', () => {
+    paused = !paused;
+    elPause.textContent = paused ? '▶ 再開' : '⏸ 一時停止';
+    sendCmd({ pause: paused });
+  });
+
   // --- WS ライブストリーム(指数バックオフ再接続) ---
   function setStatus(text, bg, fg) {
     elStatus.textContent = text;
@@ -371,7 +390,14 @@
   let backoff = 500;
   function connect() {
     const ws = new WebSocket('ws://' + location.host + '/ws');
-    ws.onopen = () => { setStatus('LIVE', '#2ecc71', '#053'); backoff = 500; };
+    ws.onopen = () => {
+      sock = ws;
+      setStatus('LIVE', '#2ecc71', '#053');
+      backoff = 500;
+      // UI の現在状態をサーバへ反映(再接続時の同期)。
+      sendCmd({ rate: +elRate.value });
+      if (paused) sendCmd({ pause: true });
+    };
     ws.onmessage = (ev) => {
       frames++;
       let msg;
@@ -380,6 +406,7 @@
       render(msg.data || msg);
     };
     ws.onclose = () => {
+      if (sock === ws) sock = null;
       setStatus('OFF', '#e74c3c', '#fff');
       setTimeout(connect, backoff);
       backoff = Math.min(backoff * 2, 5000);

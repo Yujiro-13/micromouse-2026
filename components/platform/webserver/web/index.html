@@ -62,6 +62,11 @@
       cursor: pointer; border: none; background: #8883; color: inherit;
       border-radius: 6px; padding: 0 .45rem; font-size: .85rem;
     }
+    .btn-ctrl {
+      cursor: pointer; border: 1px solid #8884; background: #8881; color: inherit;
+      border-radius: 8px; padding: .15rem .6rem; font-size: .8rem;
+    }
+    #rate { vertical-align: middle; width: 7rem; }
     /* 自己位置 2D */
     #pose-card { width: max-content; max-width: 100%; margin-bottom: 1rem; }
     #poseCanvas { width: 320px; height: 320px; display: block; max-width: 100%; }
@@ -81,6 +86,8 @@
     <span class="stat">batt <b id="batt">—</b></span>
     <span class="stat"><b id="fps">0</b> fps</span>
     <span class="stat" id="ver">schema —</span>
+    <label class="stat" title="配信レート (Hz)">rate <input id="rate" type="range" min="1" max="50" value="20"> <b id="ratev">20</b>Hz</label>
+    <button id="pause" class="btn-ctrl">⏸ 一時停止</button>
   </header>
 
   <p class="hint">数値の行をクリックすると、その項目を時系列グラフにピン留めできます。</p>
