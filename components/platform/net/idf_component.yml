@@ -1,0 +1,15 @@
+## platform/net コンポーネントの依存宣言。
+## mDNS は ESP Component Registry の managed component。
+##
+## OFF(RMOUSE_WIFI_ENABLE=n)時は、トップレベル CMakeLists が net を
+## EXCLUDE_COMPONENTS で除外する。ESP-IDF の build.cmake は除外コンポーネントを
+## manifest 一覧(local_components_list)から外してからコンポーネントマネージャへ
+## 渡すため(tools/cmake/build.cmake の EXCLUDE_COMPONENTS チェック)、
+## net の本 manifest は処理されず mdns も取得されない。
+##
+## よって条件付き($CONFIG{...})ルールは付けない。付けると manager が kconfig 確定
+## 前後で依存を2段階解決し、ON ビルドのたびに "Missing kconfig option. Re-run"
+## 警告が出てしまう。OFF ゲートは上記 EXCLUDE_COMPONENTS に一本化する。
+dependencies:
+  espressif/mdns:
+    version: "*"

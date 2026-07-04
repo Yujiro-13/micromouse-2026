@@ -20,6 +20,15 @@
 #include "files.hpp"
 #include "board_config.h"
 
+#if CONFIG_RMOUSE_WIFI_ENABLE
+// WiFi テレメトリ機能。ネット基盤(NVS/netif/event)初期化・AP/STA・mDNS の起動は
+// すべて wifi_manager(components/platform/net) が内包する。
+// HTTP サーバ(GET / で最小ページ配信)は webserver(components/platform/webserver)。
+// WebSocket ストリームは後続フェーズで webserver に追加する。
+#include "wifi_manager.hpp"
+#include "http_server.hpp"
+#endif
+
 
 
 SensorData sens;
@@ -123,6 +132,12 @@ static void init_hardware(void)
 
 extern "C" void app_main(void)
 {
+#if CONFIG_RMOUSE_WIFI_ENABLE
+    // ネット基盤(NVS/netif/event)初期化〜AP/STA/mDNS 起動まで wifi_manager が内包。
+    wifi_manager_start();
+    // netif/WiFi 起動後に HTTP サーバを開始(全インタフェースにバインド)。
+    webserver_start();
+#endif
     init_hardware();
 
     init_files();

@@ -1,36 +1,102 @@
 menu "reRoMouse Application"
 
-    menu "WiFi (future feature)"
-        comment "WiFi 接続コードは未実装。ここでは設定項目のみ先行定義する。"
-        comment "SSID/パスワードをソースに直書きしないための受け皿。"
+    menu "WiFi / Telemetry"
+        comment "WiFi テレメトリ・ダッシュボード (HTTP + WebSocket)。"
+        comment "OFF(既定)では関連コード/依存/タスクを一切ビルド・起動せず従来挙動と同一。"
+        comment "競技ビルドは n を推奨。調整・デバッグ時のみ y。"
 
         config RMOUSE_WIFI_ENABLE
-            bool "Enable WiFi feature"
+            bool "Enable WiFi telemetry feature (master switch)"
             default n
             help
-                将来の WiFi 機能を有効化するフラグ。現状はビルドへ影響しない。
+                WiFi テレメトリ機能のマスタースイッチ。
+                n(既定): WiFi 関連のコード・コンポーネント・タスクは一切
+                         ビルド/起動されず、従来挙動と完全に同一(OFF=無いのと同じ)。
+                y      : 下記設定で WiFi(AP/STA/APSTA)・HTTP/WebSocket サーバを起動する。
 
-        config RMOUSE_WIFI_SSID
-            string "WiFi SSID"
+        choice RMOUSE_WIFI_MODE
+            prompt "WiFi mode"
+            depends on RMOUSE_WIFI_ENABLE
+            default RMOUSE_WIFI_MODE_APSTA
+            help
+                起動時の WiFi 動作モード。APSTA は AP と STA を同時に起動する。
+
+            config RMOUSE_WIFI_MODE_AP
+                bool "AP only (機体がアクセスポイント／直結)"
+            config RMOUSE_WIFI_MODE_STA
+                bool "STA only (既存ルータへ接続)"
+            config RMOUSE_WIFI_MODE_APSTA
+                bool "AP + STA (同時)"
+        endchoice
+
+        comment "--- Access Point (AP) ---"
+
+        config RMOUSE_WIFI_AP_SSID
+            string "AP SSID"
             depends on RMOUSE_WIFI_ENABLE
             default "reromouse-ap"
-            help
-                接続先(STA)もしくは自機(AP)の SSID。
 
-        config RMOUSE_WIFI_PASSWORD
-            string "WiFi password"
+        config RMOUSE_WIFI_AP_PASSWORD
+            string "AP password (>=8 文字, 空=オープン)"
             depends on RMOUSE_WIFI_ENABLE
             default ""
             help
-                WiFi パスワード。空文字でオープン(認証なし)。
-                秘匿したい場合は sdkconfig.defaults ではなく
-                git 管理外の sdkconfig.defaults.* / sdkconfig へ設定すること。
+                空文字でオープン(認証なし)。WPA2 にする場合は 8 文字以上。
+                秘匿したい値は git 管理外の sdkconfig / sdkconfig.defaults.* へ設定すること。
+
+        config RMOUSE_WIFI_AP_CHANNEL
+            int "AP channel"
+            depends on RMOUSE_WIFI_ENABLE
+            range 1 13
+            default 1
+
+        config RMOUSE_WIFI_AP_MAX_CONN
+            int "AP max simultaneous connections"
+            depends on RMOUSE_WIFI_ENABLE
+            range 1 4
+            default 2
+
+        comment "--- Station (STA) ---"
+
+        config RMOUSE_WIFI_STA_SSID
+            string "STA SSID (接続先ルータ)"
+            depends on RMOUSE_WIFI_ENABLE
+            default ""
+
+        config RMOUSE_WIFI_STA_PASSWORD
+            string "STA password"
+            depends on RMOUSE_WIFI_ENABLE
+            default ""
 
         config RMOUSE_WIFI_MAX_RETRY
-            int "WiFi connection max retry"
+            int "STA connection max retry"
             depends on RMOUSE_WIFI_ENABLE
             range 0 100
             default 5
+
+        comment "--- Naming / Server ---"
+
+        config RMOUSE_WIFI_HOSTNAME
+            string "Hostname (mDNS: <name>.local)"
+            depends on RMOUSE_WIFI_ENABLE
+            default "reromouse"
+
+        config RMOUSE_TELEMETRY_PORT
+            int "HTTP/WebSocket server port"
+            depends on RMOUSE_WIFI_ENABLE
+            range 1 65535
+            default 80
+
+        config RMOUSE_TELEMETRY_HZ
+            int "Telemetry push rate [Hz]"
+            depends on RMOUSE_WIFI_ENABLE
+            range 1 50
+            default 20
+
+        config RMOUSE_TELEMETRY_AUTH_TOKEN
+            string "WebSocket auth token (空=無効)"
+            depends on RMOUSE_WIFI_ENABLE
+            default ""
     endmenu
 
     menu "Debug / Log"

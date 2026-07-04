@@ -1,5 +1,9 @@
 #include "interrupt.hpp"
 
+#if CONFIG_RMOUSE_WIFI_ENABLE
+#include "telemetry_bind.hpp" // ループ計測のテレメトリ公開(OFF 時は本 include ごと無効)
+#endif
+
 // #define ENC_MAX 4096
 #define TIRE_DIAMETER 0.01495
 #define MMPP TIRE_DIAMETER *M_PI / ENC_MAX
@@ -805,6 +809,9 @@ void Interrupt::logging()
         // if (control->log_flag == TRUE)
         //{
         xSemaphoreTake(*on_logging, portMAX_DELAY); // セマフォが取得できるまで無制限に待機 （他タスクによって解放されるまでブロックされる）
+#if CONFIG_RMOUSE_WIFI_ENABLE
+        int64_t log_start = esp_timer_get_time(); // ログ書き込み 1 回分の計測開始(OFF 時は除去)
+#endif
         // 壁センサ値はuint16_t（0-65535）だが、int16_t配列に格納するためキャストが必要
         // ただし、値の範囲を保持するため、読み出し側でuint16_tとして解釈する必要がある
         adcs[0] = (int16_t)(sens->wall.val.fl);
@@ -861,6 +868,16 @@ void Interrupt::logging()
             break;
         }
         mem_offset += sizeof(adcs);
+
+#if CONFIG_RMOUSE_WIFI_ENABLE
+        // 1 回の書き込み時間と起動間隔をテレメトリへ公開(イベント駆動のため idle 時は更新されない)。
+        static int64_t log_prev_start = 0;
+        uint32_t log_period = (log_prev_start != 0) ? static_cast<uint32_t>(log_start - log_prev_start) : 0;
+        log_prev_start = log_start;
+        telemetry_report_loop(TELEM_TASK_LOG,
+                              static_cast<uint32_t>(esp_timer_get_time() - log_start), log_period);
+#endif
+
         if (mem_offset >= partition->size)
             break;
 
@@ -962,8 +979,17 @@ void Interrupt::interrupt()
         end_time = esp_timer_get_time();
         delta_time = end_time - start_time;
 
+#if CONFIG_RMOUSE_WIFI_ENABLE
+        // ループ実行時間(delta_time)と実周期(前回開始からの差)をテレメトリへ公開。
+        // OFF 時は本ブロックごと除去され、従来挙動・サイズに影響しない。
+        static int64_t prev_start = 0;
+        uint32_t period_us = (prev_start != 0) ? static_cast<uint32_t>(start_time - prev_start) : 0;
+        prev_start = start_time;
+        telemetry_report_loop(TELEM_TASK_INTERRUPT, static_cast<uint32_t>(delta_time), period_us);
+#endif
+
         vTaskDelay(1 / portTICK_PERIOD_MS);
 
-        
+
     }
 }

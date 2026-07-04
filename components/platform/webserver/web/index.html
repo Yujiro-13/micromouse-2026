@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reRoMouse Telemetry</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      margin: 0; padding: 1rem; line-height: 1.5;
+    }
+    header {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem;
+      padding-bottom: .75rem; border-bottom: 1px solid #8884; margin-bottom: 1rem;
+    }
+    h1 { margin: 0; font-size: 1.3rem; }
+    .badge {
+      display: inline-block; padding: .15rem .6rem; border-radius: 999px;
+      background: #aaa; color: #222; font-size: .8rem; font-weight: 700;
+    }
+    .stat { font-size: .85rem; opacity: .8; }
+    .stat b { font-variant-numeric: tabular-nums; }
+    .hint { font-size: .8rem; opacity: .65; margin: 0 0 .75rem; }
+    #graphs, #cards {
+      display: grid; gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    }
+    #graphs:empty { display: none; }
+    #graphs { margin-bottom: 1rem; }
+    .card {
+      padding: .75rem 1rem; border: 1px solid #8884; border-radius: 12px;
+    }
+    .card h2 {
+      margin: 0 0 .5rem; font-size: 1rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .card h2 .sp { flex: 1; }
+    code {
+      background: #8882; padding: .05rem .35rem; border-radius: 6px; font-size: .8em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; opacity: .8;
+    }
+    table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+    td { padding: .15rem .4rem; border-bottom: 1px solid #8883; }
+    td.k { color: #888; white-space: nowrap; }
+    td.v {
+      text-align: right; font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    tr.pinnable { cursor: pointer; }
+    tr.pinnable:hover td { background: #8881; }
+    tr.pinned td.k::before { content: "📈 "; }
+    /* グラフ */
+    .chart canvas { width: 100%; height: 120px; display: block; }
+    .chart .meta {
+      display: flex; justify-content: space-between;
+      font-size: .75rem; opacity: .7; font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .btn-x {
+      cursor: pointer; border: none; background: #8883; color: inherit;
+      border-radius: 6px; padding: 0 .45rem; font-size: .85rem;
+    }
+    .btn-ctrl {
+      cursor: pointer; border: 1px solid #8884; background: #8881; color: inherit;
+      border-radius: 8px; padding: .15rem .6rem; font-size: .8rem;
+    }
+    #rate { vertical-align: middle; width: 7rem; }
+    /* 自己位置 2D */
+    #pose-card { width: max-content; max-width: 100%; margin-bottom: 1rem; }
+    #poseCanvas { width: 320px; height: 320px; display: block; max-width: 100%; }
+    .legend { display: flex; gap: 1rem; font-size: .75rem; opacity: .8; margin-top: .4rem; }
+    .legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: .25rem; }
+    .pose-info {
+      font-size: .8rem; opacity: .85; margin-top: .35rem;
+      font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🐭 reRoMouse Telemetry</h1>
+    <span id="status" class="badge">…</span>
+    <span class="stat">batt <b id="batt">—</b></span>
+    <span class="stat"><b id="fps">0</b> fps</span>
+    <span class="stat" id="ver">schema —</span>
+    <label class="stat" title="配信レート (Hz)">rate <input id="rate" type="range" min="1" max="50" value="20"> <b id="ratev">20</b>Hz</label>
+    <button id="pause" class="btn-ctrl">⏸ 一時停止</button>
+  </header>
+
+  <p class="hint">数値の行をクリックすると、その項目を時系列グラフにピン留めできます。</p>
+
+  <section id="viz">
+    <div class="card" id="pose-card">
+      <h2>自己位置 2D <code>pose</code></h2>
+      <canvas id="poseCanvas"></canvas>
+      <div class="legend">
+        <span><i style="background:#3498db"></i>生</span>
+        <span><i style="background:#e67e22"></i>セル補正後</span>
+        <span><i style="background:#2ecc71"></i>現在セル/方位</span>
+      </div>
+      <div id="pose-info" class="pose-info">—</div>
+    </div>
+  </section>
+
+  <div id="graphs"></div>
+  <div id="cards"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

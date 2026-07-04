@@ -3,6 +3,11 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_rom_sys.h"
+#include "esp_timer.h"
+
+#if CONFIG_RMOUSE_WIFI_ENABLE
+#include "telemetry_bind.hpp" // ループ計測のテレメトリ公開(OFF 時は本 include ごと無効)
+#endif
 
 void WallSensorSampler::on_charge_completed(void *arg)
 {
@@ -49,6 +54,9 @@ void WallSensorSampler::sampling()
 
     while (1)
     {
+#if CONFIG_RMOUSE_WIFI_ENABLE
+        int64_t adc_start = esp_timer_get_time(); // サンプリング 1 周分の計測開始(OFF 時は除去)
+#endif
         sens->battery_voltage = driver->adc->battery_voltage();
         for (int i = 0; i < 4; i++)
         {
@@ -114,6 +122,15 @@ void WallSensorSampler::sampling()
         sens->wall.val.fr = (int)wall_fr_filtered;
         sens->wall.val.l = (int)wall_l_filtered;
         sens->wall.val.r = (int)wall_r_filtered;
+
+#if CONFIG_RMOUSE_WIFI_ENABLE
+        // サンプリング実行時間と実周期(前回開始からの差)をテレメトリへ公開。
+        static int64_t adc_prev_start = 0;
+        uint32_t adc_period = (adc_prev_start != 0) ? static_cast<uint32_t>(adc_start - adc_prev_start) : 0;
+        adc_prev_start = adc_start;
+        telemetry_report_loop(TELEM_TASK_ADC,
+                              static_cast<uint32_t>(esp_timer_get_time() - adc_start), adc_period);
+#endif
 
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
