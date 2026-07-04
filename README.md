@@ -5,6 +5,10 @@
 
 ESP32-S3 を用いたマイクロマウス（迷路自律走行ロボット）のファームウェア。ESP-IDF (v5.x / CMake) と C++ で実装し、足立法による迷路探索と PID 制御による走行を行う。
 
+<p align="center">
+  <img src="figs/IMG_5885.jpeg" alt="reRoMouse 機体外観" width="480">
+</p>
+
 > マイクロマウスは、自律型ロボットが未知の迷路を探索し最短経路を走行する競技。
 > 競技の詳細は [全日本マイクロマウス大会（NTF）](https://www.ntf.or.jp/?page_id=25) を参照。
 
